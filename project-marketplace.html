@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Marketplace — FLOWVA</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .pm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: var(--space-5);
+        }
+
+        .pm-card {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            transition: var(--transition-slow);
+        }
+
+        .pm-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .pm-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--space-3);
+        }
+
+        .pm-card-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .pm-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .pm-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pm-card-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: -webkit-box;
+            line-clamp: 3;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .pm-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: var(--space-3);
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+
+        .pm-client-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .pm-client-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent-hover);
+            flex-shrink: 0;
+        }
+
+        .pm-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .pm-skill-tag {
+            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            background: var(--accent-soft);
+            color: var(--accent-hover);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+
+        /* Bid modal */
+        .bid-modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        /* Filter bar */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-3);
+            margin-bottom: var(--space-6);
+            align-items: center;
+        }
+
+        .filter-search {
+            flex: 1;
+            min-width: 220px;
+            position: relative;
+        }
+
+        .filter-search input {
+            width: 100%;
+            padding: 11px 16px 11px 40px;
+            border-radius: var(--radius-full);
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            outline: none;
+            transition: var(--transition-base);
+            font-family: var(--font-body);
+        }
+
+        .filter-search input:focus {
+            border-color: var(--border-focus);
+        }
+
+        .filter-search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .filter-select {
+            padding: 11px 36px 11px 16px;
+            border-radius: var(--radius-full);
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-family: var(--font-body);
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 14px) center;
+        }
+
+        @media (max-width: 600px) {
+            .pm-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <main class="page-content">
+        <div
+            style="background:var(--bg-surface);border-bottom:1px solid var(--border);padding:var(--space-12) 0 var(--space-8)">
+            <div class="container">
+                <div
+                    style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-4)">
+                    <div>
+                        <h1 class="section-title" style="margin-bottom:8px">Project Marketplace</h1>
+                        <p style="color:var(--text-muted)">
+                            <span id="result-count" style="color:var(--text-primary);font-weight:600">0 projects</span>
+                            open for bidding · Post a project or place a bid to get started
+                        </p>
+                    </div>
+                    <button class="btn btn--primary" id="btn-post-project">+ Post a Project</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="section" style="padding-top:var(--space-8)">
+            <div class="container">
+                <div class="filter-bar">
+                    <div class="filter-search">
+                        <span class="filter-search-icon">🔍</span>
+                        <input type="text" id="pm-search" placeholder="Search projects…">
+                    </div>
+                    <select class="filter-select" id="pm-category">
+                        <option value="">All Categories</option>
+                        <option value="animation">Animation</option>
+                        <option value="logo">Logo Design</option>
+                        <option value="social">Social Media</option>
+                        <option value="motion">Motion Graphics</option>
+                        <option value="branding">Branding</option>
+                        <option value="video">Video Editing</option>
+                        <option value="web">Web Design</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <select class="filter-select" id="pm-sort">
+                        <option value="newest">Newest</option>
+                        <option value="budget-high">Budget: High → Low</option>
+                        <option value="budget-low">Budget: Low → High</option>
+                        <option value="deadline">Deadline Soon</option>
+                    </select>
+                </div>
+
+                <!-- Skeletons -->
+                <div class="pm-grid" id="pm-skeleton" aria-hidden="true">
+                    <div class="skeleton" style="height:240px;border-radius:var(--radius-lg)"></div>
+                    <div class="skeleton" style="height:240px;border-radius:var(--radius-lg)"></div>
+                    <div class="skeleton" style="height:240px;border-radius:var(--radius-lg)"></div>
+                </div>
+
+                <div class="pm-grid" id="pm-grid"></div>
+
+                <div style="text-align:center;margin-top:var(--space-10)">
+                    <button class="btn btn--ghost btn--lg hidden" id="pm-load-more">Load More Projects</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- POST PROJECT MODAL (buyers) -->
+    <div class="modal-overlay" id="post-project-modal" role="dialog" aria-modal="true">
+        <div class="modal" style="max-width:640px">
+            <div class="modal-header">
+                <h2>Post a Project</h2>
+                <button class="modal-close" aria-label="Close">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="post-project-form" novalidate style="display:flex;flex-direction:column;gap:var(--space-4)">
+                    <div class="form-group">
+                        <label class="form-label">Project Title *</label>
+                        <input class="form-input" type="text" id="proj-title"
+                            placeholder="e.g. Animated logo for my brand" maxlength="200" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description *</label>
+                        <textarea class="form-input" id="proj-desc" rows="4" maxlength="5000"
+                            placeholder="Describe what you need in detail — style, references, deliverables…"
+                            style="resize:vertical" required></textarea>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select class="form-input" id="proj-category">
+                                <option value="">Select category</option>
+                                <option value="animation">Animation</option>
+                                <option value="logo">Logo Design</option>
+                                <option value="social">Social Media</option>
+                                <option value="motion">Motion Graphics</option>
+                                <option value="branding">Branding</option>
+                                <option value="video">Video Editing</option>
+                                <option value="web">Web Design</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Budget (USD) *</label>
+                            <input class="form-input" type="number" id="proj-budget" placeholder="e.g. 150" min="5"
+                                step="1" required>
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
+                        <div class="form-group">
+                            <label class="form-label">Deadline *</label>
+                            <input class="form-input" type="date" id="proj-deadline" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Required Software</label>
+                            <input class="form-input" type="text" id="proj-software"
+                                placeholder="e.g. After Effects, Figma">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Skills Needed</label>
+                        <input class="form-input" type="text" id="proj-skills"
+                            placeholder="Comma-separated: e.g. motion design, 2D animation">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Attachments (optional)</label>
+                        <input class="form-input" type="file" id="proj-attachments" multiple accept="image/*,.pdf,.zip"
+                            style="padding:10px 16px">
+                        <span style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;display:block">Images, PDF
+                            or ZIP — max 10MB each</span>
+                    </div>
+                    <div id="post-project-error" style="display:none;color:var(--danger);font-size:0.85rem"></div>
+                    <div class="modal-footer" style="padding:0;margin-top:var(--space-2)">
+                        <button type="button" class="btn btn--ghost modal-close">Cancel</button>
+                        <button type="submit" class="btn btn--primary" id="post-project-submit">Submit Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- BID MODAL (creators) -->
+    <div class="modal-overlay" id="bid-modal" role="dialog" aria-modal="true">
+        <div class="modal" style="max-width:580px">
+            <div class="modal-header">
+                <h2>Submit a Bid</h2>
+                <button class="modal-close" aria-label="Close">✕</button>
+            </div>
+            <div class="modal-body bid-modal-body">
+                <p style="font-size:0.85rem;color:var(--text-muted)" id="bid-project-title-display"></p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
+                    <div class="form-group">
+                        <label class="form-label">Bid Amount (USD) *</label>
+                        <input class="form-input" type="number" id="bid-amount" placeholder="e.g. 120" min="1" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Delivery Time (days) *</label>
+                        <input class="form-input" type="number" id="bid-delivery" placeholder="e.g. 7" min="1" step="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Proposal *</label>
+                    <textarea class="form-input" id="bid-proposal" rows="5" maxlength="3000"
+                        placeholder="Describe your approach, experience, and why you're the best fit…"
+                        style="resize:vertical"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Portfolio / Sample Links</label>
+                    <input class="form-input" type="text" id="bid-samples" placeholder="Comma-separated URLs">
+                </div>
+                <div id="bid-error" style="display:none;color:var(--danger);font-size:0.85rem"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--ghost modal-close">Cancel</button>
+                <button class="btn btn--primary" id="bid-submit-btn">Submit Bid</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECT DETAIL MODAL -->
+    <div class="modal-overlay" id="detail-modal" role="dialog" aria-modal="true">
+        <div class="modal" style="max-width:680px">
+            <div class="modal-header">
+                <h2 id="detail-title">Project Details</h2>
+                <button class="modal-close" aria-label="Close">✕</button>
+            </div>
+            <div class="modal-body" id="detail-body" style="display:flex;flex-direction:column;gap:var(--space-4)">
+            </div>
+            <div class="modal-footer" id="detail-footer"></div>
+        </div>
+    </div>
+
+    <script type="module" src="js/core/navbar.js"></script>
+    <script type="module" src="js/pages/project-marketplace.js"></script>
+</body>
+
+</html>

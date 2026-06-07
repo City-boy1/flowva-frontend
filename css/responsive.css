@@ -1,0 +1,215 @@
+/* ============================================
+   RESPONSIVE.CSS
+   Breakpoints: 1200, 900, 700, 500px
+   Covers: navbar, hero, grids, dashboard,
+           messages, auth, creator, marketplace
+============================================ */
+
+/* ============================================
+   NAVBAR — MOBILE SLIDE-IN
+============================================ */
+@media (max-width: 900px) {
+  .menu-toggle { display: flex !important; }
+
+  .nav-links {
+    position: fixed;
+    top: 0; right: -100%;
+    width: 270px; height: 100vh;
+    flex-direction: column;
+    background: var(--card);
+    border-left: 1px solid var(--border);
+    padding: 80px 20px 24px;
+    transition: right .32s cubic-bezier(.34,1.56,.64,1);
+    z-index: 9998;
+    gap: 4px;
+    box-shadow: -10px 0 40px rgba(0,0,0,.4);
+  }
+  .nav-links.open { right: 0; }
+  .nav-links a { padding: 12px 16px; font-size: .95rem; }
+
+  /* dim overlay when nav open */
+  .nav-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 9997;
+    display: none;
+  }
+  .nav-overlay.show { display: block; }
+
+  .notif-dropdown { right: -50px; width: 290px; }
+}
+
+/* ============================================
+   HERO
+============================================ */
+@media (max-width: 1200px) {
+  .hero-content h1 { font-size: 3.5rem; }
+}
+@media (max-width: 900px) {
+  .hero-content h1 { font-size: 2.8rem; }
+  .hero-content p  { font-size: .95rem; }
+}
+@media (max-width: 600px) {
+  .hero-content h1 { font-size: 2.1rem; }
+  .hero-buttons { flex-direction: column; align-items: stretch; }
+  .hero-buttons .btn { text-align: center; justify-content: center; }
+}
+
+/* ============================================
+   TEMPLATE GRIDS
+============================================ */
+@media (max-width: 1200px) {
+  .templates-grid, .template-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .templates-grid, .template-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+}
+@media (max-width: 480px) {
+  .templates-grid, .template-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   CAROUSEL
+============================================ */
+@media (max-width: 700px) {
+  .carousel-btn { display: none; }
+  .carousel-track { padding: 0 4px 12px; }
+  .carousel-track .template-card { min-width: 240px; }
+}
+
+/* ============================================
+   SECTION
+============================================ */
+@media (max-width: 700px) {
+  section.section { padding: 60px 0; }
+  .section-top { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .section-top h2 { font-size: 1.4rem; }
+}
+
+/* ============================================
+   DASHBOARD LAYOUT
+============================================ */
+@media (max-width: 900px) {
+  .dashboard-layout { flex-direction: column; }
+
+  .sidebar {
+    width: 100%; height: auto;
+    position: relative; top: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+  }
+
+  .sidebar h2 { display: none; } /* hide panel title on mobile */
+
+  .sidebar-links {
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px !important;
+    padding-bottom: 4px;
+  }
+  .sidebar-links::-webkit-scrollbar { display: none; }
+
+  .sidebar-links li {
+    flex-shrink: 0;
+    padding: 10px 14px !important;
+    border-radius: 99px !important;
+    font-size: .8rem !important;
+    transform: none !important;
+  }
+
+  .dashboard-main { padding: 20px 16px; }
+}
+
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 12px; }
+  .stat h2 { font-size: 1.8rem !important; }
+  .upload-card { padding: 20px 16px !important; }
+  .drop-zone { padding: 36px 16px !important; }
+}
+@media (max-width: 400px) {
+  .stats-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ============================================
+   MESSAGES LAYOUT
+============================================ */
+@media (max-width: 900px) {
+  .messages-layout { flex-direction: column; height: auto; min-height: calc(100vh - var(--nav-h)); }
+  .chat-sidebar   { width: 100%; height: auto; max-height: 42vh; border-right: none; border-bottom: 1px solid var(--border); }
+  .chat-main      { flex: 1; min-height: 56vh; }
+}
+@media (max-width: 600px) {
+  .message        { max-width: 88%; font-size: .82rem; }
+  .chat-header    { padding: 12px 14px; }
+  .chat-body      { padding: 14px; gap: 12px; }
+  .chat-input     { padding: 10px 12px; gap: 8px; }
+  .sidebar-top    { padding: 14px; }
+}
+
+/* ============================================
+   MARKETPLACE FILTERS
+============================================ */
+@media (max-width: 700px) {
+  .marketplace-filters { flex-direction: column; gap: 10px; }
+  .marketplace-filters select { width: 100%; }
+  .filter-row { flex-direction: column; gap: 10px; }
+}
+
+/* ============================================
+   AUTH PAGES
+============================================ */
+@media (max-width: 500px) {
+  .auth-card { padding: 28px 20px !important; margin: 10px; }
+  .auth-card h1 { font-size: 1.5rem; }
+  .field-row { grid-template-columns: 1fr !important; }
+}
+
+/* ============================================
+   CREATOR PAGE
+============================================ */
+@media (max-width: 600px) {
+  .creator-stats { flex-direction: column; gap: 20px; align-items: center; }
+  .creator-avatar { width: 120px !important; height: 120px !important; }
+  .creator-banner { height: 200px !important; }
+}
+
+/* ============================================
+   MODAL
+============================================ */
+@media (max-width: 600px) {
+  .modal-box { padding: 22px 16px; border-radius: var(--r-lg); }
+  .modal-video-box { width: 95%; }
+}
+
+/* ============================================
+   TOAST
+============================================ */
+@media (max-width: 600px) {
+  .toast { bottom: 16px; right: 12px; left: 12px; max-width: none; }
+}
+
+/* ============================================
+   CONTAINER
+============================================ */
+@media (max-width: 500px) {
+  .container { width: 94%; }
+}
+
+/* ============================================
+   GENERAL UTILITY
+============================================ */
+@media (max-width: 700px) {
+  .hide-mobile { display: none !important; }
+}
+@media (min-width: 701px) {
+  .hide-desktop { display: none !important; }
+}

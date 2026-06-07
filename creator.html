@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Creator profile — FLOWVA">
+    <title>Creator — FLOWVA</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/homepage.css">
+    <link rel="stylesheet" href="css/creator.css">
+</head>
+
+<body>
+
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <main class="page-content">
+
+        <!-- ── HERO / PROFILE HEADER ── -->
+        <div class="creator-hero">
+            <div class="creator-banner"></div>
+
+            <div class="creator-profile-wrap container">
+                <div class="creator-avatar-wrap">
+                    <div class="avatar avatar--xl avatar--placeholder" id="creator-avatar-init"
+                        style="font-size:1.6rem;border:4px solid var(--bg-base)">-</div>
+                    <div class="creator-verified" title="Verified Creator">✓</div>
+                </div>
+
+                <div class="creator-info">
+                    <h1 id="creator-name" class="skeleton-text">-</h1>
+                    <p class="role skeleton-text" id="creator-role"></p>
+                    <div class="creator-tags" id="creator-tags"></div>
+                </div>
+
+                <div class="creator-actions">
+                    <button class="btn btn--ghost" id="msg-btn">💬 Message</button>
+                    <button class="btn btn--primary" id="follow-btn">+ Follow</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── STATS BAR ── -->
+        <div class="creator-stats-bar">
+            <div class="creator-stat">
+                <div class="creator-stat-value skeleton-text" data-stat="templates">—</div>
+                <div class="creator-stat-label">Templates</div>
+            </div>
+            <div class="creator-stat">
+                <div class="creator-stat-value skeleton-text" data-stat="sales">—</div>
+                <div class="creator-stat-label">Total Sales</div>
+            </div>
+            <div class="creator-stat">
+                <div class="creator-stat-value skeleton-text" data-stat="rating">—</div>
+                <div class="creator-stat-label">Rating</div>
+            </div>
+            <div class="creator-stat">
+                <div class="creator-stat-value skeleton-text" data-stat="followers">—</div>
+                <div class="creator-stat-label">Followers</div>
+            </div>
+        </div>
+
+        <!-- ── BIO ── -->
+        <div class="creator-bio">
+            <p class="skeleton-text" id="creator-bio">-</p>
+        </div>
+
+        <!-- ── TABS ── -->
+        <div class="creator-tabs" role="tablist">
+            <button class="creator-tab active" data-tab="templates" role="tab">Templates</button>
+            <button class="creator-tab" data-tab="reviews" role="tab">Reviews</button>
+            <button class="creator-tab" data-tab="about" role="tab">About</button>
+        </div>
+
+        <!-- ── TAB CONTENT ── -->
+        <div class="creator-content">
+
+            <!-- Templates panel -->
+            <div id="tab-templates" class="creator-tab-panel">
+                <div class="template-grid" id="creator-templates-grid"></div>
+            </div>
+
+            <!-- Reviews panel -->
+            <div id="tab-reviews" class="creator-tab-panel hidden">
+                <div style="display:flex;flex-direction:column;gap:var(--space-5);max-width:700px">
+                    <div class="card" style="padding:var(--space-5)">
+                        <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:12px">
+                            <div class="avatar avatar--sm avatar--placeholder"
+                                style="background:#0ea5e9;font-size:0.7rem">MK</div>
+                            <div>
+                                <div style="font-weight:600;font-size:0.9rem">Motion Kings</div>
+                                <div style="color:#f59e0b;font-size:0.85rem">★★★★★</div>
+                            </div>
+                            <div style="margin-left:auto;font-size:0.75rem;color:var(--text-muted)">2 weeks ago</div>
+                        </div>
+                        <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6">Incredible quality. The
+                            cinematic intro pack exceeded all our expectations. Clean, well-organised files and fast
+                            delivery.</p>
+                    </div>
+                    <div class="card" style="padding:var(--space-5)">
+                        <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:12px">
+                            <div class="avatar avatar--sm avatar--placeholder"
+                                style="background:#10b981;font-size:0.7rem">NB</div>
+                            <div>
+                                <div style="font-weight:600;font-size:0.9rem">Nadia B.</div>
+                                <div style="color:#f59e0b;font-size:0.85rem">★★★★★</div>
+                            </div>
+                            <div style="margin-left:auto;font-size:0.75rem;color:var(--text-muted)">1 month ago</div>
+                        </div>
+                        <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6">Professional,
+                            responsive, and incredibly talented. Will definitely hire again for future projects!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About panel -->
+            <div id="tab-about" class="creator-tab-panel hidden">
+                <div style="max-width:600px">
+                    <h3 style="font-family:var(--font-display);margin-bottom:var(--space-4)">About Vision Studio</h3>
+                    <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:var(--space-5)">
+                        Based in Accra, Ghana. Specialising in cinematic motion graphics, brand identity animations, and
+                        social media content packs for creators, brands, and studios worldwide.
+                    </p>
+                    <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+                        <div
+                            style="display:flex;align-items:center;gap:12px;color:var(--text-secondary);font-size:0.9rem">
+                            <span>📍</span> Accra, Ghana
+                        </div>
+                        <div
+                            style="display:flex;align-items:center;gap:12px;color:var(--text-secondary);font-size:0.9rem">
+                            <span>🛠</span> After Effects, Cinema 4D, Premiere Pro, DaVinci Resolve
+                        </div>
+                        <div
+                            style="display:flex;align-items:center;gap:12px;color:var(--text-secondary);font-size:0.9rem">
+                            <span>📅</span> Member since January 2024
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module" src="js/core/navbar.js"></script>
+    <script type="module" src="js/pages/creator.js"></script>
+</body>
+
+</html>

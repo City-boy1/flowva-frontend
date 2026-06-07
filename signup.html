@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up — FLOWVA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+
+    <div class="scene">
+        <div class="scene__grain"></div>
+        <div class="scene__orb scene__orb--1"></div>
+        <div class="scene__orb scene__orb--2"></div>
+        <div class="scene__orb scene__orb--3"></div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <main class="page">
+
+        <!-- LEFT PANEL -->
+        <aside class="panel">
+            <a href="/index.html" class="logo">
+                <span class="logo__mark">F</span>
+                <span class="logo__text">FLOWVA</span>
+            </a>
+
+            <div class="panel__hero">
+                <p class="panel__eyebrow">The Global Standard</p>
+                <h2 class="panel__title">
+                    <span class="word">WHERE</span> <span class="word">ELITE</span><br>
+                    <span class="word">CREATORS</span> <span class="word">GET</span><br>
+                    <em><span class="word">PAID INSTANTLY.</span></em>
+                </h2>
+                <p class="panel__body">No middlemen. No waiting. No bank drama.<br>Sell your templates worldwide — your
+                    wallet fills up in seconds via Helio.</p>
+            </div>
+
+            <div class="panel__stats">
+                <div class="stat">
+                    <div class="stat__num" data-count="70">0%</div>
+                    <div class="stat__label">Straight to you</div>
+                </div>
+                <div class="stat">
+                    <div class="stat__num">∞</div>
+                    <div class="stat__label">Any wallet, anywhere</div>
+                </div>
+                <div class="stat">
+                    <div class="stat__num">&lt;5s</div>
+                    <div class="stat__label">Settlement time</div>
+                </div>
+            </div>
+
+            <div class="wallet-strip">
+                <div class="wallet-strip__label">Works with</div>
+                <div class="wallet-tags">
+                    <span class="wallet-tag">Phantom</span>
+                    <span class="wallet-tag">Binance</span>
+                    <span class="wallet-tag">Coinbase</span>
+                    <span class="wallet-tag">Trust</span>
+                    <span class="wallet-tag">+ Any Solana</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- FORM PANEL -->
+        <section class="form-panel">
+            <div class="card" id="card">
+
+                <div class="card__header">
+                    <a href="/index.html" class="mobile-logo">FLOWVA</a>
+                    <h1 class="card__title">Create Account</h1>
+                    <p class="card__sub">Join the global creator marketplace</p>
+                </div>
+
+                <!-- Role toggle -->
+                <div class="role-toggle" role="radiogroup" aria-label="Account type">
+                    <label class="role-btn" id="role-buyer-btn">
+                        <input type="radio" name="role" value="buyer" checked>
+                        <div class="role-btn__inner">
+                            <span class="role-btn__icon">
+                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="currentColor"
+                                        stroke-width="1.8" stroke-linejoin="round" />
+                                    <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="1.8" />
+                                    <path d="M16 10a4 4 0 01-8 0" stroke="currentColor" stroke-width="1.8" />
+                                </svg>
+                            </span>
+                            <span class="role-btn__text">
+                                <strong>Buy Templates</strong>
+                                <small>Browse premium assets</small>
+                            </span>
+                        </div>
+                    </label>
+                    <label class="role-btn" id="role-creator-btn">
+                        <input type="radio" name="role" value="creator">
+                        <div class="role-btn__inner">
+                            <span class="role-btn__icon">
+                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                                        stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                                </svg>
+                            </span>
+                            <span class="role-btn__text">
+                                <strong>Sell Templates</strong>
+                                <small>Earn 70% per sale</small>
+                            </span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Creator info banner -->
+                <div class="creator-banner" id="creator-banner">
+                    <div class="creator-banner__icon">
+                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="creator-banner__title">Instant on-chain payouts</div>
+                        <div class="creator-banner__body">Every sale auto-splits: <strong>70% lands in your wallet
+                                within seconds</strong> via Helio. No setup, no waiting. Convert to local currency
+                            anytime.</div>
+                    </div>
+                </div>
+
+                <form class="signup-form" id="signup-form" novalidate autocomplete="off">
+
+                    <div class="form-row">
+                        <!-- Full name -->
+                        <div class="field">
+                            <label class="field__label" for="f-name">Full name</label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+                                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor"
+                                            stroke-width="1.8" />
+                                        <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8" />
+                                    </svg>
+                                </span>
+                                <input class="field__input" type="text" id="f-name" name="name"
+                                    placeholder="Your full name" autocomplete="name" required>
+                            </div>
+                            <span class="field__error" id="err-name" role="alert"></span>
+                        </div>
+
+                        <!-- Country -->
+                        <div class="field">
+                            <label class="field__label" for="f-country">Country</label>
+                            <div class="input-wrap select-wrap">
+                                <span class="input-icon">
+                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8" />
+                                        <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"
+                                            stroke="currentColor" stroke-width="1.8" />
+                                    </svg>
+                                </span>
+                                <select class="field__input" id="f-country" name="country">
+                                    <optgroup label="🌍 Africa">
+                                        <option value="ghana">🇬🇭 Ghana</option>
+                                        <option value="nigeria">🇳🇬 Nigeria</option>
+                                        <option value="kenya">🇰🇪 Kenya</option>
+                                        <option value="south_africa">🇿🇦 South Africa</option>
+                                        <option value="tanzania">🇹🇿 Tanzania</option>
+                                        <option value="uganda">🇺🇬 Uganda</option>
+                                        <option value="egypt">🇪🇬 Egypt</option>
+                                        <option value="ethiopia">🇪🇹 Ethiopia</option>
+                                    </optgroup>
+                                    <optgroup label="🌎 Americas">
+                                        <option value="united_states">🇺🇸 United States</option>
+                                        <option value="canada">🇨🇦 Canada</option>
+                                        <option value="brazil">🇧🇷 Brazil</option>
+                                        <option value="mexico">🇲🇽 Mexico</option>
+                                    </optgroup>
+                                    <optgroup label="🌍 Europe">
+                                        <option value="united_kingdom">🇬🇧 United Kingdom</option>
+                                        <option value="germany">🇩🇪 Germany</option>
+                                        <option value="france">🇫🇷 France</option>
+                                        <option value="netherlands">🇳🇱 Netherlands</option>
+                                    </optgroup>
+                                    <optgroup label="🌏 Asia & Pacific">
+                                        <option value="india">🇮🇳 India</option>
+                                        <option value="philippines">🇵🇭 Philippines</option>
+                                        <option value="indonesia">🇮🇩 Indonesia</option>
+                                        <option value="australia">🇦🇺 Australia</option>
+                                    </optgroup>
+                                    <option value="other">🌍 Other</option>
+                                </select>
+                                <span class="select-arrow">
+                                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
+                                        <polyline points="6,9 12,15 18,9" stroke="currentColor" stroke-width="2" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="field">
+                        <label class="field__label" for="f-email">Email address</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">
+                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                                        stroke="currentColor" stroke-width="1.8" />
+                                    <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="1.8" />
+                                </svg>
+                            </span>
+                            <input class="field__input" type="email" id="f-email" name="email"
+                                placeholder="you@example.com" autocomplete="email" required>
+                        </div>
+                        <span class="field__error" id="err-email" role="alert"></span>
+                    </div>
+
+                    <!-- Wallet — creator only -->
+                    <div class="field creator-only" id="wallet-group" style="display:none">
+                        <label class="field__label" for="f-wallet">
+                            Solana wallet address
+                            <span class="field__badge">USDC · Instant</span>
+                        </label>
+                        <div class="input-wrap">
+                            <span class="input-icon">
+                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" stroke="currentColor"
+                                        stroke-width="1.8" />
+                                    <line x1="1" y1="10" x2="23" y2="10" stroke="currentColor" stroke-width="1.8" />
+                                </svg>
+                            </span>
+                            <input class="field__input mono" type="text" id="f-wallet" name="wallet"
+                                placeholder="Paste your Phantom, Binance, Coinbase, Trust… address" autocomplete="off"
+                                spellcheck="false">
+                        </div>
+                        <p class="field__hint">Any Solana-compatible address works. <span>You can update this
+                                later.</span></p>
+                        <span class="field__error" id="err-wallet" role="alert"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <!-- Password -->
+                        <div class="field">
+                            <label class="field__label" for="f-pass">Password</label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor"
+                                            stroke-width="1.8" />
+                                        <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.8" />
+                                    </svg>
+                                </span>
+                                <input class="field__input has-toggle" type="password" id="f-pass" name="password"
+                                    placeholder="Min. 6 chars" autocomplete="new-password" required>
+                                <button type="button" class="pass-toggle" id="pass-toggle" aria-label="Toggle password">
+                                    <svg id="eye-icon" width="15" height="15" fill="none" viewBox="0 0 24 24">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor"
+                                            stroke-width="1.8" />
+                                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="strength">
+                                <div class="strength__track">
+                                    <div class="strength__fill" id="s-fill"></div>
+                                </div>
+                                <span class="strength__label" id="s-label"></span>
+                            </div>
+                            <span class="field__error" id="err-pass" role="alert"></span>
+                        </div>
+
+                        <!-- Confirm -->
+                        <div class="field">
+                            <label class="field__label" for="f-confirm">Confirm password</label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+                                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="currentColor"
+                                            stroke-width="1.8" />
+                                        <polyline points="22,4 12,14.01 9,11.01" stroke="currentColor"
+                                            stroke-width="1.8" />
+                                    </svg>
+                                </span>
+                                <input class="field__input" type="password" id="f-confirm" name="confirm"
+                                    placeholder="Repeat password" autocomplete="new-password" required>
+                            </div>
+                            <span class="field__error" id="err-confirm" role="alert"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="btn-submit">
+                        <span class="btn-submit__shimmer"></span>
+                        <span class="btn-spinner"></span>
+                        <span class="btn-text-content" id="btn-text">Create Account</span>
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+
+                </form>
+
+                <p class="card__terms">By signing up you agree to our <a href="/terms.html">Terms</a> &amp; <a
+                        href="/privacy.html">Privacy Policy</a>.</p>
+                <p class="card__footer">Already have an account? <a href="/login.html">Sign in →</a></p>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Role toggle
+        const roleBtns = document.querySelectorAll('.role-btn input');
+        const creatorBanner = document.getElementById('creator-banner');
+        const walletGroup = document.getElementById('wallet-group');
+
+        roleBtns.forEach(btn => {
+            btn.addEventListener('change', () => {
+                const isCreator = btn.value === 'creator';
+                creatorBanner.style.display = isCreator ? 'flex' : 'none';
+                if (walletGroup) {
+                    walletGroup.style.display = isCreator ? 'flex' : 'none';
+                    if (isCreator) {
+                        walletGroup.style.animation = 'none';
+                        requestAnimationFrame(() => {
+                            walletGroup.style.animation = 'slideDown 0.4s cubic-bezier(0.22,1,0.36,1) both';
+                        });
+                    }
+                }
+            });
+        });
+
+        // Password toggle
+        const passInput = document.getElementById('f-pass');
+        const passToggle = document.getElementById('pass-toggle');
+        passToggle.addEventListener('click', () => {
+            const show = passInput.type === 'password';
+            passInput.type = show ? 'text' : 'password';
+            passToggle.innerHTML = show
+                ? `<svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`
+                : `<svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>`;
+        });
+
+        // Strength meter
+        const sFill = document.getElementById('s-fill');
+        const sLabel = document.getElementById('s-label');
+        passInput.addEventListener('input', () => {
+            const v = passInput.value;
+            let score = 0;
+            if (v.length >= 8) score++;
+            if (/[A-Z]/.test(v)) score++;
+            if (/[0-9]/.test(v)) score++;
+            if (/[^A-Za-z0-9]/.test(v)) score++;
+            const levels = [
+                { w: '0%', c: 'transparent', t: '' },
+                { w: '25%', c: '#ef4444', t: 'Weak' },
+                { w: '50%', c: '#f59e0b', t: 'Fair' },
+                { w: '75%', c: '#3b82f6', t: 'Good' },
+                { w: '100%', c: '#10b981', t: 'Strong' },
+            ];
+            const l = levels[Math.min(score, 4)];
+            sFill.style.width = v.length ? l.w : '0%';
+            sFill.style.background = l.c;
+            sLabel.textContent = v.length ? l.t : '';
+            sLabel.style.color = l.c;
+        });
+
+        // Ripple on submit button
+        const btnSubmit = document.getElementById('btn-submit');
+        btnSubmit.addEventListener('click', function (e) {
+            const rect = this.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            ripple.classList.add('ripple');
+            ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - rect.left - size / 2}px;top:${e.clientY - rect.top - size / 2}px`;
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+
+        // Animated stat counter
+        function animateCount(el, target) {
+            let start = 0;
+            const step = () => {
+                start += Math.ceil(target / 30);
+                if (start >= target) { el.textContent = target + '%'; return; }
+                el.textContent = start + '%';
+                requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+        }
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    const el = e.target;
+                    animateCount(el, parseInt(el.dataset.count));
+                    observer.unobserve(el);
+                }
+            });
+        });
+        document.querySelectorAll('[data-count]').forEach(el => observer.observe(el));
+    </script>
+
+    <script type="module" src="/js/pages/signup.js"></script>
+
+</body>
+
+</html>

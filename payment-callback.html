@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment — FLOWVA</title>
+    <script type="module">
+        import AppState from './js/core/state.js';
+        import api from './js/core/api.js';
+
+        const params = new URLSearchParams(window.location.search);
+        const statusEl = document.getElementById('status');
+        const messageEl = document.getElementById('message');
+        const actionEl = document.getElementById('action');
+
+        // Helio redirects back with no guaranteed query params
+        // We find the pending order and poll verify
+        async function checkPayment() {
+            statusEl.textContent = '⏳';
+            messageEl.textContent = 'Confirming your payment…';
+
+            await api.restoreSession();
+
+            // Find the most recent PENDING order for this user
+            const ordersRes = await api.users.getOrders();
+            if (!ordersRes.ok) {
+                showFailed();
+                return;
+            }
+
+            const pending = (ordersRes.data?.orders ?? []).find(o => o.status === 'PENDING');
+            if (!pending) {
+                // No pending order — payment may have already been confirmed via webhook
+                const paid = (ordersRes.data?.orders ?? []).find(o =>
+                    ['PAID', 'COMPLETED'].includes(o.status)
+                );
+                if (paid) {
+                    showSuccess(paid.mongoTemplateId);
+                } else {
+                    showFailed();
+                }
+                return;
+            }
+
+            // Poll verify endpoint
+            let attempts = 0;
+            const poll = setInterval(async () => {
+                attempts++;
+                const res = await api.payments.verify(pending.id);
+                if (res.ok && res.data?.verified) {
+                    clearInterval(poll);
+                    showSuccess(res.data.templateId);
+                } else if (attempts >= 10) {
+                    clearInterval(poll);
+                    // Webhook may still come — send to dashboard
+                    messageEl.textContent = 'Payment received — your purchase will appear in your dashboard shortly.';
+                    actionEl.innerHTML = `<a href="dashboard.html#purchases" class="btn">Go to Dashboard</a>`;
+                }
+            }, 3000);
+        }
+
+        function showSuccess(templateId) {
+            statusEl.textContent = '✓';
+            statusEl.style.color = '#10b981';
+            messageEl.textContent = 'Payment confirmed! Your template is ready to download.';
+            actionEl.innerHTML = templateId
+                ? `<button onclick="downloadTemplate('${templateId}')" class="btn btn--primary">Download Now</button>
+           <a href="marketplace.html" class="btn btn--ghost" style="margin-top:8px">Back to Marketplace</a>`
+                : `<a href="dashboard.html#purchases" class="btn btn--primary">Go to Downloads</a>`;
+        }
+
+        function showFailed() {
+            statusEl.textContent = '✕';
+            statusEl.style.color = '#ef4444';
+            messageEl.textContent = 'Payment could not be confirmed. If you were charged, contact support.';
+            actionEl.innerHTML = `<a href="marketplace.html" class="btn btn--ghost">Back to Marketplace</a>`;
+        }
+
+        window.downloadTemplate = async (templateId) => {
+            const res = await api.templates.getDownloadToken(templateId);
+            if (!res.ok) { alert('Download failed. Please try from your dashboard.'); return; }
+            const BASE = window.FLOWVA_API_URL || 'http://127.0.0.1:5000/api';
+            window.open(`${BASE}/templates/${templateId}/download?token=${encodeURIComponent(res.data.token)}`, '_blank');
+        };
+
+        if (AppState.isLoggedIn() || AppState.hasSession()) {
+            checkPayment();
+        } else {
+            window.location.replace('login.html');
+        }
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #0a0a0f;
+            color: #fff;
+        }
+
+        .card {
+            text-align: center;
+            padding: 48px 32px;
+            background: #1a1a2e;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        #status {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+
+        #message {
+            font-size: 1rem;
+            color: #a0a0b0;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 0.95rem;
+        }
+
+        .btn--primary {
+            background: #7c3aed;
+            color: #fff;
+        }
+
+        .btn--ghost {
+            background: transparent;
+            border: 1px solid #333;
+            color: #a0a0b0;
+        }
+
+        #action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div id="status">⏳</div>
+        <div id="message">Processing your payment…</div>
+        <div id="action"></div>
+    </div>
+</body>
+
+</html>

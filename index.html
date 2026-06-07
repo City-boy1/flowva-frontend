@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="FLOWVA — Buy premium motion graphics, flyers, logos, animations and more. Hire creators. Build cinematic visuals.">
+    <meta name="theme-color" content="#03040a">
+    <title>FLOWVA — Premium Creative Assets Marketplace</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/homepage.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR (injected by navbar.js) -->
+    <div id="shared-navbar"></div>
+
+    <!-- ═══════════════ HERO ═══════════════ -->
+    <section class="hero" aria-label="Hero">
+        <div class="hero-bg">
+            <video autoplay muted loop playsinline preload="none" aria-hidden="true">
+                <source src="assets/videos/hero.mp4" type="video/mp4">
+            </video>
+            <div class="hero-gradient"></div>
+            <div class="hero-grid"></div>
+        </div>
+
+        <div class="container hero-container">
+            <div class="hero-content reveal">
+                <span class="hero-eyebrow">✦ The Creator Marketplace</span>
+                <h1>
+                    Discover <span class="highlight">Premium</span><br>
+                    Creative Assets &<br>Motion Graphics
+                </h1>
+                <p>Buy templates, hire creators, collaborate on projects and build cinematic visuals that captivate
+                    audiences
+                    worldwide.</p>
+                <div class="hero-actions">
+                    <button class="btn btn--primary btn--lg" id="btn-browse">Browse Templates</button>
+                    <button class="btn btn--ghost btn--lg" id="btn-creator">Become a Creator</button>
+                </div>
+                <div class="hero-trust">
+                    <span>⭐ Trusted by 28,000+ buyers</span>
+                    <span class="hero-trust-dot">·</span>
+                    <span>🎨 1,200+ verified creators</span>
+                    <span class="hero-trust-dot">·</span>
+                    <span>💳 Secure Paystack checkout</span>
+                </div>
+            </div>
+
+            <div class="hero-stats reveal reveal-delay-2" id="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value" data-target="4800" data-suffix="+">0</div>
+                    <div class="hero-stat-label">Templates</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" data-target="1200" data-suffix="+">0</div>
+                    <div class="hero-stat-label">Creators</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" data-target="28000" data-suffix="+">0</div>
+                    <div class="hero-stat-label">Happy Buyers</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" data-target="98" data-suffix="%">0</div>
+                    <div class="hero-stat-label">Satisfaction</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-scroll" aria-hidden="true">
+            <span>Scroll</span>
+            <div class="hero-scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ CATEGORY PILLS ═══════════════ -->
+    <section class="categories-bar" aria-label="Browse categories">
+        <div class="container">
+            <div class="categories-scroll" id="categories-scroll" role="list">
+                <!-- Injected by home.js -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ TRENDING TEMPLATES ═══════════════ -->
+    <section class="section" id="trending">
+        <div class="container">
+            <div class="section-header reveal">
+                <div>
+                    <h2 class="section-title">Trending Templates</h2>
+                    <p class="section-subtitle">Latest uploads from our creator community</p>
+                </div>
+                <button class="btn btn--ghost" id="btn-view-all">View All →</button>
+            </div>
+
+            <!-- Skeleton -->
+            <div class="carousel-wrap" id="trending-skeleton" aria-hidden="true">
+                <div class="carousel-track">
+                    <div class="template-card-skeleton carousel-slide"></div>
+                    <div class="template-card-skeleton carousel-slide"></div>
+                    <div class="template-card-skeleton carousel-slide"></div>
+                    <div class="template-card-skeleton carousel-slide"></div>
+                </div>
+            </div>
+
+            <!-- Carousel -->
+            <div class="carousel-wrap hidden" id="trending-carousel">
+                <button class="carousel-btn carousel-btn--prev" id="carousel-prev" aria-label="Previous">‹</button>
+                <div class="carousel-viewport">
+                    <div class="carousel-track" id="trending-grid" aria-label="Trending templates"></div>
+                </div>
+                <button class="carousel-btn carousel-btn--next" id="carousel-next" aria-label="Next">›</button>
+                <div class="carousel-dots" id="carousel-dots"></div>
+            </div>
+
+            <div class="empty-state hidden" id="trending-empty">
+                <div class="empty-state-icon">🎨</div>
+                <h3>No templates yet</h3>
+                <p>Be the first to upload a template and start earning.</p>
+                <a href="signup.html" class="btn btn--primary" style="margin-top:16px">Become a Creator</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ TUTORIALS LIBRARY ═══════════════ -->
+    <section class="section section--alt" id="tutorials">
+        <div class="container">
+            <div class="section-header reveal">
+                <div>
+                    <h2 class="section-title">Tutorials Library</h2>
+                    <p class="section-subtitle">Learn from the best — free video guides</p>
+                </div>
+                <a href="marketplace.html?tab=tutorials" class="btn btn--ghost">All Tutorials →</a>
+            </div>
+
+            <!-- Software filter tabs -->
+            <div class="software-tabs" id="software-tabs" role="tablist" aria-label="Filter by software">
+                <!-- Injected by home.js -->
+            </div>
+
+            <div class="tutorials-grid hidden" id="tutorials-grid" aria-label="Tutorials"></div>
+
+            <div class="template-grid" id="tutorials-skeleton" aria-hidden="true">
+                <div class="template-card-skeleton"></div>
+                <div class="template-card-skeleton"></div>
+                <div class="template-card-skeleton"></div>
+            </div>
+
+            <div class="empty-state hidden" id="tutorials-empty">
+                <div class="empty-state-icon">🎓</div>
+                <h3>No tutorials yet</h3>
+                <p>Creators can upload tutorials to share their knowledge.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header reveal">
+                <div>
+                    <h2 class="section-title">How It Works</h2>
+                    <p class="section-subtitle">Simple, fast, transparent</p>
+                </div>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card reveal reveal-delay-1">
+                    <div class="step-number">01</div>
+                    <h3>Browse & Discover</h3>
+                    <p>Explore premium templates across every category — flyers, logos, animations, social media packs,
+                        branding kits, motion graphics, resume templates and more.</p>
+                </div>
+                <div class="step-card reveal reveal-delay-2">
+                    <div class="step-number">02</div>
+                    <h3>Purchase Securely</h3>
+                    <p>Buy with confidence via Paystack. Instant download after payment. Creators receive 70% of every
+                        sale
+                        — directly to their account.</p>
+                </div>
+                <div class="step-card reveal reveal-delay-3">
+                    <div class="step-number">03</div>
+                    <h3>Upload & Earn</h3>
+                    <p>Are you a creator? Upload your templates, set your price, and start earning. Every template is
+                        reviewed by our admin team before going live.</p>
+                </div>
+                <div class="step-card reveal reveal-delay-4">
+                    <div class="step-number">04</div>
+                    <h3>Post a Project</h3>
+                    <p>Need something custom? Post a project brief and hire a creator directly. Manage briefs,
+                        revisions,
+                        and delivery all inside FLOWVA.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ TOP CREATORS ═══════════════ -->
+    <section class="section section--alt">
+        <div class="container">
+            <div class="section-header reveal">
+                <div>
+                    <h2 class="section-title">Top Creators</h2>
+                    <p class="section-subtitle">The talent behind the best-selling templates</p>
+                </div>
+                <a href="creator.html" class="btn btn--ghost">Meet All Creators →</a>
+            </div>
+
+            <div class="creators-grid" id="creators-skeleton" aria-hidden="true">
+                <div class="creator-card-skeleton"></div>
+                <div class="creator-card-skeleton"></div>
+                <div class="creator-card-skeleton"></div>
+                <div class="creator-card-skeleton"></div>
+            </div>
+
+            <div class="creators-grid hidden" id="creators-grid"></div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ POST A PROJECT BANNER ═══════════════ -->
+    <section class="section">
+        <div class="container">
+            <div class="project-banner reveal">
+                <div class="project-banner-content">
+                    <span class="hero-eyebrow" style="justify-content:flex-start">📋 Custom Projects</span>
+                    <h2>Need Something Built Just for You?</h2>
+                    <p>Post a project brief and receive bids from talented creators within hours. You only pay when
+                        you're
+                        satisfied.</p>
+                    <div style="display:flex;gap:12px;flex-wrap:wrap">
+                        <button class="btn btn--primary btn--lg" id="btn-post-project">Post a Project</button>
+                        <a href="marketplace.html" class="btn btn--ghost btn--lg">Browse Templates Instead</a>
+                    </div>
+                </div>
+                <div class="project-banner-graphic" aria-hidden="true">
+                    <div class="project-graphic-orb"></div>
+                    <div class="project-graphic-card">
+                        <span>🎬</span>
+                        <div>
+                            <strong>Cinematic Intro</strong>
+                            <span>12 bids · Starting $45</span>
+                        </div>
+                    </div>
+                    <div class="project-graphic-card project-graphic-card--2">
+                        <span>🎨</span>
+                        <div>
+                            <strong>Brand Identity</strong>
+                            <span>8 bids · Starting $80</span>
+                        </div>
+                    </div>
+                    <div class="project-graphic-card project-graphic-card--3">
+                        <span>📱</span>
+                        <div>
+                            <strong>Social Pack</strong>
+                            <span>5 bids · Starting $30</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ CTA ═══════════════ -->
+    <section class="section">
+        <div class="container">
+            <div class="cta-inner reveal">
+                <h2>Ready to Start Creating?</h2>
+                <p>Join 1,200+ creators already earning on FLOWVA. Upload your first template free today.</p>
+                <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+                    <a href="signup.html" class="btn btn--primary btn--lg">Start Selling Free</a>
+                    <a href="marketplace.html" class="btn btn--ghost btn--lg">Explore Templates</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ FOOTER ═══════════════ -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <span class="nav-logo">FLOWVA</span>
+                    <p>The premier marketplace for motion graphics creators and buyers worldwide.</p>
+                    <div class="footer-socials">
+                        <a href="#" aria-label="Twitter" class="footer-social-link">𝕏</a>
+                        <a href="#" aria-label="Instagram" class="footer-social-link">IG</a>
+                        <a href="#" aria-label="YouTube" class="footer-social-link">▶</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Marketplace</h4>
+                    <ul>
+                        <li><a href="marketplace.html">Browse All</a></li>
+                        <li><a href="marketplace.html?cat=flyer">Flyers</a></li>
+                        <li><a href="marketplace.html?cat=logo">Logos</a></li>
+                        <li><a href="marketplace.html?cat=animation">Animations</a></li>
+                        <li><a href="marketplace.html?cat=social">Social Media</a></li>
+                        <li><a href="marketplace.html?cat=branding">Branding Kits</a></li>
+                        <li><a href="marketplace.html?cat=motion">Motion Graphics</a></li>
+                        <li><a href="marketplace.html?cat=resume">Resume Templates</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Creators</h4>
+                    <ul>
+                        <li><a href="signup.html">Become a Creator</a></li>
+                        <li><a href="dashboard.html">Creator Dashboard</a></li>
+                        <li><a href="#">Pricing & Commission</a></li>
+                        <li><a href="#">Creator Guidelines</a></li>
+                        <li><a href="marketplace.html?tab=tutorials">Tutorial Library</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About FLOWVA</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 FLOWVA. All rights reserved.</p>
+                <p style="color:var(--text-muted);font-size:0.75rem">Creators earn 70% of every sale.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ═══════════════ PREVIEW MODAL ═══════════════ -->
+    <div class="modal-overlay" id="preview-modal" role="dialog" aria-modal="true" aria-label="Template preview">
+        <div class="modal" style="max-width:700px">
+            <div class="modal-header">
+                <h2 id="modal-title">Preview</h2>
+                <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+            </div>
+            <div class="modal-body" style="padding:0">
+                <div id="modal-thumb"
+                    style="min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:0 0 var(--radius-xl) var(--radius-xl)">
+                </div>
+            </div>
+            <div class="modal-footer" id="modal-footer" style="border-top:1px solid var(--border)"></div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container"></div>
+
+    <script type="module" src="js/core/navbar.js"></script>
+    <script type="module" src="js/core/reveal.js"></script>
+    <script type="module" src="js/pages/home.js"></script>
+</body>
+
+</html>

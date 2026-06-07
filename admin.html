@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Center — FLOWVA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <a class="topbar-brand" href="#">
+            <div class="topbar-brand-icon">⚡</div>
+            FLOWVA
+        </a>
+        <span class="topbar-badge">ADMIN</span>
+        <div class="topbar-spacer"></div>
+        <div class="topbar-stat">
+            <div class="topbar-stat-dot"></div>
+            <span>Live</span>
+            <strong id="topbar-users">—</strong>
+            <span>users</span>
+        </div>
+        <div class="topbar-stat" style="gap:6px">
+            <span>Revenue</span>
+            <strong>$<span id="topbar-revenue">—</span></strong>
+        </div>
+        <div class="topbar-avatar" id="admin-avatar">A</div>
+    </header>
+
+    <!-- SHELL -->
+    <div class="shell">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="nav-section-label">Platform</div>
+            <button class="nav-item active" data-tab="overview">
+                <span class="nav-icon">◈</span> Overview
+            </button>
+
+            <div class="nav-section-label">Content</div>
+            <button class="nav-item" data-tab="templates">
+                <span class="nav-icon">🎬</span> Templates
+                <span class="nav-badge" id="badge-templates">0</span>
+            </button>
+            <button class="nav-item" data-tab="tutorials">
+                <span class="nav-icon">🎓</span> Tutorials
+                <span class="nav-badge" id="badge-tutorials">0</span>
+            </button>
+            <button class="nav-item" data-tab="projects">
+                <span class="nav-icon">📁</span> Projects
+                <span class="nav-badge" id="badge-projects">0</span>
+            </button>
+
+            <div class="nav-section-label">Commerce</div>
+            <button class="nav-item" data-tab="commissions">
+                <span class="nav-icon">💰</span> Commissions
+            </button>
+            <button class="nav-item" data-tab="disputes">
+                <span class="nav-icon">⚖️</span> Disputes
+            </button>
+
+            <div class="nav-section-label">Management</div>
+            <button class="nav-item" data-tab="users">
+                <span class="nav-icon">👥</span> Users
+            </button>
+            <button class="nav-item" data-tab="tools">
+                <span class="nav-icon">🔧</span> Tools
+            </button>
+
+            <div class="sidebar-footer">
+                <button class="nav-item" id="nav-logout" style="color:var(--red)">
+                    <span class="nav-icon">→</span> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main">
+
+            <!-- ── OVERVIEW ─────────────────────────────────── -->
+            <div class="tab-panel active" id="panel-overview">
+                <div class="page-header">
+                    <h1>Command Center</h1>
+                    <p>Real-time platform overview — <span id="overview-date"></span></p>
+                </div>
+
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card" style="--stat-color:var(--accent)">
+                        <span class="stat-icon">👤</span>
+                        <div class="stat-value" id="st-users">—</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card" style="--stat-color:var(--green)">
+                        <span class="stat-icon">🎨</span>
+                        <div class="stat-value" id="st-creators">—</div>
+                        <div class="stat-label">Creators</div>
+                    </div>
+                    <div class="stat-card" style="--stat-color:var(--purple)">
+                        <span class="stat-icon">✅</span>
+                        <div class="stat-value" id="st-orders">—</div>
+                        <div class="stat-label">Completed Orders</div>
+                    </div>
+                    <div class="stat-card" style="--stat-color:var(--yellow)">
+                        <span class="stat-icon">💵</span>
+                        <div class="stat-value">$<span id="st-revenue">—</span></div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                    <div class="stat-card" style="--stat-color:var(--red)">
+                        <span class="stat-icon">⏳</span>
+                        <div class="stat-value" id="st-pending">—</div>
+                        <div class="stat-label">Pending Templates</div>
+                    </div>
+                    <div class="stat-card" style="--stat-color:var(--green)">
+                        <span class="stat-icon">🏦</span>
+                        <div class="stat-value">$<span id="st-commission">—</span></div>
+                        <div class="stat-label">Commission Earned</div>
+                    </div>
+                </div>
+
+                <h3 style="font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text-2);
+          text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px">Quick Actions</h3>
+                <div class="quick-actions">
+                    <button class="quick-btn" data-tab="templates">
+                        <div class="quick-btn-icon" style="background:var(--accent-dim)">🎬</div>
+                        Review Templates
+                    </button>
+                    <button class="quick-btn" data-tab="tutorials">
+                        <div class="quick-btn-icon" style="background:var(--purple-dim)">🎓</div>
+                        Review Tutorials
+                    </button>
+                    <button class="quick-btn" data-tab="projects">
+                        <div class="quick-btn-icon" style="background:var(--yellow-dim)">📁</div>
+                        Review Projects
+                    </button>
+                    <button class="quick-btn" data-tab="disputes">
+                        <div class="quick-btn-icon" style="background:var(--red-dim)">⚖️</div>
+                        Resolve Disputes
+                    </button>
+                    <button class="quick-btn" data-tab="users">
+                        <div class="quick-btn-icon" style="background:var(--green-dim)">👥</div>
+                        Manage Users
+                    </button>
+                    <button class="quick-btn" data-tab="tools">
+                        <div class="quick-btn-icon" style="background:var(--bg-hover)">🔧</div>
+                        Admin Tools
+                    </button>
+                </div>
+
+                <div class="info-box info-box-green">
+                    <span class="info-box-icon">✅</span>
+                    <div>
+                        <strong>Review flow:</strong> Templates and tutorials submitted by creators arrive as
+                        <strong>PENDING</strong>. Go to the <strong>Templates</strong> or <strong>Tutorials</strong>
+                        tab to approve or reject them. Approved items go live on the marketplace immediately.
+                        Projects submitted by clients also require approval before going live.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TEMPLATES ─────────────────────────────────── -->
+            <div class="tab-panel" id="panel-templates">
+                <div class="page-header">
+                    <h1>Template Review</h1>
+                    <p>Approve, reject, preview, or unpublish creator submissions</p>
+                </div>
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-tmpl-tab="PENDING">
+                        Pending <span class="sub-tab-count" id="tmpl-pending-count"></span>
+                    </button>
+                    <button class="sub-tab" data-tmpl-tab="APPROVED">Approved</button>
+                    <button class="sub-tab" data-tmpl-tab="REJECTED">Rejected</button>
+                </div>
+                <div id="tmpl-list">
+                    <div class="loading-row">
+                        <div class="spinner"></div>Loading templates…
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TUTORIALS ─────────────────────────────────── -->
+            <div class="tab-panel" id="panel-tutorials">
+                <div class="page-header">
+                    <h1>Tutorial Review</h1>
+                    <p>Approve, reject, preview, or unpublish tutorial submissions</p>
+                </div>
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-tut-tab="PENDING">
+                        Pending <span class="sub-tab-count" id="tut-pending-count"></span>
+                    </button>
+                    <button class="sub-tab" data-tut-tab="APPROVED">Approved</button>
+                    <button class="sub-tab" data-tut-tab="REJECTED">Rejected</button>
+                </div>
+                <div id="tut-list">
+                    <div class="loading-row">
+                        <div class="spinner"></div>Loading tutorials…
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── PROJECTS ─────────────────────────────────── -->
+            <div class="tab-panel" id="panel-projects">
+                <div class="page-header">
+                    <h1>Project Review</h1>
+                    <p>Approve or reject client project submissions</p>
+                </div>
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-proj-tab="pending">
+                        Pending <span class="sub-tab-count" id="proj-pending-count"></span>
+                    </button>
+                    <button class="sub-tab" data-proj-tab="OPEN">Live</button>
+                    <button class="sub-tab" data-proj-tab="IN_PROGRESS">In Progress</button>
+                    <button class="sub-tab" data-proj-tab="COMPLETED">Completed</button>
+                </div>
+                <div id="proj-list">
+                    <div class="loading-row">
+                        <div class="spinner"></div>Loading projects…
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── COMMISSIONS ─────────────────────────────── -->
+            <div class="tab-panel" id="panel-commissions">
+                <div class="page-header">
+                    <h1>Commissions</h1>
+                    <p>Platform earnings from completed sales (auto-disbursed on-chain via Helio)</p>
+                </div>
+                <div id="comm-list">
+                    <div class="loading-row">
+                        <div class="spinner"></div>Loading…
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── DISPUTES ─────────────────────────────────── -->
+            <div class="tab-panel" id="panel-disputes">
+                <div class="page-header">
+                    <h1>Disputes</h1>
+                    <p>Resolve escrow disputes between clients and creators</p>
+                </div>
+                <div id="disputes-list">
+                    <div class="loading-row">
+                        <div class="spinner"></div>Loading…
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── USERS ─────────────────────────────────────── -->
+            <div class="tab-panel" id="panel-users">
+                <div class="page-header">
+                    <h1>Users</h1>
+                    <p>Manage platform accounts — suspend, unsuspend, or inspect any user</p>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" id="filter-role">
+                            <option value="">All Roles</option>
+                            <option value="BUYER">Buyers</option>
+                            <option value="CREATOR">Creators</option>
+                            <option value="ADMIN">Admins</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="filter-status">
+                            <option value="">All Status</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="SUSPENDED">Suspended</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="btn-filter-users" style="align-self:flex-end">
+                        Apply Filter
+                    </button>
+                </div>
+                <div class="table-wrap">
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Country</th>
+                                    <th>Joined</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-tbody">
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="loading-row">
+                                            <div class="spinner"></div>Loading…
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TOOLS ─────────────────────────────────────── -->
+            <div class="tab-panel" id="panel-tools">
+                <div class="page-header">
+                    <h1>Admin Tools</h1>
+                    <p>Fix data issues and manage stuck transactions — one click, no code</p>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <div class="tool-card-icon">🔧</div>
+                        <div>
+                            <div class="tool-card-title">Repair Sales Counts</div>
+                            <div class="tool-card-desc">Recalculates <code
+                                    style="font-family:var(--font-mono);font-size:11px;background:var(--bg-hover);padding:1px 5px;border-radius:3px">salesCount</code>
+                                on all templates from completed orders. Run this if template sales show 0 despite
+                                purchases being made.</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="btn-repair-sales">⚙ Run Repair</button>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <div class="tool-card-icon">💼</div>
+                        <div>
+                            <div class="tool-card-title">Repair Creator Wallets</div>
+                            <div class="tool-card-desc">Ensures every creator has a wallet record. Run if creators see
+                                wallet errors or missing balances.</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="btn-repair-wallets">⚙ Run Repair</button>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <div class="tool-card-icon">⏳</div>
+                        <div>
+                            <div class="tool-card-title">Stuck PENDING Orders</div>
+                            <div class="tool-card-desc">Orders stuck in PENDING for over 30 minutes. Force-complete
+                                credits the creator. Cancel lets the buyer repurchase.</div>
+                        </div>
+                    </div>
+                    <div id="stuck-orders-list" style="margin-top:12px">
+                        <div class="loading-row">
+                            <div class="spinner"></div>Loading stuck orders…
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main><!-- /main -->
+    </div><!-- /shell -->
+
+    <!-- TOAST ROOT -->
+    <div id="toast-root"></div>
+
+    <!-- MODALS will be injected by JS -->
+
+    <!-- Auth guard -->
+    <script type="module">
+        import AppState from './js/core/state.js';
+        const u = AppState.getUser();
+        if (!AppState.isLoggedIn() || u?.role !== 'ADMIN') {
+            window.location.replace('index.html');
+        } else {
+            document.getElementById('admin-avatar').textContent = (u.name || 'A')[0].toUpperCase();
+        }
+    </script>
+
+    <script type="module" src="js/core/navbar.js"></script>
+    <script type="module" src="js/pages/admin.js"></script>
+</body>
+
+</html>

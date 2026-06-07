@@ -1,0 +1,209 @@
+/* ═══════════════════════════════
+   CREATOR PROFILE PAGE
+═══════════════════════════════ */
+
+.creator-hero {
+  padding-top: var(--navbar-h);
+  position: relative;
+}
+
+.creator-banner {
+  height: 280px;
+  background: linear-gradient(135deg, #1a0a3e 0%, #2d1b69 50%, #0f0a2e 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.creator-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(124,58,237,0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(79,70,229,0.2) 0%, transparent 40%);
+}
+
+.creator-banner::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--bg-base));
+}
+
+.creator-profile-wrap {
+  position: relative;
+  margin-top: -80px;
+  padding: 0 var(--space-10) var(--space-8);
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-6);
+}
+
+.creator-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.creator-avatar {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--bg-base);
+  background: var(--bg-raised);
+}
+
+.creator-verified {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 30px;
+  height: 30px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  border: 2px solid var(--bg-base);
+}
+
+.creator-info { flex: 1; min-width: 0; padding-bottom: var(--space-2); }
+
+.creator-info h1 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 4px;
+}
+
+.creator-info .role {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.creator-tags {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.creator-actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding-bottom: var(--space-2);
+  flex-shrink: 0;
+}
+
+/* ─── STATS BAR ─── */
+.creator-stats-bar {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+
+.creator-stat {
+  flex: 1;
+  text-align: center;
+  padding: var(--space-5) var(--space-4);
+  border-right: 1px solid var(--border);
+  transition: var(--transition-base);
+}
+
+.creator-stat:last-child { border-right: none; }
+.creator-stat:hover { background: var(--bg-raised); }
+
+.creator-stat-value {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.creator-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ─── ABOUT ─── */
+.creator-bio {
+  padding: var(--space-8) var(--space-10);
+  border-bottom: 1px solid var(--border);
+}
+
+.creator-bio p {
+  color: var(--text-secondary);
+  max-width: 700px;
+  line-height: 1.7;
+}
+
+/* ─── TABS ─── */
+.creator-tabs {
+  display: flex;
+  gap: var(--space-2);
+  padding: 0 var(--space-10);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.creator-tab {
+  padding: 16px var(--space-5);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition-base);
+  white-space: nowrap;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  background: none;
+}
+
+.creator-tab:hover { color: var(--text-primary); }
+
+.creator-tab.active {
+  color: var(--accent-hover);
+  border-bottom-color: var(--accent);
+}
+
+/* ─── CONTENT ─── */
+.creator-content {
+  padding: var(--space-8) var(--space-10);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .creator-profile-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 var(--space-5) var(--space-6);
+    margin-top: -60px;
+  }
+
+  .creator-actions { width: 100%; }
+  .creator-stats-bar { flex-wrap: wrap; }
+  .creator-stat { min-width: 50%; }
+  .creator-bio,
+  .creator-tabs,
+  .creator-content { padding-left: var(--space-5); padding-right: var(--space-5); }
+}
+
+@media (max-width: 480px) {
+  .creator-banner { height: 180px; }
+  .creator-avatar { width: 90px; height: 90px; }
+  .creator-info h1 { font-size: 1.4rem; }
+  .creator-stat { min-width: 50%; }
+}

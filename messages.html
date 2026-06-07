@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FLOWVA Messages — chat with creators and clients">
+    <title>Messages — FLOWVA</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/message.css">
+</head>
+
+<body>
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <div class="messages-page">
+        <aside class="msg-sidebar" id="msg-sidebar">
+            <div class="msg-sidebar-header">
+                <h2>Messages</h2>
+                <div class="msg-search">
+                    <span class="msg-search-icon">🔍</span>
+                    <input type="text" id="msg-search" placeholder="Search conversations…" aria-label="Search messages"
+                        autocomplete="off">
+                </div>
+            </div>
+            <div class="chat-list" id="chat-list" role="list" aria-label="Conversations"></div>
+        </aside>
+
+        <div class="chat-main" id="chat-main"></div>
+
+        <div class="chat-empty" id="chat-empty">
+            <div class="chat-empty-icon">💬</div>
+            <h3>Your messages</h3>
+            <p>When buyers or creators message you, their conversations will appear here.</p>
+        </div>
+    </div>
+
+    <script type="module" src="js/core/navbar.js"></script>
+    <script type="module" src="js/pages/messages.js"></script>
+</body>
+
+</html>

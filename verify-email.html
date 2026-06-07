@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email — FLOWVA</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+
+<body>
+    <div id="shared-navbar"></div>
+
+    <main class="auth-page">
+        <div class="auth-card" style="text-align:center;max-width:420px">
+            <a href="index.html" class="auth-logo">FLOWVA</a>
+
+            <div id="verify-icon" style="font-size:3rem;margin-bottom:16px">⏳</div>
+            <h1 class="auth-heading" id="verify-heading" style="font-size:1.5rem">Verifying your email…</h1>
+            <p id="verify-msg" style="color:var(--text-muted);font-size:0.9rem;margin-top:8px;line-height:1.6"></p>
+
+            <div id="verify-action" style="margin-top:var(--space-6);display:none">
+                <a href="login.html" class="btn btn--primary" style="width:100%;justify-content:center" id="verify-cta">
+                    Log in to FLOWVA
+                </a>
+                <p style="margin-top:var(--space-4);font-size:0.8rem;color:var(--text-muted)">
+                    Redirecting automatically in <span id="verify-countdown">5</span>s…
+                </p>
+            </div>
+
+            <div id="verify-error-action" style="margin-top:var(--space-6);display:none">
+                <a href="signup.html" class="btn btn--ghost" style="width:100%;justify-content:center">
+                    Back to Sign Up
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="js/core/navbar.js"></script>
+    <script type="module" src="js/pages/verify-email.js"></script>
+</body>
+
+</html>

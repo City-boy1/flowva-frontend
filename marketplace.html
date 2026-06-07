@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse thousands of premium motion graphics templates on FLOWVA Marketplace">
+    <title>Marketplace — FLOWVA</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/homepage.css">
+</head>
+
+<body>
+
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <main class="page-content">
+
+        <div style="background:var(--bg-surface);border-bottom:1px solid var(--border);padding:var(--space-12) 0 0">
+            <div class="container">
+                <h1 class="section-title" style="margin-bottom:8px">Marketplace</h1>
+                <p style="color:var(--text-muted);margin-bottom:var(--space-6)">
+                    Explore <span id="result-count" style="color:var(--text-primary);font-weight:600">0 templates</span>
+                    from world-class creators
+                </p>
+
+                <!-- TOP TABS -->
+                <div style="display:flex;gap:0;border-bottom:none">
+                    <button class="market-tab active" data-tab="templates"
+                        style="padding:12px 28px;background:none;border:none;border-bottom:2px solid var(--accent-hover);color:var(--accent-hover);font-weight:600;font-size:0.95rem;cursor:pointer;font-family:var(--font-body)">
+                        🎬 Templates
+                    </button>
+                    <button class="market-tab" data-tab="tutorials"
+                        style="padding:12px 28px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-muted);font-weight:500;font-size:0.95rem;cursor:pointer;font-family:var(--font-body)">
+                        🎓 Tutorials
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TEMPLATES TAB ═══ -->
+        <div id="tab-templates" class="market-tab-panel">
+            <section class="section" style="padding-top:var(--space-8)">
+                <div class="container">
+
+                    <div class="filter-bar" role="search" aria-label="Filter templates">
+                        <div class="filter-search">
+                            <span class="filter-search-icon">🔍</span>
+                            <input type="text" id="market-search" placeholder="Search templates, creators…"
+                                aria-label="Search templates">
+                        </div>
+                        <select class="filter-select" id="market-sort" aria-label="Sort by">
+                            <option value="trending">🔥 Trending</option>
+                            <option value="newest">✨ Newest</option>
+                            <option value="best-selling">💰 Best Selling</option>
+                            <option value="rating">⭐ Top Rated</option>
+                            <option value="price-low">Price: Low → High</option>
+                            <option value="price-high">Price: High → Low</option>
+                        </select>
+                        <select class="filter-select" id="market-price" aria-label="Filter by price">
+                            <option value="all">All Prices</option>
+                            <option value="low">Under $20</option>
+                            <option value="mid">$20 – $35</option>
+                            <option value="high">$35+</option>
+                            <option value="free">Free</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-bar" id="category-pills" role="tablist" aria-label="Filter by category"
+                        style="margin-bottom:var(--space-8)"></div>
+
+                    <div class="template-grid" id="skeleton-grid" aria-hidden="true">
+                        <div class="skeleton" style="height:360px;border-radius:var(--radius-lg)"></div>
+                        <div class="skeleton" style="height:360px;border-radius:var(--radius-lg)"></div>
+                        <div class="skeleton" style="height:360px;border-radius:var(--radius-lg)"></div>
+                        <div class="skeleton" style="height:360px;border-radius:var(--radius-lg)"></div>
+                    </div>
+
+                    <div class="template-grid" id="market-grid" aria-label="Templates"></div>
+
+                    <div style="text-align:center;margin-top:var(--space-10)">
+                        <button class="btn btn--ghost btn--lg hidden" id="load-more">Load More Templates</button>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+        <!-- ═══ TUTORIALS TAB ═══ -->
+        <div id="tab-tutorials" class="market-tab-panel" style="display:none">
+            <section class="section" style="padding-top:var(--space-8)">
+                <div class="container">
+
+                    <!-- Software filter -->
+                    <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;margin-bottom:var(--space-6)"
+                        id="tut-software-bar">
+                        <!-- injected by marketplace.js -->
+                    </div>
+
+                    <!-- Search -->
+                    <div class="filter-bar" style="margin-bottom:var(--space-8)">
+                        <div class="filter-search">
+                            <span class="filter-search-icon">🔍</span>
+                            <input type="text" id="tut-search" placeholder="Search tutorials…"
+                                aria-label="Search tutorials">
+                        </div>
+                    </div>
+
+                    <!-- Skeletons -->
+                    <div class="template-grid" id="tut-skeleton" aria-hidden="true">
+                        <div class="skeleton" style="height:280px;border-radius:var(--radius-lg)"></div>
+                        <div class="skeleton" style="height:280px;border-radius:var(--radius-lg)"></div>
+                        <div class="skeleton" style="height:280px;border-radius:var(--radius-lg)"></div>
+                    </div>
+
+                    <div class="template-grid hidden" id="tut-grid" aria-label="Tutorials"></div>
+
+                    <div class="empty-state hidden" id="tut-empty">
+                        <div class="empty-state-icon">🎓</div>
+                        <h3>No tutorials found</h3>
+                        <p>Try a different software filter.</p>
+                    </div>
+
+                    <div style="text-align:center;margin-top:var(--space-10)">
+                        <button class="btn btn--ghost btn--lg hidden" id="tut-load-more">Load More Tutorials</button>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+    </main>
+    <!-- PREVIEW MODAL -->
+    <div class="modal-overlay" id="preview-modal" role="dialog" aria-modal="true" aria-label="Template preview">
+        <div class="modal" style="max-width:700px">
+            <div class="modal-header">
+                <h2 id="modal-title">Preview</h2>
+                <button class="modal-close" aria-label="Close">✕</button>
+            </div>
+            <div class="modal-body" style="padding:0">
+                <div id="modal-thumb"
+                    style="min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:0 0 var(--radius-xl) var(--radius-xl)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BUY CONFIRMATION MODAL -->
+    <div class="modal-overlay" id="buy-modal" role="dialog" aria-modal="true" aria-label="Purchase template">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Confirm Purchase</h2>
+                <button class="modal-close" aria-label="Close">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:1.1rem;font-weight:600;margin-bottom:var(--space-4)" id="buy-title"></p>
+
+                <div
+                    style="background:var(--bg-overlay);border-radius:var(--radius-md);padding:var(--space-5);margin-bottom:var(--space-6)">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+                        <span style="color:var(--text-muted)">Template price</span>
+                        <span id="buy-price" style="font-weight:700"></span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:0.85rem">
+                        <span style="color:var(--text-muted)">Creator earns (70%)</span>
+                        <span id="buy-creator-cut" style="color:var(--success)"></span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:0.85rem">
+                        <span style="color:var(--text-muted)">Platform fee (30%)</span>
+                        <span id="buy-platform-cut" style="color:var(--text-muted)"></span>
+                    </div>
+                </div>
+
+                <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.5">
+                    By completing this purchase you agree to our <a href="#" style="color:var(--accent-hover)">Terms of
+                        Service</a>. You'll receive an instant download link.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--ghost modal-close">Cancel</button>
+                <button class="btn btn--primary" id="confirm-buy-btn">Complete Purchase</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="js/core/navbar.js"></script>
+    <script type="module" src="js/pages/marketplace.js"></script>
+</body>
+
+</html>
