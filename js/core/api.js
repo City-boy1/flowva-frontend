@@ -9,7 +9,7 @@
 
 import AppState from './state.js';
 
-const BASE_URL = window.FLOWVA_API_URL || 'http://127.0.0.1:5000/api';
+const BASE_URL = window.FLOWVA_API_URL || 'https://flowva-backend-ztai.onrender.com/api';
 
 let _refreshPromise = null;
 
