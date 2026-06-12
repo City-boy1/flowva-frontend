@@ -165,6 +165,7 @@ function activateTab(tab) {
     commissions: loadCommissions,
     disputes:    loadDisputes,
     users:       loadUsers,
+    requests:    () => loadRoleRequests('PENDING'),
     tools:       loadTools,
   };
   loaders[tab]?.();
@@ -200,6 +201,7 @@ async function loadStats() {
   setBadge('badge-templates', s.pendingTemplates);
   setBadge('badge-tutorials', s.pendingTutorials);
   setBadge('badge-projects',  s.pendingProjects);
+  setBadge('badge-requests', s.pendingRoleRequests);
 }
 
 function setBadge(id, n) {
@@ -763,10 +765,18 @@ async function loadUsers(role = '', status = '') {
       <td style="color:var(--text-2)">${fmt(u.createdAt)}</td>
       <td>
         ${u.role !== 'ADMIN'
+          ? `<select class="role-select" data-action="change-role" data-id="${esc(u.id)}" data-current="${esc(u.role)}">
+               <option value="BUYER"   ${u.role === 'BUYER'   ? 'selected' : ''}>Buyer</option>
+               <option value="CREATOR" ${u.role === 'CREATOR' ? 'selected' : ''}>Creator</option>
+             </select>`
+          : '<span class="text-muted">—</span>'}
+      </td>
+      <td>
+        ${u.role !== 'ADMIN'
           ? u.status === 'SUSPENDED'
             ? `<button class="btn btn-approve btn-sm" data-action="unsuspend" data-id="${esc(u.id)}">↑ Unsuspend</button>`
             : `<button class="btn btn-danger  btn-sm" data-action="suspend"   data-id="${esc(u.id)}">⊘ Suspend</button>`
-          : '<span style="color:var(--text-3)">—</span>'}
+          : '<span class="text-muted">—</span>'}
       </td>`;
 
     tr.querySelector('[data-action="suspend"]')?.addEventListener('click', async btn => {
@@ -789,6 +799,31 @@ async function loadUsers(role = '', status = '') {
       if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; return; }
       Toast.show('User unsuspended ✓', 'success');
       loadUsers(el('filter-role').value, el('filter-status').value);
+    });
+
+    tr.querySelector('[data-action="change-role"]')?.addEventListener('change', async evt => {
+      const sel = evt.currentTarget;
+      const newRole = sel.value;
+      const oldRole = sel.dataset.current;
+      if (newRole === oldRole) return;
+      const ok = await showConfirm({
+        icon: '🔄',
+        title: 'Change User Role',
+        body: `Change ${u.name ?? u.email} from ${oldRole} to ${newRole}? They will be notified by email.`,
+        confirmLabel: 'Change Role',
+        confirmClass: 'btn-primary',
+      });
+      if (!ok) { sel.value = oldRole; return; }
+      sel.disabled = true;
+      const r = await api.admin.changeUserRole(sel.dataset.id, newRole);
+      sel.disabled = false;
+      if (!r.ok) {
+        Toast.show(r.error ?? 'Failed to change role', 'error');
+        sel.value = oldRole;
+        return;
+      }
+      sel.dataset.current = newRole;
+      Toast.show(`Role changed to ${newRole} ✓`, 'success');
     });
 
     tbody.appendChild(tr);
@@ -949,6 +984,209 @@ function emptyHtml(icon, title, sub) {
   return `<div class="empty-state"><div class="empty-icon">${icon}</div><div class="empty-title">${esc(title)}</div><div class="empty-sub">${esc(sub)}</div></div>`;
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+//  ROLE REQUESTS
+// ════════════════════════════════════════════════════════════════════════════
+
+async function loadRoleRequests(status = 'PENDING') {
+  const container = el('requests-list');
+  if (!container) return;
+  container.innerHTML = '<div class="loading-row"><div class="spinner"></div>Loading requests…</div>';
+
+  const res = await api.admin.getRoleRequests(status);
+  if (!res.ok) { container.innerHTML = errorHtml('Failed to load role requests'); return; }
+
+  const requests = res.data.requests ?? [];
+
+  if (status === 'PENDING') {
+    setBadge('badge-requests', requests.length);
+    const chip = el('req-pending-count');
+    if (chip) chip.textContent = requests.length || '';
+  }
+
+  if (!requests.length) {
+    const labels = { PENDING: 'No pending applications', APPROVED: 'No approved applications', REJECTED: 'No rejected applications' };
+    container.innerHTML = emptyHtml('✅', labels[status] ?? 'No requests', '');
+    return;
+  }
+
+  container.innerHTML = '';
+  const list = document.createElement('div');
+  list.className = 'role-request-list';
+
+  for (const r of requests) {
+    const card = document.createElement('div');
+    card.className = 'role-request-card';
+    card.dataset.id = r.id;
+
+    // Portfolio URL — server already stripped non-https, but double-check client side too
+    let portfolioHtml = '';
+    if (r.portfolio) {
+      let isSafe = false;
+      try {
+  const u = new URL(r.portfolio);
+  const host = u.hostname;
+  isSafe = u.protocol === 'https:'
+    && host.includes('.')
+    && host !== 'localhost'
+    && !/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|127\.)/.test(host)
+    && (host.split('.').pop()?.length ?? 0) >= 2;
+} catch { isSafe = false; }
+
+      portfolioHtml = isSafe
+        ? `<div class="role-request-url-row">
+             <span class="role-request-url-text">${esc(r.portfolio)}</span>
+             <button class="btn btn-ghost btn-sm open-portfolio-btn"
+               data-url="${esc(r.portfolio)}"
+               title="Opens in a new tab. Verify the link before clicking.">
+               🔗 Open Link
+             </button>
+           </div>`
+        : `<span class="role-request-url-text invalid">⚠ URL removed — not a valid https:// link</span>`;
+    } else {
+      portfolioHtml = `<span class="role-request-url-text invalid">No URL provided</span>`;
+    }
+
+    // Action footer — differs by status
+    let footerHtml = '';
+    if (status === 'PENDING') {
+      footerHtml = `
+        <button class="btn btn-approve" data-action="approve" data-id="${esc(r.id)}">✓ Approve</button>
+        <input class="role-request-reject-input" id="req-reason-${esc(r.id)}"
+          placeholder="Rejection reason (min 5 chars) — required to reject…">
+        <button class="btn btn-reject" data-action="reject" data-id="${esc(r.id)}">✕ Reject</button>`;
+    } else if (status === 'REJECTED') {
+      footerHtml = `
+        <button class="btn btn-approve" data-action="approve" data-id="${esc(r.id)}">↑ Approve Instead</button>
+        <button class="btn btn-danger"  data-action="delete"  data-id="${esc(r.id)}">🗑 Delete Record</button>`;
+    } else {
+      footerHtml = `<span style="color:var(--text-3);font-size:12px">Approved — no further action needed</span>`;
+    }
+
+    const statusBadge =
+      r.status === 'PENDING'  ? '<span class="badge badge-pending">Pending</span>'  :
+      r.status === 'APPROVED' ? '<span class="badge badge-approved">Approved</span>' :
+                                '<span class="badge badge-rejected">Rejected</span>';
+
+    card.innerHTML = `
+      <div class="review-title">${esc(r.user?.name ?? '—')}</div>
+      <div class="role-request-meta">
+        <span class="meta-chip">✉️ ${esc(r.user?.email ?? '—')}</span>
+        <span class="meta-chip">📅 Applied ${fmt(r.createdAt)}</span>
+        <span class="meta-chip">Member since ${fmt(r.user?.createdAt)}</span>
+        ${statusBadge}
+      </div>
+      <div class="role-request-fields">
+        <div class="role-request-field">
+          <div class="role-request-field-label">Portfolio / Social</div>
+          <div class="role-request-field-value">${portfolioHtml}</div>
+        </div>
+        <div class="role-request-field">
+          <div class="role-request-field-label">Software</div>
+          <div class="role-request-field-value">${esc(r.software ?? '—')}</div>
+        </div>
+        <div class="role-request-field">
+          <div class="role-request-field-label">Why FLOWVA</div>
+          <div class="role-request-field-value">${esc(r.bio ?? '—')}</div>
+        </div>
+        ${r.rejectionReason ? `
+        <div class="role-request-field" style="border-color:rgba(239,68,68,0.25);background:var(--red-dim)">
+          <div class="role-request-field-label" style="color:var(--red)">Rejection Reason</div>
+          <div class="role-request-field-value" style="color:#fca5a5">${esc(r.rejectionReason)}</div>
+        </div>` : ''}
+      </div>
+      <div class="role-request-actions">${footerHtml}</div>`;
+
+    // Open portfolio — deliberate step, noopener + noreferrer
+    card.querySelectorAll('.open-portfolio-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const url = btn.dataset.url;
+        // Final client-side guard before opening
+       try {
+  const u = new URL(url);
+  const host = u.hostname;
+  if (u.protocol !== 'https:') { Toast.show('Blocked — not https://', 'error'); return; }
+  if (!host.includes('.') || host === 'localhost') { Toast.show('Blocked — not a real domain', 'error'); return; }
+  if (/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|127\.)/.test(host)) { Toast.show('Blocked — internal IP not allowed', 'error'); return; }
+} catch { Toast.show('Blocked — invalid URL', 'error'); return; }
+        const ok = await showConfirm({
+          icon: '🔗',
+          title: 'Open External Link',
+          body: `You are about to visit:\n\n${url}\n\nThis is a user-submitted link. Only proceed if you trust it.`,
+          confirmLabel: 'Open Link',
+          confirmClass: 'btn-primary',
+          cancelLabel: 'Cancel',
+        });
+        if (!ok) return;
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.click();
+      });
+    });
+
+    // Approve
+    card.querySelector('[data-action="approve"]')?.addEventListener('click', async btn => {
+      const b = btn.currentTarget;
+      const ok = await showConfirm({
+        icon: '✓',
+        title: `Approve ${r.user?.name ?? 'this user'} as Creator?`,
+        body: 'Their role will be changed to CREATOR and they will be notified by email.',
+        confirmLabel: 'Approve', confirmClass: 'btn-approve',
+      });
+      if (!ok) return;
+      b.disabled = true; b.textContent = 'Approving…';
+      const result = await api.admin.approveRoleRequest(b.dataset.id);
+      if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✓ Approve'; return; }
+      Toast.show(`${r.user?.name ?? 'User'} is now a Creator ✓`, 'success');
+      card.remove();
+      refreshBadge('badge-requests', 'req-pending-count', container);
+    });
+
+    // Reject
+    card.querySelector('[data-action="reject"]')?.addEventListener('click', async btn => {
+      const b = btn.currentTarget;
+      const reason = el(`req-reason-${b.dataset.id}`)?.value.trim();
+      if (!reason || reason.length < 5) { Toast.show('Enter a rejection reason (min 5 chars)', 'warning'); return; }
+      const ok = await showConfirm({
+        icon: '✕',
+        title: `Reject ${r.user?.name ?? 'this user'}'s application?`,
+        body: 'They will be notified by email with your reason.',
+        confirmLabel: 'Reject', confirmClass: 'btn-reject',
+      });
+      if (!ok) return;
+      b.disabled = true; b.textContent = 'Rejecting…';
+      const result = await api.admin.rejectRoleRequest(b.dataset.id, reason);
+      if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✕ Reject'; return; }
+      Toast.show('Application rejected. User notified.', 'info');
+      card.remove();
+      refreshBadge('badge-requests', 'req-pending-count', container);
+    });
+
+    // Delete record (rejected only)
+    card.querySelector('[data-action="delete"]')?.addEventListener('click', async btn => {
+      const b = btn.currentTarget;
+      const ok = await showConfirm({
+        icon: '🗑',
+        title: 'Delete this application record?',
+        body: `Removes all application data for ${r.user?.name ?? 'this user'}. They remain a Buyer and can reapply. Cannot be undone.`,
+        confirmLabel: 'Delete Record', confirmClass: 'btn-danger',
+      });
+      if (!ok) return;
+      b.disabled = true; b.textContent = 'Deleting…';
+      const result = await api.admin.deleteRoleRequest(b.dataset.id);
+      if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '🗑 Delete Record'; return; }
+      Toast.show('Application record deleted ✓', 'success');
+      card.remove();
+    });
+
+    list.appendChild(card);
+  }
+
+  container.appendChild(list);
+}
+
 // ════════════════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════════════════
@@ -987,6 +1225,15 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('[data-proj-tab]').forEach(b => b.classList.toggle('active', b === btn));
       _loaded.delete('projects');
       loadProjects(btn.dataset.projTab);
+    });
+  });
+
+  // ── Requests sub-tabs
+  document.querySelectorAll('[data-req-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-req-tab]').forEach(b => b.classList.toggle('active', b === btn));
+      _loaded.delete('requests');
+      loadRoleRequests(btn.dataset.reqTab);
     });
   });
 

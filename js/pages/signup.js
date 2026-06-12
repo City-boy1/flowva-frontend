@@ -28,7 +28,6 @@ const btn         = document.getElementById('btn-submit');
 const btnText     = document.getElementById('btn-text');
 const passInput   = document.getElementById('f-pass');
 const passToggle  = document.getElementById('pass-toggle');
-const eyeIcon     = document.getElementById('eye-icon');
 const sFill       = document.getElementById('s-fill');
 const sLabel      = document.getElementById('s-label');
 const roleInputs  = document.querySelectorAll('input[name="role"]');
@@ -84,25 +83,6 @@ passInput?.addEventListener('input', () => {
   const cfg = STRENGTH_CONFIG[calcStrength(passInput.value)];
   if (sFill)  { sFill.style.width = cfg.w; sFill.style.background = cfg.c; }
   if (sLabel) { sLabel.textContent = cfg.l; sLabel.style.color = cfg.c; }
-});
-
-// ── Password visibility toggle ───────────────────────────────────────────────
-const EYE_OPEN = `
-  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-    stroke="currentColor" stroke-width="1.8"/>
-  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>`;
-
-const EYE_SHUT = `
-  <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8
-    a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8
-    a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"
-    stroke="currentColor" stroke-width="1.8"/>
-  <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.8"/>`;
-
-passToggle?.addEventListener('click', () => {
-  const showing      = passInput.type === 'text';
-  passInput.type     = showing ? 'password' : 'text';
-  eyeIcon.innerHTML  = showing ? EYE_OPEN : EYE_SHUT;
 });
 
 // ── Error helpers ─────────────────────────────────────────────────────────────

@@ -623,12 +623,16 @@
         // ── Password toggle ──
         const passToggle = document.getElementById('pass-toggle');
         const eyeIcon = document.getElementById('login-eye');
+        const EYE_OPEN_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>`;
+
+        const MONKEY_SVG = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+
+        passToggle.innerHTML = EYE_OPEN_SVG;
+
         passToggle.addEventListener('click', () => {
             const show = passInput.type === 'password';
             passInput.type = show ? 'text' : 'password';
-            eyeIcon.innerHTML = show
-                ? `<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>`
-                : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>`;
+            passToggle.innerHTML = show ? MONKEY_SVG : EYE_OPEN_SVG;
         });
 
         // ── Ripple on submit ──
@@ -677,28 +681,7 @@
             if (e.key === 'Escape') closeForgot();
         });
 
-        forgotSubmit.addEventListener('click', () => {
-            const val = forgotEmailInput.value.trim();
-            if (!isValidEmail(val)) {
-                forgotError.textContent = 'Please enter a valid email.';
-                forgotError.classList.add('visible');
-                forgotEmailInput.classList.add('error');
-                return;
-            }
-            forgotError.classList.remove('visible');
-            forgotEmailInput.classList.remove('error');
-            forgotSubmit.classList.add('loading');
-            forgotSubmit.disabled = true;
-
-            // Simulate send
-            setTimeout(() => {
-                forgotSubmit.classList.remove('loading');
-                forgotSubmit.disabled = false;
-                forgotFormInner.style.display = 'none';
-                forgotSentEmail.textContent = val;
-                forgotSuccessEl.style.display = 'block';
-            }, 1400);
-        });
+        //
 
         // Enter key in forgot email
         forgotEmailInput.addEventListener('keydown', e => {

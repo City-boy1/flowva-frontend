@@ -16,7 +16,7 @@
 
     <!-- TOPBAR -->
     <header class="topbar">
-        <a class="topbar-brand" href="#">
+        <a class="topbar-brand" href="index.html" id="brand-link">
             <div class="topbar-brand-icon">⚡</div>
             FLOWVA
         </a>
@@ -70,6 +70,10 @@
             <div class="nav-section-label">Management</div>
             <button class="nav-item" data-tab="users">
                 <span class="nav-icon">👥</span> Users
+            </button>
+            <button class="nav-item" data-tab="requests">
+                <span class="nav-icon">🙋</span> Creator Requests
+                <span class="nav-badge" id="badge-requests">0</span>
             </button>
             <button class="nav-item" data-tab="tools">
                 <span class="nav-icon">🔧</span> Tools
@@ -147,6 +151,10 @@
                     <button class="quick-btn" data-tab="users">
                         <div class="quick-btn-icon" style="background:var(--green-dim)">👥</div>
                         Manage Users
+                    </button>
+                    <button class="quick-btn" data-tab="requests">
+                        <div class="quick-btn-icon" style="background:var(--purple-dim)">🙋</div>
+                        Creator Requests
                     </button>
                     <button class="quick-btn" data-tab="tools">
                         <div class="quick-btn-icon" style="background:var(--bg-hover)">🔧</div>
@@ -290,7 +298,8 @@
                                     <th>Status</th>
                                     <th>Country</th>
                                     <th>Joined</th>
-                                    <th>Action</th>
+                                    <th>Role</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="users-tbody">
@@ -356,7 +365,25 @@
                     </div>
                 </div>
             </div>
-
+            <!-- ── CREATOR REQUESTS ──────────────────────────── -->
+            <div class="tab-panel" id="panel-requests">
+                <div class="page-header">
+                    <h1>Creator Requests</h1>
+                    <p>Review buyer applications to become creators on the platform</p>
+                </div>
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-req-tab="PENDING">
+                        Pending <span class="sub-tab-count" id="req-pending-count"></span>
+                    </button>
+                    <button class="sub-tab" data-req-tab="APPROVED">Approved</button>
+                    <button class="sub-tab" data-req-tab="REJECTED">Rejected</button>
+                </div>
+                <div id="requests-list">
+                    <div class="loading-row">
+                        <div class="spinner"></div>Loading requests…
+                    </div>
+                </div>
+            </div>
         </main><!-- /main -->
     </div><!-- /shell -->
 

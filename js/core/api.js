@@ -8,8 +8,10 @@
  */
 
 import AppState from './state.js';
-
-const BASE_URL = window.FLOWVA_API_URL || 'https://flowva-backend-ztai.onrender.com/api';
+const BASE_URL = window.FLOWVA_API_URL || 
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : 'https://flowva-backend-ztai.onrender.com/api');// const BASE_URL = window.FLOWVA_API_URL || 'https://flowva-backend-ztai.onrender.com/api';
 
 let _refreshPromise = null;
 
@@ -243,6 +245,8 @@ const api = {
     // Preferences
     getPreferences:  ()          => request('GET', '/users/preferences'),
     savePreferences: (payload)   => request('PUT', '/users/preferences', payload),
+    submitRoleRequest:     (payload) => request('POST', '/users/role-request', payload),
+    getRoleRequestStatus:  ()        => request('GET',  '/users/role-request'),
 
     // Favourites
     getFavourites:   ()          => request('GET',    '/users/favourites'),
@@ -287,11 +291,13 @@ const api = {
       callbackUrl: `${window.location.origin}/payment-callback.html`,
     }),
     getDownloadToken: (id)               => request('GET',   `/templates/${id}/download-token`),
+    rate:             (id, payload)      => request('POST',  `/templates/${id}/rate`, payload),
+    getRatings:       (id)               => request('GET',   `/templates/${id}/ratings`),
     // Admin actions
-    approve:          (id)               => request('PATCH', `/templates/${id}/approve`),
-    reject:           (id, reason)       => request('PATCH', `/templates/${id}/reject`, { reason }),
-    unpublish:        (id, reason)       => request('PATCH', `/templates/${id}/unpublish`, { reason }),
-    permanentDelete:  (id)               => request('DELETE',`/templates/${id}/permanent`),
+    approve:          (id)               => request('PATCH', `/admin/templates/${id}/approve`),
+    reject:           (id, reason)       => request('PATCH', `/admin/templates/${id}/reject`, { reason }),
+    unpublish:        (id, reason)       => request('PATCH', `/admin/templates/${id}/unpublish`, { reason }),
+    permanentDelete:  (id)               => request('DELETE',`/admin/templates/${id}/permanent`),
   },
 
   // ── Projects / Bidding ────────────────────────────────────────────────────
@@ -359,6 +365,15 @@ const api = {
     },
     suspendUser:         (id)         => request('PATCH', `/admin/users/${id}/suspend`),
     unsuspendUser:       (id)         => request('PATCH', `/admin/users/${id}/unsuspend`),
+    changeUserRole:      (id, role)   => request('PATCH', `/admin/users/${id}/role`, { role }),
+    // Role Requests
+    getRoleRequests:       (status) => {
+      const qs = status ? `?status=${status}` : '';
+      return request('GET', `/admin/role-requests${qs}`);
+    },
+    approveRoleRequest:    (id)     => request('POST', `/admin/role-requests/${id}/approve`),
+    rejectRoleRequest:     (id, reason) => request('POST', `/admin/role-requests/${id}/reject`, { reason }),
+    deleteRoleRequest:     (id)         => request('DELETE', `/admin/role-requests/${id}`),
 
     // Commissions (all auto-disbursed on-chain by Helio)
     getCommissions:      (disbursed)  => {

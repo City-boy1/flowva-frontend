@@ -20,11 +20,11 @@
     <!-- ═══════════════ HERO ═══════════════ -->
     <section class="hero" aria-label="Hero">
         <div class="hero-bg">
-            <video autoplay muted loop playsinline preload="none" aria-hidden="true">
+            <video autoplay muted loop playsinline preload="none" aria-hidden="true" data-parallax="0.15">
                 <source src="assets/videos/hero.mp4" type="video/mp4">
             </video>
             <div class="hero-gradient"></div>
-            <div class="hero-grid"></div>
+            <div class="hero-grid" data-parallax="0.08"></div>
         </div>
 
         <div class="container hero-container">
@@ -46,7 +46,7 @@
                     <span class="hero-trust-dot">·</span>
                     <span>🎨 1,200+ verified creators</span>
                     <span class="hero-trust-dot">·</span>
-                    <span>💳 Secure Paystack checkout</span>
+                    <span>💳 Secure checkout</span>
                 </div>
             </div>
 
@@ -74,6 +74,16 @@
             <span>Scroll</span>
             <div class="hero-scroll-line"></div>
         </div>
+        <!-- Marquee strip -->
+        <!-- After -->
+        <div data-marquee class="marquee-strip">
+            <div data-marquee-inner class="marquee-inner">
+                <span>✦ Premium Templates</span><span>⚡ Motion Graphics</span><span>🎨 Brand Kits</span><span>📱 Social
+                    Media</span><span>🎬 Animations</span><span>▶️ YouTube Kits</span><span>🎯 Logo
+                    Design</span><span>📋 Resume Templates</span><span>🎉 Event Flyers</span><span>✦ Premium
+                    Templates</span><span>⚡ Motion Graphics</span><span>🎨 Brand Kits</span><span>📱 Social Media</span>
+            </div>
+        </div>
     </section>
 
     <!-- ═══════════════ CATEGORY PILLS ═══════════════ -->
@@ -88,7 +98,7 @@
     <!-- ═══════════════ TRENDING TEMPLATES ═══════════════ -->
     <section class="section" id="trending">
         <div class="container">
-            <div class="section-header reveal">
+            <div class="section-header reveal-left">
                 <div>
                     <h2 class="section-title">Trending Templates</h2>
                     <p class="section-subtitle">Latest uploads from our creator community</p>
@@ -128,7 +138,7 @@
     <!-- ═══════════════ TUTORIALS LIBRARY ═══════════════ -->
     <section class="section section--alt" id="tutorials">
         <div class="container">
-            <div class="section-header reveal">
+            <div class="section-header reveal-right">
                 <div>
                     <h2 class="section-title">Tutorials Library</h2>
                     <p class="section-subtitle">Learn from the best — free video guides</p>
@@ -166,7 +176,7 @@
                     <p class="section-subtitle">Simple, fast, transparent</p>
                 </div>
             </div>
-            <div class="steps-grid">
+            <div class="steps-grid" data-stagger>
                 <div class="step-card reveal reveal-delay-1">
                     <div class="step-number">01</div>
                     <h3>Browse & Discover</h3>
@@ -200,7 +210,7 @@
     <!-- ═══════════════ TOP CREATORS ═══════════════ -->
     <section class="section section--alt">
         <div class="container">
-            <div class="section-header reveal">
+            <div class="section-header reveal-left">
                 <div>
                     <h2 class="section-title">Top Creators</h2>
                     <p class="section-subtitle">The talent behind the best-selling templates</p>
@@ -215,21 +225,21 @@
                 <div class="creator-card-skeleton"></div>
             </div>
 
-            <div class="creators-grid hidden" id="creators-grid"></div>
+            <div class="creators-grid hidden" id="creators-grid" data-stagger></div>
         </div>
     </section>
 
     <!-- ═══════════════ POST A PROJECT BANNER ═══════════════ -->
     <section class="section">
         <div class="container">
-            <div class="project-banner reveal">
+            <div class="project-banner reveal-zoom">
                 <div class="project-banner-content">
                     <span class="hero-eyebrow" style="justify-content:flex-start">📋 Custom Projects</span>
                     <h2>Need Something Built Just for You?</h2>
                     <p>Post a project brief and receive bids from talented creators within hours. You only pay when
                         you're
                         satisfied.</p>
-                    <div style="display:flex;gap:12px;flex-wrap:wrap">
+                    <div class="banner-actions">
                         <button class="btn btn--primary btn--lg" id="btn-post-project">Post a Project</button>
                         <a href="marketplace.html" class="btn btn--ghost btn--lg">Browse Templates Instead</a>
                     </div>
@@ -265,10 +275,10 @@
     <!-- ═══════════════ CTA ═══════════════ -->
     <section class="section">
         <div class="container">
-            <div class="cta-inner reveal">
+            <div class="cta-inner reveal-zoom">
                 <h2>Ready to Start Creating?</h2>
                 <p>Join 1,200+ creators already earning on FLOWVA. Upload your first template free today.</p>
-                <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+                <div class="cta-actions">
                     <a href="signup.html" class="btn btn--primary btn--lg">Start Selling Free</a>
                     <a href="marketplace.html" class="btn btn--ghost btn--lg">Explore Templates</a>
                 </div>
@@ -324,24 +334,22 @@
             </div>
             <div class="footer-bottom">
                 <p>© 2026 FLOWVA. All rights reserved.</p>
-                <p style="color:var(--text-muted);font-size:0.75rem">Creators earn 70% of every sale.</p>
+                <p class="footer-earn-note">Creators earn 70% of every sale.</p>
             </div>
         </div>
     </footer>
 
     <!-- ═══════════════ PREVIEW MODAL ═══════════════ -->
     <div class="modal-overlay" id="preview-modal" role="dialog" aria-modal="true" aria-label="Template preview">
-        <div class="modal" style="max-width:700px">
+        <div class="modal modal--preview">
             <div class="modal-header">
                 <h2 id="modal-title">Preview</h2>
                 <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
             </div>
-            <div class="modal-body" style="padding:0">
-                <div id="modal-thumb"
-                    style="min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:0 0 var(--radius-xl) var(--radius-xl)">
-                </div>
+            <div class="modal-body modal-body--flush">
+                <div id="modal-thumb" class="modal-thumb"></div>
             </div>
-            <div class="modal-footer" id="modal-footer" style="border-top:1px solid var(--border)"></div>
+            <div class="modal-footer modal-footer--bordered" id="modal-footer"></div>
         </div>
     </div>
 
@@ -349,7 +357,7 @@
     <div id="toast-container"></div>
 
     <script type="module" src="js/core/navbar.js"></script>
-    <script type="module" src="js/core/reveal.js"></script>
+    <script src="js/core/reveal.js"></script>
     <script type="module" src="js/pages/home.js"></script>
 </body>
 

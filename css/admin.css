@@ -1064,6 +1064,13 @@
       .stats-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
     }
 
+    @media (min-width: 769px) {
+  .topbar-brand {
+    pointer-events: none;
+    cursor: default;
+  }
+}
+
     @media (max-width: 768px) {
       .sidebar {
         width: 100%;
@@ -1079,8 +1086,18 @@
         gap: 4px;
       }
 
-      .nav-section-label,
-      .sidebar-footer { display: none; }
+      .nav-section-label { display: none; }
+
+.sidebar-footer {
+  display: flex;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+  border-left: 1px solid var(--border);
+  margin-left: 4px;
+  padding-left: 8px;
+  flex-shrink: 0;
+}
 
       .nav-item { flex-direction: column; gap: 3px; padding: 8px 10px; font-size: 10px; flex-shrink: 0; width: auto; }
       .nav-icon { width: auto; font-size: 17px; }
@@ -1095,6 +1112,147 @@
       .reject-reason-input { min-width: 100%; }
       .topbar-stat { display: none; }
     }
+
+    /* ══════════════════════════════════════════════
+   ROLE SELECT (users table)
+══════════════════════════════════════════════ */
+.role-select {
+  padding: 5px 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-1);
+  font-size: 11.5px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a5568'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 26px;
+}
+
+.role-select:focus {
+  border-color: var(--border-focus);
+}
+
+.role-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.role-select option {
+  background: var(--bg-card);
+}
+
+.text-muted {
+  color: var(--text-3);
+}
+
+/* ══════════════════════════════════════════════
+   ROLE REQUEST CARDS
+══════════════════════════════════════════════ */
+.role-request-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: border-color var(--transition);
+}
+
+.role-request-card:hover {
+  border-color: rgba(255,255,255,0.1);
+}
+
+.role-request-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 16px;
+}
+
+.role-request-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.role-request-field {
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+
+.role-request-field-label {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+  margin-bottom: 4px;
+}
+
+.role-request-field-value {
+  font-size: 13px;
+  color: var(--text-1);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.role-request-url-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.role-request-url-text {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-2);
+  word-break: break-all;
+  flex: 1;
+}
+
+.role-request-url-text.invalid {
+  color: var(--red);
+  font-style: italic;
+}
+
+.role-request-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.role-request-reject-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 7px 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-1);
+  font-size: 12.5px;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.role-request-reject-input:focus { border-color: var(--border-focus); }
+.role-request-reject-input::placeholder { color: var(--text-3); }
+
+.role-request-list { display: flex; flex-direction: column; gap: 12px; }
 
     /* ══════════════════════════════════════════════
        OVERVIEW QUICK LINKS

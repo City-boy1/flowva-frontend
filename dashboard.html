@@ -180,12 +180,53 @@
                             <p style="color:var(--text-muted);font-size:0.9rem;padding:16px 0">Loading…</p>
                         </div>
                     </div>
-                    <div class="upgrade-banner">
+                    <div class="upgrade-banner" id="creator-upgrade-banner">
                         <div class="upgrade-banner-content">
                             <h3>🚀 Become a Creator</h3>
                             <p>Start selling your templates and tutorials. Earn 70% of every sale.</p>
-                            <a href="signup.html?upgrade=creator" class="btn btn--primary">Apply to Become a
-                                Creator</a>
+                            <div id="upgrade-cta-area">
+                                <button class="btn btn--primary" id="btn-apply-creator">Apply to Become a
+                                    Creator</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Creator Application Modal -->
+                    <div class="modal-overlay" id="creator-apply-modal">
+                        <div class="modal">
+                            <div class="modal-header">
+                                <h2>🚀 Apply to Become a Creator</h2>
+                                <button class="modal-close" id="creator-apply-modal-close">✕</button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="creator-apply-intro">Tell us about yourself. We review all applications within
+                                    48 hours.</p>
+                                <div class="form-group">
+                                    <label class="form-label" for="apply-portfolio">Portfolio or Social Link *</label>
+                                    <input class="form-input" type="url" id="apply-portfolio"
+                                        placeholder="https://behance.net/you or https://instagram.com/you">
+                                    <span class="form-error" id="apply-portfolio-error"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="apply-software">Software you use *</label>
+                                    <input class="form-input" type="text" id="apply-software"
+                                        placeholder="e.g. After Effects, Canva, Photoshop">
+                                    <span class="form-error" id="apply-software-error"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="apply-bio">Why do you want to sell on FLOWVA?
+                                        *</label>
+                                    <textarea class="form-input" id="apply-bio" rows="4"
+                                        placeholder="Briefly describe your work and what you plan to sell (min 30 characters)…"
+                                        maxlength="500"></textarea>
+                                    <span class="form-error" id="apply-bio-error"></span>
+                                </div>
+                                <div id="apply-general-error" class="apply-general-error"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn--ghost" id="creator-apply-cancel">Cancel</button>
+                                <button class="btn btn--primary" id="creator-apply-submit">Submit Application</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -241,8 +282,19 @@
                     <h1>My Templates</h1>
                     <p>Manage your published templates</p>
                 </div>
+
+                <div class="pending-section is-hidden" id="templates-pending-section">
+                    <h3 class="panel-subheading">
+                        ⏳ Pending Review
+                        <span class="panel-subheading-count" id="templates-pending-count">0</span>
+                    </h3>
+                    <div class="templates-list" id="my-templates-pending-list"></div>
+                    <hr class="pending-divider">
+                </div>
+
+                <h3 class="panel-subheading">Published</h3>
                 <div class="templates-list" id="my-templates-list">
-                    <p style="color:var(--text-muted);font-size:0.9rem">Loading…</p>
+                    <p class="loading-text">Loading…</p>
                 </div>
             </div>
 
@@ -268,12 +320,12 @@
                     <div class="drop-zone" id="drop-zone" role="button" tabindex="0"
                         aria-label="Drop your template file here">
                         <input type="file" id="file-input"
-                            accept="video/mp4,video/webm,.zip,application/zip,image/png,image/jpeg,image/webp,application/pdf"
+                            accept="video/mp4,video/webm,image/png,image/jpeg,image/webp,application/pdf"
                             aria-label="Upload template file">
                         <div class="drop-zone-icon">☁️</div>
                         <h3>Drop your template file here</h3>
-                        <p>Video (MP4/WebM), ZIP, Image, or PDF — max 200MB<br>
-                            <strong style="color:var(--accent-hover)">Preview is generated automatically ✨</strong>
+                        <p>Video (MP4/WebM) up to 70MB, Image up to 5MB, or PDF up to 10MB<br>
+                            <strong class="drop-zone-highlight">Preview is generated automatically ✨</strong>
                         </p>
                         <button class="btn btn--ghost btn--sm" type="button"
                             onclick="document.getElementById('file-input').click()">Choose File</button>
@@ -369,7 +421,7 @@
                         <input type="file" id="tutorial-file-input" accept="video/mp4,video/webm">
                         <div class="drop-zone-icon">🎓</div>
                         <h3>Drop your tutorial video here</h3>
-                        <p>MP4 or WebM — max 500MB</p>
+                        <p>MP4 or WebM — max 70MB</p>
                         <button class="btn btn--ghost btn--sm" type="button"
                             onclick="document.getElementById('tutorial-file-input').click()">Choose Video</button>
                     </div>
@@ -425,6 +477,20 @@
                         <button type="submit" class="btn btn--primary" id="tutorial-submit-btn"
                             style="margin-top:var(--space-6)">Submit Tutorial for Review</button>
                     </form>
+                </div>
+                <div class="pending-section is-hidden" id="tutorials-pending-section" style="margin-top:var(--space-8)">
+                    <h3 class="panel-subheading">
+                        ⏳ Pending Review
+                        <span class="panel-subheading-count" id="tutorials-pending-count">0</span>
+                    </h3>
+                    <div class="templates-list" id="my-tutorials-pending-list"></div>
+                </div>
+
+                <div style="margin-top:var(--space-8)">
+                    <h3 class="panel-subheading">Published Tutorials</h3>
+                    <div class="templates-list" id="my-tutorials-list">
+                        <p class="loading-text">Loading…</p>
+                    </div>
                 </div>
             </div>
 
@@ -674,15 +740,15 @@
                         </div>
                         <div class="settings-section-body">
                             <div class="settings-avatar-row">
-                                <div class="avatar avatar--lg avatar--placeholder" id="settings-avatar-preview"
-                                    style="font-size:1.4rem;font-family:var(--font-display);font-weight:700">U</div>
+                                <div class="avatar avatar--lg avatar--placeholder settings-avatar-hidden"
+                                    id="settings-avatar-preview"></div>
                                 <div>
-                                    <button class="btn btn--ghost btn--sm" id="avatar-upload-btn">Change
-                                        Photo</button>
+                                    <button class="btn btn--ghost btn--sm" id="avatar-upload-btn">Change Photo</button>
+                                    <button class="btn btn--danger btn--sm avatar-delete-btn hidden"
+                                        id="avatar-delete-btn">Remove Photo</button>
                                     <input type="file" id="avatar-file-input" accept="image/jpeg,image/png,image/webp"
                                         style="display:none">
-                                    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:6px">
-                                        JPG, PNG or WebP · Max 5MB</p>
+                                    <p class="avatar-size-hint">JPG, PNG or WebP · Max 2MB</p>
                                 </div>
                             </div>
                             <form id="profile-form" novalidate>

@@ -67,6 +67,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     return GRADIENTS[index % GRADIENTS.length];
   }
 
+  function _seededShuffle(arr) {
+  const seed = Math.floor(Date.now() / 86400000); // changes daily
+  const seeded = arr.map((item, i) => ({
+    item,
+    sort: Math.sin(seed * (i + 1)) * 10000
+  }));
+  seeded.sort((a, b) => a.sort - b.sort);
+  return seeded.map(x => x.item);
+}
+
   // ─────────────────────────────────────────────────────────────────────────
   // CATEGORY BAR
   // ─────────────────────────────────────────────────────────────────────────
@@ -113,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   empty?.classList.add('hidden');
 
   try {
-    const params = { limit: 6, sort: 'newest' };
+    const params = { limit: 24, sort: 'newest' };
     if (cat) params.category = cat;
     const res = await api.templates.list(params);
     skeleton?.classList.add('hidden');
@@ -122,7 +132,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
     carousel?.classList.remove('hidden');
-    renderTemplates(grid, res.data.templates);
+    const displayed = _seededShuffle(res.data.templates).slice(0, 6);
+    renderTemplates(grid, displayed);
   } catch {
     skeleton?.classList.add('hidden');
     empty?.classList.remove('hidden');
@@ -140,14 +151,16 @@ function renderTemplates(grid, templates) {
     const fileUrl = t.fileUrl ?? '';
     const fileType = t.fileType ?? '';
 
-    const thumbHTML = previewUrl
-      ? `<img class="thumb-img" src="${_esc(previewUrl)}" alt="${_esc(t.title)}" loading="lazy">
-         ${fileType === 'video' && fileUrl
-           ? `<video class="thumb-video" src="${_esc(fileUrl)}" muted loop playsinline preload="none"></video>`
-           : ''}`
-      : `<div class="template-thumb-placeholder" style="background:${_gradient(i)}">
-           <span style="font-size:2.5rem">${_catEmoji(t.category)}</span>
-         </div>`;
+    const previewVideoUrl = t.previewVideoUrl ?? '';
+
+const thumbHTML = previewUrl
+  ? `<img class="thumb-img" src="${_esc(previewUrl)}" alt="${_esc(t.title)}" loading="lazy">
+     ${fileType === 'video' && previewVideoUrl
+       ? `<video class="thumb-video" src="${_esc(previewVideoUrl)}" muted loop playsinline preload="none"></video>`
+       : ''}`
+  : `<div class="template-thumb-placeholder" style="background:${_gradient(i)}">
+       <span style="font-size:2.5rem">${_catEmoji(t.category)}</span>
+     </div>`;
 
     return `
       <article class="template-card card--hover carousel-slide reveal"
@@ -192,10 +205,22 @@ function renderTemplates(grid, templates) {
           </p>
           <div class="template-footer">
             <div class="template-rating">
-              <span class="stars">★★★★★</span>
-              <span>${Number(t.rating ?? 0).toFixed(1)}</span>
+              <span class="stars">${'★'.repeat(Math.round(Number(t.rating??0)))}${'☆'.repeat(5-Math.round(Number(t.rating??0)))}</span>
+              <span>${Number(t.rating??0)>0 ? Number(t.rating??0).toFixed(1) : 'New'}</span>
             </div>
-            <span class="trending-badge">🔥 New</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              ${(() => {
+                const daysSince = t.createdAt
+                  ? (Date.now() - new Date(t.createdAt)) / 86400000
+                  : 999;
+                return daysSince <= 14
+                  ? `<span class="trending-badge">🔥 New</span>`
+                  : '';
+              })()}
+              <button class="hp-rate-btn"
+                data-id="${_esc(String(templateId))}"
+                data-title="${_esc(t.title)}">⭐ Rate</button>
+            </div>
           </div>
         </div>
       </article>
@@ -318,6 +343,33 @@ function _initVideoAutoplay() {
 
   function _bindTemplateEvents(grid, templates) {
     // Favourite toggle
+    // Rate button
+    grid.querySelectorAll('.hp-rate-btn').forEach(btn => {
+      btn.addEventListener('click', async e => {
+        e.stopPropagation();
+        if (!AppState.isLoggedIn()) {
+          Toast.show('Please login to rate templates', 'info');
+          setTimeout(() => { window.location.href = 'login.html'; }, 800);
+          return;
+        }
+        const id    = btn.dataset.id;
+        const title = btn.dataset.title;
+        const ordersRes = await api.users.getOrders();
+        const order = ordersRes.ok
+          ? (ordersRes.data?.orders ?? []).find(o =>
+              o.mongoTemplateId === id &&
+              ['PAID','COMPLETED'].includes(o.status) &&
+              !o.rated
+            )
+          : null;
+        if (!order) {
+          Toast.show('You can only rate templates you have purchased', 'info');
+          return;
+        }
+        // Redirect to marketplace with rate param — the full modal lives there
+        window.location.href = `marketplace.html?rate=${id}&orderId=${order.id}&title=${encodeURIComponent(title)}`;
+      });
+    });
     grid.querySelectorAll('.template-fav').forEach(btn => {
       btn.addEventListener('click', e => {
         e.stopPropagation();
@@ -418,17 +470,14 @@ function _initVideoAutoplay() {
 
     let res;
     try {
-      const params = { limit: 3, sort: 'newest' };
+      const params = { limit: 12, sort: 'newest' };
       if (sw) params.software = sw;
 
       res = await api.tutorials.list(params);
 
-      console.log('tutorials res.ok:', res.ok);
-      console.log('tutorials res.data:', JSON.stringify(res.data));
-
       skeleton?.classList.add('hidden');
 
-     const list = Array.isArray(res.data?.tutorials) ? res.data.tutorials : [];
+      const list = Array.isArray(res.data?.tutorials) ? res.data.tutorials : [];
 
       if (!res.ok || !list.length) {
         empty?.classList.remove('hidden');
@@ -436,7 +485,8 @@ function _initVideoAutoplay() {
       }
 
       grid.classList.remove('hidden');
-      renderTutorials(grid, list);
+      const displayed = _seededShuffle(list).slice(0, 3);
+      await renderTutorials(grid, displayed);
 
     } catch (err) {
       console.error('tutorials error:', err);
@@ -445,12 +495,24 @@ function _initVideoAutoplay() {
     }
   }
 
-  function renderTutorials(grid, tutorials) {
+  async function renderTutorials(grid, tutorials) {
+  const creatorNames = await Promise.all(tutorials.map(t => {
+    const name = t.creator?.name ?? t.creator?.username ?? t.creatorName ?? t.creator_name ?? null;
+    if (name) return Promise.resolve(name);
+    const id = t.creatorId ?? t.creator?.id ?? t.creator?._id ?? null;
+    if (!id) return Promise.resolve('Creator');
+    return api.users.getCreatorById(id).then(res => {
+      return res.ok && res.data
+      ? (res.data.creator?.name ?? res.data.creator?.username ?? res.data.name ?? res.data.username ?? 'Creator')
+      : 'Creator';
+    }).catch(() => 'Creator');
+  }));
+
   grid.innerHTML = tutorials.map((t, i) => {
     const thumbUrl   = t.thumbnailUrl ?? t.thumbnail_url ?? '';
     const software   = t.software ?? t.category ?? 'General';
     const duration   = t.duration ?? '';
-    const creatorName = t.creator?.name ?? t.creatorName ?? 'Creator';
+    const creatorName = creatorNames[i];
 
     const thumbHTML = thumbUrl
       ? `<img src="${_esc(thumbUrl)}" alt="${_esc(t.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
@@ -544,7 +606,7 @@ function _initVideoAutoplay() {
   }
 
   function renderCreators(grid, creators) {
-    grid.innerHTML = creators.map(c => {
+    grid.innerHTML = creators.map((c, index) => {
       const name      = c.name ?? 'Creator';
       const role      = c.role ?? c.specialty ?? 'Creator';
       const initials  = name.slice(0, 2).toUpperCase();
@@ -569,6 +631,7 @@ function _initVideoAutoplay() {
            class="creator-card reveal"
            aria-label="View ${_esc(name)}'s profile">
           ${avatarHTML}
+          ${index === 0 ? `<span class="featured-creator-badge">⭐ Featured</span>` : ''}
           <h3>${_esc(name)}</h3>
           <p class="role">${_esc(role)}</p>
           <div class="creator-card-stats">
@@ -627,17 +690,17 @@ const isVideo = template.fileType === 'video' && previewVideoUrl;
 if (isVideo) {
   thumb.innerHTML = `
     <video controls autoplay muted loop playsinline
-      style="width:100%;max-height:360px;border-radius:0 0 var(--radius-xl) var(--radius-xl);background:#000">
+      style="width:100%;height:320px;object-fit:cover;display:block;background:#000;">
       <source src="${_esc(previewVideoUrl)}" type="video/mp4">
     </video>`;
 } else if (previewUrl) {
   thumb.innerHTML = `
     <img src="${_esc(previewUrl)}" alt="${_esc(template.title)}"
-      style="width:100%;max-height:360px;object-fit:cover;
+      style="width:100%;max-height:220px;object-fit:cover;
       border-radius:0 0 var(--radius-xl) var(--radius-xl);">`;
 } else {
   thumb.style.background = _gradient(0);
-  thumb.innerHTML = `<span style="font-size:5rem">${_catEmoji(template.category)}</span>`;
+  thumb.innerHTML = `<span class="modal-thumb-emoji">${_catEmoji(template.category)}</span>`;
 }
 
     if (footer) {
@@ -735,15 +798,11 @@ if (isVideo) {
   }
 
   const statsSection = document.getElementById('hero-stats');
-  if (statsSection) {
-    const obs = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        statsSection.querySelectorAll('[data-target]').forEach(animateCounter);
-        obs.disconnect();
-      }
-    }, { threshold: 0.5 });
-    obs.observe(statsSection);
-  }
+if (statsSection) {
+  setTimeout(() => {
+    statsSection.querySelectorAll('[data-target]').forEach(animateCounter);
+  }, 600);
+}
 
   // ─────────────────────────────────────────────────────────────────────────
   // REVEAL HELPER

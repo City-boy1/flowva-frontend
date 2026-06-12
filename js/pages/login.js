@@ -105,8 +105,6 @@ if (params.get('verified') === '1') {
 
       console.log('User already logged in');
 
-      // Uncomment later if needed
-      // window.location.href = 'dashboard.html';
     }
 
   } catch (err) {
@@ -114,18 +112,6 @@ if (params.get('verified') === '1') {
     console.error('AppState error:', err);
   }
 
-  // ─────────────────────────────────────────
-  // Password Toggle
-  // ─────────────────────────────────────────
-
-  passToggle?.addEventListener('click', () => {
-
-    const isPassword = passInput.type === 'password';
-
-    passInput.type = isPassword ? 'text' : 'password';
-
-    passToggle.textContent = isPassword ? '🙈' : '👁';
-  });
 
   // ─────────────────────────────────────────
   // Clear Errors
@@ -333,7 +319,7 @@ if (params.get('verified') === '1') {
 
       setTimeout(() => {
 
-        window.location.replace('dashboard.html');
+        window.location.replace(user.role === 'ADMIN' ? 'admin.html' : 'dashboard.html');
 
       }, 1000);
 
@@ -457,22 +443,19 @@ if (params.get('verified') === '1') {
 
       console.log('FORGOT RESPONSE:', res);
 
-      closeForgotModal();
-
-      if (res.ok) {
-
-        showToast(
-          'Reset link sent! Check inbox/spam.',
-          'success'
-        );
-
+    if (res.ok) {
+        // Show success state inside modal instead of closing it
+        const forgotFormInner = document.getElementById('forgot-form-inner');
+        const forgotSuccessEl = document.getElementById('forgot-success');
+        const forgotSentEmail = document.getElementById('forgot-sent-email');
+        if (forgotFormInner) forgotFormInner.style.display = 'none';
+        if (forgotSentEmail) forgotSentEmail.textContent = email;
+        if (forgotSuccessEl) forgotSuccessEl.style.display = 'block';
       } else {
-
-        showToast(
-          res.error ||
-          'Could not send reset email.',
-          'error'
-        );
+        if (forgotError) {
+          forgotError.textContent = res.error || 'Could not send reset email.';
+          forgotError.classList.add('visible');
+        }
       }
 
     } catch (err) {

@@ -8,6 +8,10 @@ function _esc(str) {
   return d.innerHTML;
 }
 
+function _initials(name = '') {
+  return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
+}
+
 function timeAgo(dateStr) {
   if (!dateStr) return '';
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -54,6 +58,115 @@ function calcStrength(pwd) {
 }
 
 function getRole() { return (AppState.getUser()?.role ?? 'BUYER').toUpperCase(); }
+
+async function initCreatorApplyBanner() {
+  const banner = document.getElementById('creator-upgrade-banner');
+  if (!banner) return;
+
+  const ctaArea = document.getElementById('upgrade-cta-area');
+  const res = await api.users.getRoleRequestStatus();
+
+  if (res.ok && res.data?.request) {
+    const { status, rejectionReason } = res.data.request;
+    if (status === 'PENDING') {
+      ctaArea.innerHTML = `
+        <div class="upgrade-banner-status upgrade-banner-status--pending">
+          ⏳ Your application is under review — we'll email you within 48 hours.
+        </div>`;
+      return;
+    }
+    if (status === 'REJECTED') {
+      ctaArea.innerHTML = `
+        <div class="upgrade-banner-status upgrade-banner-status--rejected">
+          ✕ Application not approved${rejectionReason ? `: ${rejectionReason}` : ''}.
+        </div>
+        <button class="btn btn--ghost" id="btn-apply-creator" style="margin-top:var(--space-3)">
+          Re-apply
+        </button>`;
+    }
+  }
+
+  document.getElementById('btn-apply-creator')?.addEventListener('click', () => {
+    document.getElementById('creator-apply-modal').classList.add('open');
+    document.getElementById('apply-portfolio').value = '';
+    document.getElementById('apply-software').value = '';
+    document.getElementById('apply-bio').value = '';
+    document.getElementById('apply-general-error').textContent = '';
+    ['apply-portfolio-error', 'apply-software-error', 'apply-bio-error']
+      .forEach(id => { document.getElementById(id).textContent = ''; });
+  });
+
+  document.getElementById('creator-apply-modal-close')?.addEventListener('click', () => {
+    document.getElementById('creator-apply-modal').classList.remove('open');
+  });
+  document.getElementById('creator-apply-cancel')?.addEventListener('click', () => {
+    document.getElementById('creator-apply-modal').classList.remove('open');
+  });
+  document.getElementById('creator-apply-modal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('creator-apply-modal')) {
+      document.getElementById('creator-apply-modal').classList.remove('open');
+    }
+  });
+
+  document.getElementById('creator-apply-submit')?.addEventListener('click', async () => {
+    const portfolio = document.getElementById('apply-portfolio').value.trim();
+    const software  = document.getElementById('apply-software').value.trim();
+    const bio       = document.getElementById('apply-bio').value.trim();
+    const generalEl = document.getElementById('apply-general-error');
+    let valid = true;
+
+    document.getElementById('apply-portfolio-error').textContent = '';
+    document.getElementById('apply-software-error').textContent  = '';
+    document.getElementById('apply-bio-error').textContent       = '';
+    generalEl.textContent = '';
+
+    if (!portfolio) {
+      document.getElementById('apply-portfolio-error').textContent = 'Portfolio link is required';
+      valid = false;
+    } else {
+      try {
+      const u = new URL(portfolio);
+      const host = u.hostname;
+      if (u.protocol !== 'https:') throw new Error('not-https');
+      if (!host.includes('.') || host === 'localhost') throw new Error('no-dot');
+      if (/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|127\.)/.test(host)) throw new Error('private-ip');
+      if ((host.split('.').pop()?.length ?? 0) < 2) throw new Error('bad-tld');
+    } catch {
+      document.getElementById('apply-portfolio-error').textContent = 'Must be a valid public https:// URL (e.g. https://behance.net/yourname)';
+      valid = false;
+    }
+    }
+    if (!software) {
+      document.getElementById('apply-software-error').textContent = 'Please list your software';
+      valid = false;
+    }
+    if (bio.length < 30) {
+      document.getElementById('apply-bio-error').textContent = 'Minimum 30 characters';
+      valid = false;
+    }
+    if (!valid) return;
+
+    const btn = document.getElementById('creator-apply-submit');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    const r = await api.users.submitRoleRequest({ portfolio, software, bio, message: '' });
+    btn.disabled = false;
+    btn.textContent = 'Submit Application';
+
+    if (!r.ok) {
+      generalEl.textContent = r.error ?? 'Failed to submit. Please try again.';
+      return;
+    }
+
+    document.getElementById('creator-apply-modal').classList.remove('open');
+    Toast.show('Application submitted! We\'ll review it within 48 hours. ✓', 'success');
+    ctaArea.innerHTML = `
+      <div class="upgrade-banner-status upgrade-banner-status--pending">
+        ⏳ Your application is under review — we'll email you within 48 hours.
+      </div>`;
+  });
+}
 function isCreator() { return ['CREATOR','ADMIN'].includes(getRole()); }
 
 function applyRoleUI() {
@@ -117,6 +230,7 @@ async function loadBuyerOverview() {
     const savedCount = favRes.ok ? (favRes.data?.favourites?.length ?? 0) : 0;
     animateCounter(savedEl, savedCount);
   }
+  initCreatorApplyBanner();
 
   // Activity feed stays the same
   if (ordersRes.ok && ordersRes.data?.orders) {
@@ -154,7 +268,7 @@ async function loadCreatorOverview() {
 
   if (ordersRes.ok && ordersRes.data?.orders) {
     const orders    = ordersRes.data.orders;
-const completed = orders.filter(o => o.status === 'COMPLETED' && o.type === 'TEMPLATE_PURCHASE').length;    const active    = orders.filter(o => ['IN_PROGRESS','PAID'].includes(o.status)).length;
+    const completed = orders.filter(o => o.status === 'COMPLETED' && o.type === 'TEMPLATE_PURCHASE').length;    const active    = orders.filter(o => ['IN_PROGRESS','PAID'].includes(o.status)).length;
     const salesEl   = document.getElementById('stat-sales');
     const projEl    = document.getElementById('stat-projects');
     if (salesEl) animateCounter(salesEl, completed);
@@ -166,11 +280,11 @@ const completed = orders.filter(o => o.status === 'COMPLETED' && o.type === 'TEM
         activityEl.innerHTML = '<p style="color:var(--text-muted);font-size:0.9rem">No activity yet.</p>';
       } else {
         activityEl.innerHTML = orders.slice(0, 8).map(o => {
-  const label = o.type === 'TEMPLATE_PURCHASE'
+    const label = o.type === 'TEMPLATE_PURCHASE'
     ? (o.templateTitle ?? 'Template sale')
     : 'Project delivery';
-  const dot = o.status==='COMPLETED' ? 'var(--success)' : o.status==='PAID' ? 'var(--info)' : 'var(--warning)';
-  return `
+    const dot = o.status==='COMPLETED' ? 'var(--success)' : o.status==='PAID' ? 'var(--info)' : 'var(--warning)';
+    return `
     <div class="activity-item">
       <div class="activity-dot" style="background:${dot}"></div>
       <div class="activity-text">
@@ -246,14 +360,54 @@ if (!completed.length) { list.innerHTML = '<p style="color:var(--text-muted);fon
 async function loadMyTemplates() {
   const list = document.getElementById('my-templates-list');
   if (!list) return;
-  list.innerHTML = '<p style="color:var(--text-muted);font-size:0.9rem">Loading…</p>';
+  list.innerHTML = '<p class="loading-text">Loading…</p>';
+
+  const pendingSection = document.getElementById('templates-pending-section');
+  const pendingList    = document.getElementById('my-templates-pending-list');
+  const pendingCount   = document.getElementById('templates-pending-count');
+
   const userId = AppState.getUser()?._id ?? AppState.getUser()?.id;
   const res = await api.templates.list({ creatorId: userId, limit: 50 });
-  if (!res.ok || !res.data?.templates?.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎬</div><h3>No templates yet</h3><button class="btn btn--primary" style="margin-top:16px" onclick="document.querySelector('[data-target=upload]').click()">Upload Now</button></div>`;
+
+  if (!res.ok) {
+    list.innerHTML = '<p class="loading-text">Could not load templates.</p>';
     return;
   }
-  list.innerHTML = res.data.templates.map(t => {
+
+  const all     = res.data?.templates ?? [];
+  const pending = all.filter(t => t.status === 'PENDING');
+  const visible = all.filter(t => t.status !== 'PENDING' && t.status !== 'REJECTED');
+
+  // Pending section
+  if (pendingSection && pendingList && pendingCount) {
+    if (pending.length) {
+      pendingSection.classList.remove('is-hidden');
+      pendingCount.textContent = pending.length;
+      pendingList.innerHTML = pending.map(t => `
+        <div class="project-item project-item--pending">
+          <div class="project-thumb">⏳</div>
+          <div class="project-info">
+            <h4>${_esc(t.title)}</h4>
+            <p>Submitted ${timeAgo(t.createdAt)}</p>
+          </div>
+          <span class="pending-status-badge">⏳ Awaiting Review</span>
+        </div>
+      `).join('');
+    } else {
+      pendingSection.classList.add('is-hidden');
+      pendingList.innerHTML = '';
+    }
+  }
+
+  if (!visible.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎬</div><h3>No published templates yet</h3><button class="btn btn--primary" id="templates-empty-upload-btn">Upload Now</button></div>`;
+    document.getElementById('templates-empty-upload-btn')?.addEventListener('click', () => {
+      document.querySelector('[data-target=upload]')?.click();
+    });
+    return;
+  }
+
+  list.innerHTML = visible.map(t => {
   const id = t._id ?? t.id;
   return `
     <div class="project-item" data-id="${_esc(String(id))}">
@@ -310,6 +464,63 @@ list.querySelectorAll('.delete-template-btn').forEach(btn => {
     btn.closest('.project-item').remove();
   });
 });
+}
+
+async function loadMyTutorials() {
+  const list = document.getElementById('my-tutorials-list');
+  if (!list) return;
+  list.innerHTML = '<p class="loading-text">Loading…</p>';
+
+  const pendingSection = document.getElementById('tutorials-pending-section');
+  const pendingList    = document.getElementById('my-tutorials-pending-list');
+  const pendingCount   = document.getElementById('tutorials-pending-count');
+
+  const userId = AppState.getUser()?._id ?? AppState.getUser()?.id;
+  const res = await api.tutorials.list({ creatorId: userId, limit: 50 });
+
+  if (!res.ok) {
+    list.innerHTML = '<p class="loading-text">Could not load tutorials.</p>';
+    return;
+  }
+
+  const all     = res.data?.tutorials?.tutorials ?? res.data?.tutorials ?? [];
+  const pending = all.filter(t => t.status === 'PENDING');
+  const visible = all.filter(t => t.status !== 'PENDING' && t.status !== 'REJECTED');
+
+  if (pendingSection && pendingList && pendingCount) {
+    if (pending.length) {
+      pendingSection.classList.remove('is-hidden');
+      pendingCount.textContent = pending.length;
+      pendingList.innerHTML = pending.map(t => `
+        <div class="project-item project-item--pending">
+          <div class="project-thumb">⏳</div>
+          <div class="project-info">
+            <h4>${_esc(t.title)}</h4>
+            <p>Submitted ${timeAgo(t.createdAt)}</p>
+          </div>
+          <span class="pending-status-badge">⏳ Awaiting Review</span>
+        </div>
+      `).join('');
+    } else {
+      pendingSection.classList.add('is-hidden');
+      pendingList.innerHTML = '';
+    }
+  }
+
+  if (!visible.length) {
+    list.innerHTML = '<p class="loading-text">No published tutorials yet.</p>';
+    return;
+  }
+
+  list.innerHTML = visible.map(t => `
+    <div class="project-item">
+      <div class="project-thumb">🎓</div>
+      <div class="project-info">
+        <h4>${_esc(t.title)}</h4>
+        <p>${_esc((t.software ?? '').toString())} · ${timeAgo(t.createdAt)}</p>
+      </div>
+    </div>
+  `).join('');
 }
 
 async function loadProjects() {
@@ -922,12 +1133,16 @@ async function initSettingsPanel() {
   if (countryEl) countryEl.value = user.country ?? 'GH';
 
   if (avatarPrev) {
-    if (user.avatarUrl) {
-      avatarPrev.innerHTML = `<img src="${_esc(user.avatarUrl)}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;display:block;" alt="Avatar">`;
-    } else {
-      avatarPrev.textContent = (user.name ?? 'U').charAt(0).toUpperCase();
-    }
+  if (user.avatarUrl) {
+    avatarPrev.innerHTML = `<img src="${_esc(user.avatarUrl)}" class="avatar-preview-img" alt="Avatar">`;
+    document.getElementById('avatar-delete-btn')?.classList.remove('hidden');
+  } else {
+    avatarPrev.textContent = _initials(user.name ?? '');
+    avatarPrev.style.fontSize = '1.4rem';
+    document.getElementById('avatar-delete-btn')?.classList.add('hidden');
   }
+  avatarPrev.classList.add('settings-avatar-ready');
+}
 
   if (bioEl && bioCount) {
     bioCount.textContent = `${bioEl.value.length} / 500`;
@@ -956,19 +1171,53 @@ async function initSettingsPanel() {
   const avatarBtn   = document.getElementById('avatar-upload-btn');
   const avatarInput = document.getElementById('avatar-file-input');
   avatarBtn?.addEventListener('click', () => avatarInput?.click());
+  
+  document.getElementById('avatar-delete-btn')?.addEventListener('click', async () => {
+  const deleteBtn = document.getElementById('avatar-delete-btn');
+  if (!confirm('Remove your profile photo? Your initials will be shown instead.')) return;
+  deleteBtn.disabled = true;
+  deleteBtn.textContent = 'Removing…';
+  const res = await api.delete('/users/avatar');
+  deleteBtn.disabled = false;
+  deleteBtn.textContent = 'Remove Photo';
+  if (!res.ok) { Toast.show(res.error ?? 'Failed to remove photo', 'error'); return; }
+  AppState.setAuth(AppState.getToken(), { ...AppState.getUser(), avatarUrl: null });
+  const updatedUser = AppState.getUser();
+  if (avatarPrev) {
+    avatarPrev.innerHTML = '';
+    avatarPrev.textContent = _initials(updatedUser?.name ?? '');
+    avatarPrev.style.fontSize = '1.4rem';
+  }
+  deleteBtn.classList.add('hidden');
+  Toast.show('Profile photo removed ✓', 'success');
+});
+
   avatarInput?.addEventListener('change', async () => {
     const file = avatarInput.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { Toast.show('Image must be under 5MB', 'error'); return; }
+    if (file.size > 2 * 1024 * 1024) { Toast.show('Image must be under 2MB', 'error'); return; }
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type)) {
+      Toast.show('Please use a JPG, PNG, or WebP image', 'error');
+      return;
+    }
     avatarBtn.disabled = true; avatarBtn.textContent = 'Uploading…';
     const formData = new FormData();
     formData.append('avatar', file);
+
+    await api.restoreSession().catch(() => {});
+
     const res = await api.users.uploadAvatar(formData);
     avatarBtn.disabled = false; avatarBtn.textContent = 'Change Photo';
-    if (!res.ok) { Toast.show(res.error ?? 'Upload failed', 'error'); return; }
+
+    if (!res.ok) {
+      Toast.show(res.error ?? 'Upload failed. Please try again.', 'error');
+      avatarInput.value = '';
+      return;
+    }
     if (res.data?.avatarUrl) {
-      AppState.setAuth(AppState.getToken(), { ...AppState.getUser(), avatarUrl: res.data.avatarUrl });
-      if (avatarPrev) avatarPrev.innerHTML = `<img src="${_esc(res.data.avatarUrl)}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;display:block;" alt="Avatar">`;
+  AppState.setAuth(AppState.getToken(), { ...AppState.getUser(), avatarUrl: res.data.avatarUrl });
+  if (avatarPrev) avatarPrev.innerHTML = `<img src="${_esc(res.data.avatarUrl)}" class="avatar-preview-img" alt="Avatar">`;
+  document.getElementById('avatar-delete-btn')?.classList.remove('hidden');
     }
     Toast.show('Photo updated ✓', 'success');
     avatarInput.value = '';
@@ -989,15 +1238,44 @@ async function initSettingsPanel() {
     Toast.show('Profile saved ✓', 'success');
   });
 
-  function bindToggle(btnId, inputId) {
-    document.getElementById(btnId)?.addEventListener('click', () => {
-      const input = document.getElementById(inputId);
-      if (!input) return;
-      const isPass = input.type === 'password';
-      input.type = isPass ? 'text' : 'password';
-      document.getElementById(btnId).textContent = isPass ? '🙈' : '👁';
-    });
-  }
+  const EYE_OPEN = `
+  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+        stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="12" cy="12" r="3"
+          stroke="currentColor" stroke-width="1.8"/>
+  </svg>
+`;
+
+const EYE_CLOSED = `
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"/>
+        <line x1="1" y1="1" x2="23" y2="23"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"/>
+    </svg>
+`;
+
+function bindToggle(btnId, inputId) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+
+  btn.innerHTML = EYE_CLOSED; // initial state (password hidden)
+
+  btn.addEventListener('click', () => {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    const isPass = input.type === 'password';
+
+    input.type = isPass ? 'text' : 'password';
+    btn.innerHTML = isPass ? EYE_OPEN : EYE_CLOSED;
+  });
+}
   bindToggle('curr-pass-toggle','current-password');
   bindToggle('new-pass-toggle','new-password');
   bindToggle('delete-pass-toggle','delete-password');
@@ -1134,11 +1412,15 @@ function initUploadPanel() {
       Toast.show('ZIP files are not supported. Please upload a video, image, or PDF template.', 'error');
       return;
     }
+    if (!isVideo && !isImage && !isPdf) {
+      Toast.show('Unsupported file type. Please upload a video, image, or PDF.', 'error');
+      return;
+    }
 
-    const maxBytes = isVideo ? 100 * 1024 * 1024
-                   : isImage ?  10 * 1024 * 1024
-                   :            20 * 1024 * 1024; // pdf
-    const maxLabel = isVideo ? '100MB' : isImage ? '10MB' : '20MB';
+    const maxBytes = isVideo ? 70 * 1024 * 1024
+                   : isImage ?  5 * 1024 * 1024
+                   :            10 * 1024 * 1024; // pdf
+    const maxLabel = isVideo ? '70MB' : isImage ? '5MB' : '10MB';
     if (file.size > maxBytes) {
       Toast.show(`${isVideo ? 'Video' : isImage ? 'Image' : 'PDF'} files must be under ${maxLabel}. Please compress and try again.`, 'error');
       return;
@@ -1146,7 +1428,6 @@ function initUploadPanel() {
     templateFile = file;
     showLocalPreview(file);
   }
-
   dropZone?.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('dragover'); });
   dropZone?.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
   dropZone?.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
@@ -1240,8 +1521,12 @@ if (tplSelect) {
   dropZone?.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
   function handleTutorialFile(f) {
     if (!f) return;
-    if (f.size > 100 * 1024 * 1024) {
-      Toast.show('Tutorial videos must be under 100MB. Please compress your video first (try HandBrake or ffmpeg).', 'error');
+    if (!f.type.startsWith('video/')) {
+      Toast.show('Please select a video file (MP4 or WebM).', 'error');
+      return;
+    }
+    if (f.size > 70 * 1024 * 1024) {
+      Toast.show('Tutorial videos must be under 70MB. Please compress your video first (try HandBrake or ffmpeg).', 'error');
       return;
     }
     tutorialFile = f;
@@ -1265,8 +1550,8 @@ if (tplSelect) {
     if (!title || !software || !desc) {
       if (errorEl) { errorEl.textContent = 'Please fill all required fields.'; errorEl.style.display = 'block'; } return;
     }
-    if (tutorialFile.size > 100 * 1024 * 1024) {
-      if (errorEl) { errorEl.textContent = 'Video must be under 100MB. Please compress it first.'; errorEl.style.display = 'block'; } return;
+    if (tutorialFile.size > 70 * 1024 * 1024) {
+      if (errorEl) { errorEl.textContent = 'Video must be under 70MB. Please compress it first.'; errorEl.style.display = 'block'; } return;
     }
     if (errorEl) errorEl.style.display = 'none';
     const formData = new FormData();
@@ -1274,7 +1559,7 @@ if (tplSelect) {
     formData.append('software',    software);
     formData.append('description', desc);
     const linkedTemplate = document.getElementById('tut-template')?.value;
-if (linkedTemplate) formData.append('templateId', linkedTemplate);
+    if (linkedTemplate) formData.append('templateId', linkedTemplate);
     formData.append('video', tutorialFile);
     const btn = document.getElementById('tutorial-submit-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Preparing…'; }
@@ -1308,6 +1593,7 @@ if (linkedTemplate) formData.append('templateId', linkedTemplate);
     Toast.show('Tutorial submitted for review! 🎓', 'success');
     tutForm.reset(); tutorialFile = null;
     if (previewEl) previewEl.innerHTML = '';
+    loadMyTutorials();
   });
 }
 
@@ -1519,6 +1805,7 @@ function activateTab(target) {
   if (target === 'payout'            && isCreator())       initPayoutPanel();
   if (target === 'ratings'           && isCreator())       loadRatings();
   if (target === 'templates'         && isCreator())       loadMyTemplates();
+  if (target === 'tutorials-upload'  && isCreator())       loadMyTutorials();
   if (target === 'purchases'         && !isCreator())      loadPurchases();
   if (target === 'projects')                               loadProjects();
   if (target === 'following')                              loadFollowing();

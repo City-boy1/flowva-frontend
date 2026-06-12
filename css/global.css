@@ -96,6 +96,7 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -877,22 +878,6 @@ ul, ol { list-style: none; }
   to   { opacity: 1; transform: scale(1); }
 }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.4,0,0.2,1);
-}
-
-.reveal.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
-
 /* ─── UTILITIES ─── */
 .text-accent    { color: var(--accent-hover); }
 .text-muted     { color: var(--text-muted); }
@@ -1012,4 +997,116 @@ overscroll-behavior: contain;
     width: calc(100vw - 32px);
     right: -80px;
   }
+}
+
+/* ─── NAVBAR MOBILE FIX ─── */
+@media (max-width: 480px) {
+  .nav-logo {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .nav-content {
+    gap: 6px;
+  }
+
+  .nav-actions {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .nav-actions .btn--sm {
+    padding: 7px 10px;
+    font-size: 0.75rem;
+  }
+
+  .nav-toggle {
+    flex-shrink: 0;
+    width: 28px;
+  }
+}
+
+/* ─── SECTION TITLE LINE ─── */
+.section-title-line {
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  border-radius: 2px;
+  margin-top: 8px;
+  transition: width 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s;
+}
+
+/* ─── REVEAL SYSTEM v3 ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(44px) scale(0.97);
+  transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1),
+              transform 0.85s cubic-bezier(0.16,1,0.3,1);
+  will-change: transform, opacity;
+}
+
+.reveal.active  { opacity: 1; transform: translateY(0) scale(1); }
+.reveal.exit    { opacity: 0; transform: translateY(-20px) scale(0.99);
+                  transition: opacity 0.4s ease, transform 0.4s ease; }
+
+/* Slide from left */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-60px) scale(0.97);
+  transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1),
+              transform 0.85s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal-left.active { opacity: 1; transform: translateX(0) scale(1); }
+.reveal-left.exit   { opacity: 0; transform: translateX(-40px); transition: opacity 0.4s ease, transform 0.4s ease; }
+
+/* Slide from right */
+.reveal-right {
+  opacity: 0;
+  transform: translateX(60px) scale(0.97);
+  transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1),
+              transform 0.85s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal-right.active { opacity: 1; transform: translateX(0) scale(1); }
+.reveal-right.exit   { opacity: 0; transform: translateX(40px); transition: opacity 0.4s ease, transform 0.4s ease; }
+
+/* Zoom in */
+.reveal-zoom {
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+              transform 0.7s cubic-bezier(0.34,1.56,0.64,1);
+}
+.reveal-zoom.active { opacity: 1; transform: scale(1); }
+.reveal-zoom.exit   { opacity: 0; transform: scale(0.92); transition: opacity 0.4s ease, transform 0.4s ease; }
+
+/* Swing from side */
+.reveal-swing[data-swing-dir="left"] {
+  opacity: 0;
+  transform: translateX(-50px) rotate(-4deg);
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1),
+              transform 0.8s cubic-bezier(0.34,1.56,0.64,1);
+}
+.reveal-swing[data-swing-dir="right"] {
+  opacity: 0;
+  transform: translateX(50px) rotate(4deg);
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1),
+              transform 0.8s cubic-bezier(0.34,1.56,0.64,1);
+}
+.reveal-swing.active { opacity: 1; transform: translateX(0) rotate(0); }
+.reveal-swing.exit   { opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; }
+
+/* Delays */
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-4 { transition-delay: 0.32s; }
+
+/* Section underline */
+.section-title-line {
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  border-radius: 2px;
+  margin-top: 8px;
+  transition: width 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s;
 }
