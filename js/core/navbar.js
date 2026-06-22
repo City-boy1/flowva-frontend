@@ -171,7 +171,7 @@ function _buildNavbarHTML() {
   return `
     <nav class="navbar" id="main-navbar" role="navigation" aria-label="Main navigation">
       <div class="container nav-content">
-        <a href="index.html" class="nav-logo" aria-label="FLOWVA home">FLOWVA</a>
+        <img src="./assets/images/logo.png" class="nav-logo-img" alt="FLOWVA" id="nav-logo-img">
 
         <div class="nav-links" id="nav-links" role="menubar">
           ${navLinkHTML}
@@ -197,6 +197,8 @@ function _buildNavbarHTML() {
           ` : ''}
 
           ${authSection}
+
+          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">🌙</button>
 
           <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
             <span></span><span></span><span></span>
@@ -512,6 +514,22 @@ mount.innerHTML = _buildNavbarHTML();
     Toast.show('Logged out successfully', 'info');
     setTimeout(() => { window.location.href = 'index.html'; }, 600);
   });
+
+  // ── Theme toggle ──
+  const themeBtn = document.getElementById('theme-toggle');
+  if (themeBtn) {
+    const saved = localStorage.getItem('flowva-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    themeBtn.textContent = saved === 'light' ? '🌙' : '☀️';
+
+    themeBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('flowva-theme', next);
+      themeBtn.textContent = next === 'light' ? '🌙' : '☀️';
+    });
+  }
 
   // Notifications
   const notifBtn = document.getElementById('notif-btn');

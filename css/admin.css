@@ -15,9 +15,10 @@
       --text-2:       #8b96b0;
       --text-3:       #4a5568;
 
-      --accent:       #3b82f6;
-      --accent-dim:   rgba(59,130,246,0.12);
-      --accent-glow:  rgba(59,130,246,0.25);
+      --accent:       #007BFF;
+      --accent-dim:   rgba(0,123,255,0.12);
+      --accent-glow:  rgba(0,123,255,0.25);
+      --accent-pink:  #FF2E93;
 
       --green:        #10b981;
       --green-dim:    rgba(16,185,129,0.12);
@@ -28,8 +29,7 @@
       --purple:       #8b5cf6;
       --purple-dim:   rgba(139,92,246,0.12);
 
-      --font-display: 'Syne', sans-serif;
-      --font-body:    'DM Sans', sans-serif;
+--font-display: 'Poppins', sans-serif;      --font-body:    'DM Sans', sans-serif;
       --font-mono:    'DM Mono', monospace;
 
       --nav-w:        220px;

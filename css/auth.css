@@ -9,20 +9,22 @@ padding: 0;
 --bg-surface: #080c18;
 --bg-raised: #0d1225;
 --bg-overlay: #111828;
---accent: #7c3aed;
---accent-hover: #8b5cf6;
---accent-soft: rgba(124,58,237,0.12);
---accent-glow: rgba(124,58,237,0.35);
---accent-subtle: rgba(124,58,237,0.06);
+--accent: #007BFF;
+--accent-hover: #00CFFF;
+--accent-soft: rgba(0,123,255,0.12);
+--accent-glow: rgba(0,123,255,0.35);
+--accent-subtle: rgba(0,123,255,0.06);
+--accent-pink: #FF2E93;
+--accent-pink-hover: #FF6FB5;
 --success: #10b981;
 --danger: #ef4444;
 --text-1: #f1f5f9;
 --text-2: #94a3b8;
 --text-3: #475569;
 --border: rgba(255,255,255,0.07);
---border-hover: rgba(124,58,237,0.4);
---border-focus: rgba(124,58,237,0.6);
---font-display: 'Syne', sans-serif;
+--border-hover: rgba(0,123,255,0.4);
+--border-focus: rgba(0,123,255,0.6);
+--font-display: 'Poppins', sans-serif;
 --font-body: 'DM Sans', sans-serif;
 --font-mono: 'JetBrains Mono', monospace;
 --r: 16px;
@@ -278,7 +280,7 @@ animation:fadeUp 0.6s 0.2s ease both;
 width:36px;
 height:36px;
 border-radius:10px;
-background:linear-gradient(135deg,var(--accent),#4f2edc);
+background:linear-gradient(135deg,var(--accent-pink),var(--accent));
 display:flex;
 align-items:center;
 justify-content:center;
@@ -300,7 +302,7 @@ font-family:var(--font-display);
 font-size:1.5rem;
 font-weight:800;
 letter-spacing:-0.03em;
-background:linear-gradient(135deg,#a78bfa,var(--accent));
+background:linear-gradient(135deg,var(--accent-pink),var(--accent));
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
 background-clip:text;
@@ -348,7 +350,7 @@ margin-bottom:20px;
 
 .panel__title em {
 font-style:normal;
-background:linear-gradient(90deg,#a78bfa,var(--accent-hover));
+background:linear-gradient(90deg,var(--accent-pink),var(--accent-hover));
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
 background-clip:text;
@@ -364,7 +366,7 @@ bottom:-4px;
 left:0;
 width:0;
 height:2px;
-background:linear-gradient(90deg,var(--accent),#a78bfa);
+background:linear-gradient(90deg,var(--accent),var(--accent-pink));
 border-radius:2px;
 animation:underlineSweep 0.8s 1.1s cubic-bezier(0.22,1,0.36,1) forwards;
 }
@@ -508,7 +510,7 @@ font-family:var(--font-display);
 font-size:1.6rem;
 font-weight:800;
 letter-spacing:-0.03em;
-background:linear-gradient(135deg,#a78bfa,var(--accent));
+background:linear-gradient(135deg,var(--accent-pink),var(--accent));
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
 background-clip:text;
@@ -1361,7 +1363,7 @@ justify-content:center;
 gap:8px;
 width:100%;
 padding:16px 24px;
-background:var(--accent);
+background:linear-gradient(135deg,var(--accent-pink),var(--accent));
 border:none;
 border-radius:9999px;
 color:white;
@@ -2005,4 +2007,49 @@ grid-template-columns:1fr
 .card__title {
 font-size:1.9rem
   }
+}
+
+/* ─── BRAND OVERRIDE ─── */
+:root {
+  --accent:            #007BFF;
+  --accent-hover:      #00CFFF;
+  --accent-soft:       rgba(0,123,255,0.12);
+  --accent-glow:       rgba(0,123,255,0.35);
+  --accent-subtle:     rgba(0,123,255,0.06);
+  --accent-pink:       #FF2E93;
+  --accent-pink-hover: #FF6FB5;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #FF2E93, #007BFF) !important;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #FF6FB5, #00CFFF) !important;
+}
+
+.logo__mark {
+  background: linear-gradient(135deg, #FF2E93, #007BFF) !important;
+}
+
+.logo__text,
+.mobile-logo {
+  background: linear-gradient(135deg, #FF2E93, #007BFF) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+.stat__num {
+  background: linear-gradient(135deg, #FF2E93, #00CFFF) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+.panel__title em {
+  background: linear-gradient(135deg, #FF2E93, #00CFFF) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
 }

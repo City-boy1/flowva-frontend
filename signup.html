@@ -5,9 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up — FLOWVA</title>
+    <link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Flowva" />
+    <link rel="manifest" href="/assets/images/site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="css/auth.css">
 </head>
@@ -220,6 +226,24 @@
                                 placeholder="you@example.com" autocomplete="email" required>
                         </div>
                         <span class="field__error" id="err-email" role="alert"></span>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="field">
+                        <label class="field__label" for="f-phone">Phone number <span
+                                style="color:var(--text-3);font-weight:400">(optional)</span></label>
+                        <div class="input-wrap">
+                            <span class="input-icon">
+                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"
+                                        stroke="currentColor" stroke-width="1.8" />
+                                </svg>
+                            </span>
+                            <input class="field__input" type="tel" id="f-phone" name="phone"
+                                placeholder="+1 234 567 8900" autocomplete="tel">
+                        </div>
+                        <span class="field__error" id="err-phone" role="alert"></span>
                     </div>
 
                     <!-- Wallet — creator only -->

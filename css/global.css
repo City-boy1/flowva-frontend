@@ -3,8 +3,7 @@
    Production-grade, security-conscious frontend
 ═══════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
 /* ─── CSS RESET ─── */
 *, *::before, *::after {
   margin: 0;
@@ -21,10 +20,14 @@
   --bg-overlay: #111828;
 
   /* Purple accent system */
-  --accent:       #7c3aed;
-  --accent-hover: #8b5cf6;
-  --accent-soft:  rgba(124,58,237,0.12);
-  --accent-glow:  rgba(124,58,237,0.35);
+  --accent:       #007BFF;
+--accent-hover: #00CFFF;
+--accent-soft:  rgba(0,123,255,0.12);
+--accent-glow:  rgba(0,123,255,0.35);
+
+--accent-pink:       #FF2E93;
+--accent-pink-hover: #FF6FB5;
+--accent-pink-soft:  rgba(255,46,147,0.12);
 
   /* Semantic colors */
   --success:  #10b981;
@@ -64,8 +67,7 @@
   --radius-full: 9999px;
 
   /* Typography */
-  --font-display: 'Syne', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
+--font-display: 'Poppins', sans-serif;  --font-body:    'DM Sans', sans-serif;
 
   /* Shadows */
   --shadow-sm:  0 2px 8px rgba(0,0,0,0.4);
@@ -183,9 +185,9 @@ ul, ol { list-style: none; }
 .btn:active::after { opacity: 0.06; }
 
 .btn--primary {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent));
   color: white;
-  box-shadow: var(--shadow-accent);
+  box-shadow: 0 8px 32px rgba(255,46,147,0.3);
 }
 
 .btn--primary:hover {
@@ -379,7 +381,7 @@ ul, ol { list-style: none; }
   font-size: 1.6rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1109,4 +1111,80 @@ overscroll-behavior: contain;
   border-radius: 2px;
   margin-top: 8px;
   transition: width 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s;
+}
+/* ─── LOGO ─── */
+.nav-logo-img {
+  height: 36px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  max-width: 120px;
+}
+
+[data-theme="dark"] .nav-logo-img {
+  filter: drop-shadow(0 0 0 white) brightness(1.1);
+}
+
+[data-theme="light"] .nav-logo-img {
+  filter: none;
+}
+
+@media (max-width: 1024px) { .nav-logo-img { height: 32px; } }
+@media (max-width: 600px)  { .nav-logo-img { height: 28px; } }
+@media (max-width: 480px)  { .nav-logo-img { height: 24px; max-width: 90px; } }
+
+/* ─── THEME TOGGLE ─── */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: var(--transition-base);
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+/* ─── LIGHT MODE VARIABLES ─── */
+[data-theme="light"] {
+  --bg-base:    #f8f9fc;
+  --bg-surface: #ffffff;
+  --bg-raised:  #f1f3f9;
+  --bg-overlay: #e8ecf4;
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+  --text-disabled:  #cbd5e1;
+  --border:       rgba(0,0,0,0.08);
+  --border-hover: rgba(0,123,255,0.35);
+  --border-focus: rgba(0,123,255,0.5);
+  --accent-soft:  rgba(0,123,255,0.08);
+  --accent-glow:  rgba(0,123,255,0.2);
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md:  0 8px 32px rgba(0,0,0,0.1);
+  --shadow-lg:  0 20px 60px rgba(0,0,0,0.12);
+  --accent-soft: rgba(0,123,255,0.08);
+  --border-hover: rgba(0,123,255,0.35);
+  --border-focus: rgba(0,123,255,0.5);
+}
+[data-theme="light"] .navbar {
+  background: rgba(248,249,252,0.95);
+  border-bottom-color: rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] .navbar.scrolled {
+  background: rgba(248,249,252,0.99);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+[data-theme="light"] .glass {
+  background: rgba(255,255,255,0.75);
 }

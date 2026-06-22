@@ -240,46 +240,6 @@ function initParallax() {
   },{passive:true});
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// 10. MARQUEE / INFINITE SCROLL STRIP
-// ══════════════════════════════════════════════════════════════════════
-function initMarquee() {
-  document.querySelectorAll('[data-marquee]').forEach(wrap=>{
-    const speed=parseInt(wrap.dataset.marquee)||40;
-    const inner=wrap.querySelector('[data-marquee-inner]');
-    if(!inner)return;
-    // Duplicate content for seamless loop
-    inner.innerHTML+=inner.innerHTML;
-    inner.style.cssText=`display:flex;gap:24px;width:max-content;animation:marquee-scroll ${speed}s linear infinite;`;
-    const s=document.createElement('style');
-    s.textContent=`@keyframes marquee-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-    [data-marquee]{overflow:hidden;mask-image:linear-gradient(90deg,transparent,black 10%,black 90%,transparent);}
-    [data-marquee]:hover [data-marquee-inner]{animation-play-state:paused;}`;
-    document.head.appendChild(s);
-  });
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// 11. COUNTER ANIMATION
-// ══════════════════════════════════════════════════════════════════════
-function initCounters() {
-  const section=document.getElementById('hero-stats');
-  if(!section)return;
-  setTimeout(()=>{
-    section.querySelectorAll('[data-target]').forEach(el=>{
-      const target=parseInt(el.dataset.target,10);
-      const suffix=el.dataset.suffix||'';
-      const start=performance.now();
-      const dur=2200;
-      (function step(now){
-        const p=Math.min((now-start)/dur,1);
-        const e=1-Math.pow(1-p,4);
-        el.textContent=Math.floor(e*target).toLocaleString()+suffix;
-        if(p<1)requestAnimationFrame(step);
-      })(performance.now());
-    });
-  },800);
-}
 
 // ══════════════════════════════════════════════════════════════════════
 // 12. FLOATING PARTICLES (hero)
@@ -459,7 +419,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   initReveal();
   initStagger();
   initParallax();
-  initMarquee();
   initCounters();
   initParticles();
   initHeroAmbient();
