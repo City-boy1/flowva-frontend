@@ -163,7 +163,6 @@ async function getCreatorName(id) {
   if(!id) return 'Unknown Creator';
   if(_creatorCache[id]) return _creatorCache[id];
   const res = await api.users.getCreatorById(id);
-  console.log('Creator API response for', id, ':', JSON.stringify(res.data));
   if(res.ok && res.data) {
     const name = res.data.name
       ?? res.data.username
