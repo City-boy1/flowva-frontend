@@ -8,11 +8,26 @@
  */
 
 import AppState from './state.js';
-const BASE_URL = window.FLOWVA_API_URL || 
-  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:5000/api'
-    : 'https://flowva-backend-ztai.onrender.com/api');// const BASE_URL = window.FLOWVA_API_URL || 'https://flowva-backend-ztai.onrender.com/api';
+let BASE_URL = 'https://flowva-backend-ztai.onrender.com/api';
 
+async function _resolveBaseUrl() {
+  if (window.FLOWVA_API_URL) {
+    BASE_URL = window.FLOWVA_API_URL;
+    return;
+  }
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') return;
+
+  try {
+    await fetch('http://localhost:5000/api/health', {
+      signal: AbortSignal.timeout(1500)
+    });
+    BASE_URL = 'http://localhost:5000/api';
+  } catch {
+    // stays as deployed URL
+  }
+}
+
+_resolveBaseUrl();
 let _refreshPromise = null;
 
 // ─────────────────────────────────────────────────────────────────────────────

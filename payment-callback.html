@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment — FLOWVA</title>
+    <script>
+        (function () {
+            var t = localStorage.getItem('flowva-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
     <script type="module">
         import AppState from './js/core/state.js';
         import api from './js/core/api.js';

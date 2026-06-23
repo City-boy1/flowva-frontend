@@ -1295,4 +1295,40 @@
       font-size: 1rem;
       flex-shrink: 0;
     }
+
+    .stat-icon {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--stat-color, var(--accent));
+  font-family: var(--font-mono);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.quick-btn-icon {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
   
+    [data-theme="light"] {
+  --bg:        #f4f6fb;
+  --bg-panel:  #ffffff;
+  --bg-card:   #f0f2f8;
+  --bg-hover:  #e8ecf4;
+  --bg-input:  #ffffff;
+  --border:    rgba(0,0,0,0.08);
+  --border-focus: rgba(0,123,255,0.5);
+  --text-1:    #0f172a;
+  --text-2:    #475569;
+  --text-3:    #94a3b8;
+}
+
+[data-theme="light"] .topbar {
+  background: rgba(244,246,251,0.95);
+}
+
+[data-theme="light"] .sidebar {
+  background: #ffffff;
+}

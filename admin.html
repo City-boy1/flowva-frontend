@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Command Center — FLOWVA</title>
+    <script>
+        (function () {
+            var t = localStorage.getItem('flowva-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
@@ -19,11 +25,12 @@
 </head>
 
 <body>
+    <div id="shared-navbar" style="display:none"></div>
 
     <!-- TOPBAR -->
     <header class="topbar">
         <a class="topbar-brand" href="index.html" id="brand-link">
-            <div class="topbar-brand-icon">⚡</div>
+            <div class="topbar-brand-icon">F</div>
             FLOWVA
         </a>
         <span class="topbar-badge">ADMIN</span>
@@ -53,36 +60,42 @@
 
             <div class="nav-section-label">Content</div>
             <button class="nav-item" data-tab="templates">
-                <span class="nav-icon">🎬</span> Templates
+                <span class="nav-icon">▶</span> Templates
                 <span class="nav-badge" id="badge-templates">0</span>
             </button>
             <button class="nav-item" data-tab="tutorials">
-                <span class="nav-icon">🎓</span> Tutorials
+                <span class="nav-icon">▣</span> Tutorials
+
                 <span class="nav-badge" id="badge-tutorials">0</span>
             </button>
             <button class="nav-item" data-tab="projects">
-                <span class="nav-icon">📁</span> Projects
+                <span class="nav-icon">▤</span> Projects
+
                 <span class="nav-badge" id="badge-projects">0</span>
             </button>
 
             <div class="nav-section-label">Commerce</div>
             <button class="nav-item" data-tab="commissions">
-                <span class="nav-icon">💰</span> Commissions
+                <span class="nav-icon">$</span> Commissions
             </button>
             <button class="nav-item" data-tab="disputes">
-                <span class="nav-icon">⚖️</span> Disputes
+                <span class="nav-icon">≡</span> Disputes
+
             </button>
 
             <div class="nav-section-label">Management</div>
             <button class="nav-item" data-tab="users">
-                <span class="nav-icon">👥</span> Users
+                <span class="nav-icon">◉</span> Users
+
             </button>
             <button class="nav-item" data-tab="requests">
-                <span class="nav-icon">🙋</span> Creator Requests
+                <span class="nav-icon">+</span> Creator Requests
+
                 <span class="nav-badge" id="badge-requests">0</span>
             </button>
             <button class="nav-item" data-tab="tools">
-                <span class="nav-icon">🔧</span> Tools
+                <span class="nav-icon">⚙</span> Tools
+
             </button>
 
             <div class="sidebar-footer">
@@ -104,32 +117,32 @@
 
                 <div class="stats-grid" id="stats-grid">
                     <div class="stat-card" style="--stat-color:var(--accent)">
-                        <span class="stat-icon">👤</span>
+                        <span class="stat-icon">◉</span>
                         <div class="stat-value" id="st-users">—</div>
                         <div class="stat-label">Total Users</div>
                     </div>
                     <div class="stat-card" style="--stat-color:var(--green)">
-                        <span class="stat-icon">🎨</span>
+                        <span class="stat-icon">◈</span>
                         <div class="stat-value" id="st-creators">—</div>
                         <div class="stat-label">Creators</div>
                     </div>
                     <div class="stat-card" style="--stat-color:var(--purple)">
-                        <span class="stat-icon">✅</span>
+                        <span class="stat-icon">✓</span>
                         <div class="stat-value" id="st-orders">—</div>
                         <div class="stat-label">Completed Orders</div>
                     </div>
                     <div class="stat-card" style="--stat-color:var(--yellow)">
-                        <span class="stat-icon">💵</span>
+                        <span class="stat-icon">$</span>
                         <div class="stat-value">$<span id="st-revenue">—</span></div>
                         <div class="stat-label">Total Revenue</div>
                     </div>
                     <div class="stat-card" style="--stat-color:var(--red)">
-                        <span class="stat-icon">⏳</span>
+                        <span class="stat-icon">◷</span>
                         <div class="stat-value" id="st-pending">—</div>
                         <div class="stat-label">Pending Templates</div>
                     </div>
                     <div class="stat-card" style="--stat-color:var(--green)">
-                        <span class="stat-icon">🏦</span>
+                        <span class="stat-icon">▲</span>
                         <div class="stat-value">$<span id="st-commission">—</span></div>
                         <div class="stat-label">Commission Earned</div>
                     </div>
@@ -139,37 +152,37 @@
           text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px">Quick Actions</h3>
                 <div class="quick-actions">
                     <button class="quick-btn" data-tab="templates">
-                        <div class="quick-btn-icon" style="background:var(--accent-dim)">🎬</div>
+                        <div class="quick-btn-icon" style="background:var(--accent-dim)">▶</div>
                         Review Templates
                     </button>
                     <button class="quick-btn" data-tab="tutorials">
-                        <div class="quick-btn-icon" style="background:var(--purple-dim)">🎓</div>
+                        <div class="quick-btn-icon" style="background:var(--purple-dim)">▣</div>
                         Review Tutorials
                     </button>
                     <button class="quick-btn" data-tab="projects">
-                        <div class="quick-btn-icon" style="background:var(--yellow-dim)">📁</div>
+                        <div class="quick-btn-icon" style="background:var(--yellow-dim)">▤</div>
                         Review Projects
                     </button>
                     <button class="quick-btn" data-tab="disputes">
-                        <div class="quick-btn-icon" style="background:var(--red-dim)">⚖️</div>
+                        <div class="quick-btn-icon" style="background:var(--red-dim)">≡</div>
                         Resolve Disputes
                     </button>
                     <button class="quick-btn" data-tab="users">
-                        <div class="quick-btn-icon" style="background:var(--green-dim)">👥</div>
+                        <div class="quick-btn-icon" style="background:var(--green-dim)">◉</div>
                         Manage Users
                     </button>
                     <button class="quick-btn" data-tab="requests">
-                        <div class="quick-btn-icon" style="background:var(--purple-dim)">🙋</div>
+                        <div class="quick-btn-icon" style="background:var(--purple-dim)">+</div>
                         Creator Requests
                     </button>
                     <button class="quick-btn" data-tab="tools">
-                        <div class="quick-btn-icon" style="background:var(--bg-hover)">🔧</div>
+                        <div class="quick-btn-icon" style="background:var(--bg-hover)">⚙</div>
                         Admin Tools
                     </button>
                 </div>
 
                 <div class="info-box info-box-green">
-                    <span class="info-box-icon">✅</span>
+                    <span class="info-box-icon">✓</span>
                     <div>
                         <strong>Review flow:</strong> Templates and tutorials submitted by creators arrive as
                         <strong>PENDING</strong>. Go to the <strong>Templates</strong> or <strong>Tutorials</strong>
@@ -331,7 +344,7 @@
 
                 <div class="tool-card">
                     <div class="tool-card-header">
-                        <div class="tool-card-icon">🔧</div>
+                        <div class="tool-card-icon">⚙</div>
                         <div>
                             <div class="tool-card-title">Repair Sales Counts</div>
                             <div class="tool-card-desc">Recalculates <code
@@ -345,7 +358,7 @@
 
                 <div class="tool-card">
                     <div class="tool-card-header">
-                        <div class="tool-card-icon">💼</div>
+                        <div class="tool-card-icon">▲</div>
                         <div>
                             <div class="tool-card-title">Repair Creator Wallets</div>
                             <div class="tool-card-desc">Ensures every creator has a wallet record. Run if creators see

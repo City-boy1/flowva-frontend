@@ -298,7 +298,7 @@ if (aboutPanel) {
           </div>` : ''}
         ${joinDate ? `
           <div class="about-field">
-            <span class="about-field-icon">📅</span>
+            <span class="about-field-icon"></span>
             <div>
               <div class="about-field-label">Member since</div>
               <div class="about-field-value">${_esc(joinDate)}</div>
@@ -454,7 +454,7 @@ document.querySelectorAll('.creator-tab').forEach(tab => {
         <div class="preview-video-wrap">
           ${videoHtml || `
             <div class="preview-no-video">
-              <div class="preview-no-video-icon">🎬</div>
+              <div class="preview-no-video-icon">▶</div>
               <span>No video preview available</span>
               <span style="font-size:0.78rem;opacity:0.6">Purchase to access full template files</span>
             </div>
@@ -519,7 +519,7 @@ document.querySelectorAll('.creator-tab').forEach(tab => {
     if (!templates.length) {
       grid.innerHTML = `
         <div class="empty-state" style="grid-column:1/-1;padding:60px 20px;text-align:center">
-          <div style="font-size:3rem;margin-bottom:12px">🎬</div>
+          <div style="font-size:3rem;margin-bottom:12px">▶</div>
           <p style="color:var(--text-muted)">No templates published yet.</p>
         </div>`;
       return;
@@ -540,7 +540,7 @@ document.querySelectorAll('.creator-tab').forEach(tab => {
             ${t.previewUrl
               ? `<img src="${_esc(t.previewUrl)}" alt="${_esc(t.title)}" style="width:100%;height:100%;object-fit:cover">`
               : `<div class="template-thumb-placeholder" style="background:linear-gradient(135deg,#1a0a3e,#4c1d95);width:100%;height:100%;display:flex;align-items:center;justify-content:center">
-                  <span style="font-size:2rem">🎬</span>
+                  <span style="font-size:2rem">▶</span>
                  </div>`
             }
             <div class="template-overlay">
@@ -762,7 +762,7 @@ document.querySelectorAll('.creator-tab').forEach(tab => {
       if (!res.ok || !res.data?.creators?.length) {
         if (grid) grid.innerHTML = `
           <div class="empty-state" style="grid-column:1/-1;padding:60px 20px;text-align:center">
-            <div style="font-size:3rem;margin-bottom:12px">👥</div>
+            <div style="font-size:3rem;margin-bottom:12px">◉</div>
             <h3>No creators found</h3>
             <p style="color:var(--text-muted);margin-top:8px">${search ? 'Try a different search term' : 'Be the first to join as a creator!'}</p>
           </div>`;

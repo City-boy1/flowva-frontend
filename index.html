@@ -7,6 +7,12 @@
     <meta name="description"
         content="FLOWVA — Buy premium motion graphics, flyers, logos, animations and more. Hire creators. Build cinematic visuals.">
     <meta name="theme-color" content="#03040a">
+    <script>
+        (function () {
+            var t = localStorage.getItem('flowva-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
     <link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
     <link rel="shortcut icon" href="/assets/images/favicon.ico" />
@@ -132,7 +138,7 @@
             </div>
 
             <div class="empty-state hidden" id="tutorials-empty">
-                <div class="empty-state-icon">🎓</div>
+                <div class="empty-state-icon">▣</div>
                 <h3>No tutorials yet</h3>
                 <p>Creators can upload tutorials to share their knowledge.</p>
             </div>
@@ -206,7 +212,7 @@
         <div class="container">
             <div class="project-banner reveal-zoom">
                 <div class="project-banner-content">
-                    <span class="hero-eyebrow" style="justify-content:flex-start">📋 Custom Projects</span>
+                    <span class="hero-eyebrow" style="justify-content:flex-start"> Custom Projects</span>
                     <h2>Need Something Built Just for You?</h2>
                     <p>Post a project brief and receive bids from talented creators within hours. You only pay when
                         you're
@@ -219,21 +225,18 @@
                 <div class="project-banner-graphic" aria-hidden="true">
                     <div class="project-graphic-orb"></div>
                     <div class="project-graphic-card">
-                        <span>🎬</span>
                         <div>
                             <strong>Cinematic Intro</strong>
                             <span>12 bids · Starting $45</span>
                         </div>
                     </div>
                     <div class="project-graphic-card project-graphic-card--2">
-                        <span>🎨</span>
                         <div>
                             <strong>Brand Identity</strong>
                             <span>8 bids · Starting $80</span>
                         </div>
                     </div>
                     <div class="project-graphic-card project-graphic-card--3">
-                        <span>📱</span>
                         <div>
                             <strong>Social Pack</strong>
                             <span>5 bids · Starting $30</span>

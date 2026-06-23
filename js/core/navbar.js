@@ -140,7 +140,7 @@ function _buildNavbarHTML() {
       <button class="nav-avatar-btn" id="nav-avatar-btn" aria-haspopup="true" aria-expanded="false" title="${avatarName}">
         ${avatarContent}
       </button>
-      <div class="nav-dropdown" id="nav-dropdown" role="menu">
+      <div class="nav-dropdown" id="nav-dropdown" role="menu" style="opacity:0;pointer-events:none;transform:translateY(-8px) scale(0.97);">
         <div class="nav-dropdown-header">
           <span class="nav-dropdown-name">${avatarName}</span>
           <span class="nav-dropdown-role">${_escape(user?.role ?? '')}</span>
@@ -198,7 +198,7 @@ function _buildNavbarHTML() {
 
           ${authSection}
 
-          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">🌙</button>
+          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
 
           <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
             <span></span><span></span><span></span>
@@ -324,6 +324,8 @@ async function _initNavbar() {
   const mount = document.getElementById('shared-navbar');
   if (!mount) return;
 
+  mount.innerHTML = _buildNavbarHTML();
+
   await api.restoreSession();
 
 if (AppState.isLoggedIn()) {
@@ -332,15 +334,20 @@ if (AppState.isLoggedIn()) {
   const stale = !lastFetch || Date.now() - parseInt(lastFetch) > 5 * 60 * 1000;
 
   if (stale || !user?.avatarUrl) {
-    const meRes = await api.auth.me();
-    if (meRes.ok && meRes.data?.user) {
-      AppState.setAuth(AppState.getToken(), meRes.data.user);
-      sessionStorage.setItem('fv_me_fetched', Date.now().toString());
-    }
+    api.auth.me().then(meRes => {
+      if (meRes.ok && meRes.data?.user) {
+        AppState.setAuth(AppState.getToken(), meRes.data.user);
+        sessionStorage.setItem('fv_me_fetched', Date.now().toString());
+        // Patch avatar in-place without re-rendering the navbar
+        const updatedUser = meRes.data.user;
+        const avatarBtn = document.getElementById('nav-avatar-btn');
+        if (avatarBtn && updatedUser.avatarUrl) {
+          avatarBtn.innerHTML = `<img src="${_escape(updatedUser.avatarUrl)}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;display:block;" alt="${_escape(updatedUser.name ?? '')}">`;
+        }
+      }
+    });
   }
 }
-
-mount.innerHTML = _buildNavbarHTML();
 
   // Inject dropdown styles once
   if (!document.getElementById('nav-dropdown-styles')) {
@@ -388,9 +395,9 @@ mount.innerHTML = _buildNavbarHTML();
       }
 
       .nav-dropdown.open {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateY(0) scale(1);
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: translateY(0) scale(1) !important;
       }
 
       .nav-dropdown-header {
@@ -517,17 +524,19 @@ mount.innerHTML = _buildNavbarHTML();
 
   // ── Theme toggle ──
   const themeBtn = document.getElementById('theme-toggle');
+
+  const ICON_MOON = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+  const ICON_SUN  = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+
   if (themeBtn) {
-    const saved = localStorage.getItem('flowva-theme') || 'light';
-    document.documentElement.setAttribute('data-theme', saved);
-    themeBtn.textContent = saved === 'light' ? '🌙' : '☀️';
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    themeBtn.innerHTML = current === 'light' ? ICON_MOON : ICON_SUN;
 
     themeBtn.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'light' ? 'dark' : 'light';
+      const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('flowva-theme', next);
-      themeBtn.textContent = next === 'light' ? '🌙' : '☀️';
+      themeBtn.innerHTML = next === 'light' ? ICON_MOON : ICON_SUN;
     });
   }
 

@@ -28,15 +28,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ─── Category definitions ────────────────────────────────────────────────
   // These are UI labels — the 'value' matches what your backend uses for ?cat=
   const CATEGORIES = [
-    { label: 'All',            value: '',          icon: '✦' },
-    { label: 'Flyers',         value: 'flyer',     icon: '📄' },
-    { label: 'Logos',          value: 'logo',      icon: '🎯' },
-    { label: 'Animations',     value: 'animation', icon: '🎬' },
-    { label: 'Social Media',   value: 'social',    icon: '📱' },
-    { label: 'Branding Kits',  value: 'branding',  icon: '🎨' },
-    { label: 'Motion Graphics',value: 'motion',    icon: '⚡' },
-    { label: 'YouTube',        value: 'youtube',   icon: '▶️' },
-    { label: 'Resume',         value: 'resume',    icon: '📋' },
+    { label: 'All',            value: ''},
+    { label: 'Flyers',         value: 'flyer',     },
+    { label: 'Logos',          value: 'logo'},
+    { label: 'Animations',     value: 'animation'},
+    { label: 'Social Media',   value: 'social'},
+    { label: 'Branding Kits',  value: 'branding'},
+    { label: 'Motion Graphics',value: 'motion'},
+    { label: 'YouTube',        value: 'youtube'},
+    { label: 'Resume',         value: 'resume'},
   ];
 
   // ─── Software tab definitions for tutorials ──────────────────────────────
@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         role="listitem"
         aria-pressed="${activeCat === c.value}"
       >
-        <span class="category-pill-icon">${c.icon}</span>
         ${_esc(c.label)}
       </button>
     `).join('');
@@ -159,7 +158,7 @@ const thumbHTML = previewUrl
        ? `<video class="thumb-video" src="${_esc(previewVideoUrl)}" muted loop playsinline preload="none"></video>`
        : ''}`
   : `<div class="template-thumb-placeholder" style="background:${_gradient(i)}">
-       <span style="font-size:2.5rem">${_catEmoji(t.category)}</span>
+       <span style="font-size:2.5rem"></span>
      </div>`;
 
     return `
@@ -214,7 +213,7 @@ const thumbHTML = previewUrl
                   ? (Date.now() - new Date(t.createdAt)) / 86400000
                   : 999;
                 return daysSince <= 14
-                  ? `<span class="trending-badge">🔥 New</span>`
+                  ? `<span class="trending-badge">New</span>`
                   : '';
               })()}
               <button class="hp-rate-btn"
@@ -333,12 +332,7 @@ function _initVideoAutoplay() {
   });
 }
   function _catEmoji(cat) {
-    const map = {
-      flyer: '📄', logo: '🎯', animation: '🎬', social: '📱',
-      branding: '🎨', motion: '⚡', youtube: '▶️', resume: '📋',
-      intro: '🎬', effects: '⚡', slides: '📊',
-    };
-    return map[cat] || '✨';
+        return '';
   }
 
   function _bindTemplateEvents(grid, templates) {
@@ -517,7 +511,6 @@ function _initVideoAutoplay() {
     const thumbHTML = thumbUrl
       ? `<img src="${_esc(thumbUrl)}" alt="${_esc(t.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
       : `<div class="tutorial-thumb-placeholder" style="background:${_gradient(i + 3)}">
-           <span style="font-size:2.5rem">🎓</span>
          </div>`;
 
     return `
@@ -700,7 +693,7 @@ if (isVideo) {
       border-radius:0 0 var(--radius-xl) var(--radius-xl);">`;
 } else {
   thumb.style.background = _gradient(0);
-  thumb.innerHTML = `<span class="modal-thumb-emoji">${_catEmoji(template.category)}</span>`;
+  thumb.innerHTML = `<span class="modal-thumb-emoji"></span>`;
 }
 
     if (footer) {

@@ -45,7 +45,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 11px var(--space-3);
+  padding: 11px var(--space-4);
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   font-size: 0.9rem;
@@ -939,6 +939,20 @@ textarea.form-input {
   font-size: 0.75rem;
   color: var(--text-muted);
   margin-top: 6px;
+}
+
+/* ─── POST-EMOJI CLEANUP ─── */
+.project-thumb:empty {
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+}
+
+.drop-zone-icon:empty {
+  display: none;
+}
+
+.dash-nav-icon {
+  display: none;
 }
 
 /* ─── RESPONSIVE ─── */

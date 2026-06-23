@@ -1464,23 +1464,11 @@
 
     /* ── Category pills ── */
     .mkt-pills {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
     }
 
-    @media (max-width: 600px) {
-      .mkt-pills {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        scrollbar-width: none;
-        padding-bottom: 6px;
-        -webkit-overflow-scrolling: touch;
-      }
-      .mkt-pills::-webkit-scrollbar { display: none; }
-      .mkt-pill { flex-shrink: 0; }
-    }
     .mkt-pill {
       padding: 8px 18px;
       border-radius: var(--radius-full);

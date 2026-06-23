@@ -71,7 +71,7 @@ async function initCreatorApplyBanner() {
     if (status === 'PENDING') {
       ctaArea.innerHTML = `
         <div class="upgrade-banner-status upgrade-banner-status--pending">
-          ⏳ Your application is under review — we'll email you within 48 hours.
+           Your application is under review — we'll email you within 48 hours.
         </div>`;
       return;
     }
@@ -163,7 +163,7 @@ async function initCreatorApplyBanner() {
     Toast.show('Application submitted! We\'ll review it within 48 hours. ✓', 'success');
     ctaArea.innerHTML = `
       <div class="upgrade-banner-status upgrade-banner-status--pending">
-        ⏳ Your application is under review — we'll email you within 48 hours.
+         Your application is under review — we'll email you within 48 hours.
       </div>`;
   });
 }
@@ -240,7 +240,6 @@ async function loadBuyerOverview() {
     if (!orders.length) {
       activityEl.innerHTML = `
         <div class="empty-state" style="padding:24px 0">
-          <div class="empty-state-icon">🛒</div>
           <h3>No purchases yet</h3>
           <a href="marketplace.html" class="btn btn--primary" style="margin-top:12px">Browse Templates</a>
         </div>`;
@@ -314,7 +313,7 @@ async function loadPurchases() {
 if (!completed.length) { list.innerHTML = '<p style="color:var(--text-muted);font-size:0.9rem">No purchases yet.</p>'; return; }
   list.innerHTML = completed.map(o => `
     <div class="project-item">
-      <div class="project-thumb">🎬</div>
+      <div class="project-thumb">▶</div>
       <div class="project-info">
         <h4>${_esc(o.templateTitle ?? o.template?.title ?? 'Template')}</h4>
         <p>$${Number(o.amount??0).toFixed(2)} · ${timeAgo(o.createdAt)}</p>
@@ -385,12 +384,12 @@ async function loadMyTemplates() {
       pendingCount.textContent = pending.length;
       pendingList.innerHTML = pending.map(t => `
         <div class="project-item project-item--pending">
-          <div class="project-thumb">⏳</div>
+          <div class="project-thumb"></div>
           <div class="project-info">
             <h4>${_esc(t.title)}</h4>
             <p>Submitted ${timeAgo(t.createdAt)}</p>
           </div>
-          <span class="pending-status-badge">⏳ Awaiting Review</span>
+          <span class="pending-status-badge"> Awaiting Review</span>
         </div>
       `).join('');
     } else {
@@ -400,7 +399,7 @@ async function loadMyTemplates() {
   }
 
   if (!visible.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎬</div><h3>No published templates yet</h3><button class="btn btn--primary" id="templates-empty-upload-btn">Upload Now</button></div>`;
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">▶</div><h3>No published templates yet</h3><button class="btn btn--primary" id="templates-empty-upload-btn">Upload Now</button></div>`;
     document.getElementById('templates-empty-upload-btn')?.addEventListener('click', () => {
       document.querySelector('[data-target=upload]')?.click();
     });
@@ -414,7 +413,7 @@ async function loadMyTemplates() {
       <div class="project-thumb">
         ${t.previewUrl
           ? `<img src="${_esc(t.previewUrl)}" style="width:60px;height:40px;object-fit:cover;border-radius:6px">`
-          : '🎬'}
+          : '▶'}
       </div>
       <div class="project-info">
         <h4>${_esc(t.title)}</h4>
@@ -424,12 +423,12 @@ async function loadMyTemplates() {
       <button class="btn btn--ghost btn--sm copy-link-btn"
   data-id="${_esc(String(id))}"
   style="font-size:0.78rem">
-  🔗 Copy Link
+  → Copy Link
 </button>
       <button class="btn btn--danger btn--sm delete-template-btn"
         data-id="${_esc(String(id))}"
         data-title="${_esc(t.title)}">
-        🗑 Delete
+        ✕ Delete
       </button>
     </div>
   `;
@@ -457,7 +456,7 @@ list.querySelectorAll('.delete-template-btn').forEach(btn => {
     if (!res.ok) {
       Toast.show(res.error ?? 'Delete failed', 'error');
       btn.disabled    = false;
-      btn.textContent = '🗑 Delete';
+      btn.textContent = '✕ Delete';
       return;
     }
     Toast.show(`"${title}" deleted ✓`, 'success');
@@ -493,12 +492,12 @@ async function loadMyTutorials() {
       pendingCount.textContent = pending.length;
       pendingList.innerHTML = pending.map(t => `
         <div class="project-item project-item--pending">
-          <div class="project-thumb">⏳</div>
+          <div class="project-thumb"></div>
           <div class="project-info">
             <h4>${_esc(t.title)}</h4>
             <p>Submitted ${timeAgo(t.createdAt)}</p>
           </div>
-          <span class="pending-status-badge">⏳ Awaiting Review</span>
+          <span class="pending-status-badge">Awaiting Review</span>
         </div>
       `).join('');
     } else {
@@ -514,7 +513,7 @@ async function loadMyTutorials() {
 
   list.innerHTML = visible.map(t => `
     <div class="project-item">
-      <div class="project-thumb">🎓</div>
+      <div class="project-thumb">▣</div>
       <div class="project-info">
         <h4>${_esc(t.title)}</h4>
         <p>${_esc((t.software ?? '').toString())} · ${timeAgo(t.createdAt)}</p>
@@ -536,7 +535,6 @@ const res = await api.projects.list(
   if (!res.ok || !res.data?.projects?.length) {
     list.innerHTML = isCreator()
       ? `<div class="empty-state" style="padding:40px 20px;text-align:center">
-           <div style="font-size:2.5rem;margin-bottom:12px">🎯</div>
            <h3>No bids yet</h3>
            <p style="color:var(--text-muted);margin-top:8px;font-size:0.9rem">
              Browse the project marketplace and submit a bid to see your projects here.
@@ -546,7 +544,6 @@ const res = await api.projects.list(
            </a>
          </div>`
       : `<div class="empty-state" style="padding:40px 20px;text-align:center">
-           <div style="font-size:2.5rem;margin-bottom:12px">📋</div>
            <h3>No projects yet</h3>
            <p style="color:var(--text-muted);margin-top:8px;font-size:0.9rem">
              Post your first project and get bids from talented creators.
@@ -570,13 +567,13 @@ const res = await api.projects.list(
   // Creator: deliver work
   if (isCreator() && p.status === 'IN_PROGRESS') {
     actions.push(`<button class="btn btn--primary btn--sm deliver-btn"
-      data-id="${_esc(p.id)}" data-title="${_esc(title)}">📦 Deliver</button>`);
+      data-id="${_esc(p.id)}" data-title="${_esc(title)}"> Deliver</button>`);
   }
 
   // Client: view bids on open project
   if (!isCreator() && p.status === 'OPEN') {
     actions.push(`<button class="btn btn--primary btn--sm view-bids-btn"
-      data-id="${_esc(p.id)}" data-title="${_esc(title)}">📋 View Bids</button>`);
+      data-id="${_esc(p.id)}" data-title="${_esc(title)}"> View Bids</button>`);
   }
 
   // Client: approve or request revision
@@ -590,7 +587,7 @@ const res = await api.projects.list(
   // Client or creator: open dispute
   if (['IN_PROGRESS','DELIVERED','REVISION_REQUESTED'].includes(p.status)) {
     actions.push(`<button class="btn btn--danger btn--sm dispute-btn"
-      data-id="${_esc(p.id)}">⚠️ Dispute</button>`);
+      data-id="${_esc(p.id)}">! Dispute</button>`);
   }
 
   // Open bids for creator
@@ -635,7 +632,7 @@ list.querySelectorAll('.deliver-btn').forEach(btn => {
       m.innerHTML = `
         <div class="modal" style="max-width:500px">
           <div class="modal-header">
-            <h2>📦 Deliver Work</h2>
+            <h2>Deliver Work</h2>
             <button class="modal-close" onclick="document.getElementById('deliver-modal').classList.remove('open')">✕</button>
           </div>
           <div class="modal-body" style="display:flex;flex-direction:column;gap:var(--space-4)">
@@ -892,7 +889,6 @@ async function loadFavourites() {
   if (!ids.length) {
     list.innerHTML = `
       <div class="empty-state" style="padding:60px 20px;text-align:center">
-        <div class="empty-state-icon">❤️</div>
         <h3>No favourites yet</h3>
         <p style="color:var(--text-muted);margin-top:8px">Heart a template in the marketplace to save it here</p>
         <a href="marketplace.html" class="btn btn--primary" style="margin-top:16px">Browse Templates</a>
@@ -914,7 +910,7 @@ async function loadFavourites() {
         <div class="card card--hover" style="padding:0;overflow:hidden">
           ${t.previewUrl
             ? `<img src="${_esc(t.previewUrl)}" style="width:100%;height:130px;object-fit:cover;display:block">`
-            : `<div style="width:100%;height:130px;background:linear-gradient(135deg,#1a0a3e,#4c1d95);display:flex;align-items:center;justify-content:center;font-size:2.5rem">🎬</div>`}
+            : `<div style="width:100%;height:130px;background:linear-gradient(135deg,#1a0a3e,#4c1d95);display:flex;align-items:center;justify-content:center;font-size:2.5rem">▶</div>`}
           <div style="padding:var(--space-4)">
             <h4 style="margin-bottom:4px;font-size:0.92rem">${_esc(t.title)}</h4>
             <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px">$${Number(t.price).toFixed(2)}</p>
@@ -934,7 +930,6 @@ async function loadFollowing() {
   if (!res.ok || !res.data?.following?.length) {
     list.innerHTML = `
       <div class="empty-state" style="padding:60px 20px;text-align:center">
-        <div style="font-size:3rem;margin-bottom:12px">👥</div>
         <h3>Not following anyone yet</h3>
         <p style="color:var(--text-muted);margin-top:8px">Discover creators on the marketplace</p>
         <a href="creator.html" class="btn btn--primary btn--sm" style="margin-top:16px">Browse Creators</a>
@@ -1372,7 +1367,7 @@ function initUploadPanel() {
 
     if (info && inner) {
       info.style.display = 'block';
-      const emoji = file.type.startsWith('image/') ? '🖼' : file.type.startsWith('video/') ? '🎬' : '📦';
+      const emoji = file.type.startsWith('image/') ? '🖼' : file.type.startsWith('video/') ? '▶' : '📦';
       inner.innerHTML = `
         <span>${emoji}</span>
         <span style="font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_esc(file.name)}</span>
@@ -1397,7 +1392,7 @@ function initUploadPanel() {
   vid.src = URL.createObjectURL(file);
   box.appendChild(vid);
 } else {
-      box.innerHTML = `<div style="text-align:center"><div style="font-size:3rem;margin-bottom:8px">📦</div><div style="font-size:0.85rem;color:var(--text-muted)">Preview will be auto-generated on upload</div></div>`;
+      box.innerHTML = `<div style="text-align:center"><div style="font-size:0.85rem;color:var(--text-muted)">Preview will be auto-generated on upload</div></div>`;
     }
   }
 
@@ -1476,7 +1471,7 @@ function initUploadPanel() {
     : '⚙️ Processing on server…';  // ← shows after 100% while Cloudinary processes
 });
 
-    if (btn) { btn.disabled = false; btn.textContent = 'Submit for Review 🚀'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Submit for Review'; }
     if (!res.ok) {
       // Show specific field errors from Zod if present
       if (res.data?.errors?.length) {
@@ -1488,7 +1483,7 @@ function initUploadPanel() {
       return;
     }
 
-    Toast.show('Template submitted! Pending admin review before going live. 🚀', 'success');
+    Toast.show('Template submitted! Pending admin review before going live.', 'success');
     uploadForm.reset();
     templateFile = null;
     document.getElementById('auto-preview-wrap').style.display = 'none';
@@ -1538,7 +1533,7 @@ if (tplSelect) {
 
   function renderTutPreview(f) {
     if (!previewEl) return;
-    previewEl.innerHTML = `<div class="preview-file"><span>🎬</span><span style="font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_esc(f.name)}</span><span style="font-size:0.75rem;color:var(--text-muted)">${(f.size/1024/1024).toFixed(1)}MB</span></div>`;
+    previewEl.innerHTML = `<div class="preview-file"><span>▶</span><span style="font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_esc(f.name)}</span><span style="font-size:0.75rem;color:var(--text-muted)">${(f.size/1024/1024).toFixed(1)}MB</span></div>`;
   }
 
   tutForm?.addEventListener('submit', async e => {
@@ -1590,7 +1585,7 @@ if (tplSelect) {
     if (spinInterval) { clearInterval(spinInterval); spinInterval = null; }
     if (btn) { btn.disabled = false; btn.textContent = 'Submit Tutorial for Review'; }
     if (!res.ok) { Toast.show(res.error ?? 'Upload failed', 'error'); return; }
-    Toast.show('Tutorial submitted for review! 🎓', 'success');
+    Toast.show('Tutorial submitted for review!', 'success');
     tutForm.reset(); tutorialFile = null;
     if (previewEl) previewEl.innerHTML = '';
     loadMyTutorials();
@@ -1664,7 +1659,6 @@ async function loadRatings() {
   if (!res.ok || !res.data?.ratings?.length) {
     list.innerHTML = `
       <div class="empty-state" style="padding:60px 20px;text-align:center">
-        <div style="font-size:3rem;margin-bottom:12px">⭐</div>
         <h3>No reviews yet</h3>
         <p style="color:var(--text-muted);margin-top:8px">Reviews appear here after buyers rate your work</p>
       </div>`;

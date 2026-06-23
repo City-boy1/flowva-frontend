@@ -152,11 +152,11 @@ function initTrail() {
   let mx=0,my=0;
   window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;},{passive:true});
   (function anim(){
-    dots[0].x+=(mx-dots[0].x)*0.3; dots[0].y+=(my-dots[0].y)*0.3;
+    dots[0].x+=(mx-dots[0].x)*0.8; dots[0].y+=(my-dots[0].y)*0.8;
     dots[0].el.style.left=dots[0].x+'px'; dots[0].el.style.top=dots[0].y+'px';
     for(let i=1;i<N;i++){
-      dots[i].x+=(dots[i-1].x-dots[i].x)*0.5;
-      dots[i].y+=(dots[i-1].y-dots[i].y)*0.5;
+      dots[i].x+=(dots[i-1].x-dots[i].x)*0.75;
+dots[i].y+=(dots[i-1].y-dots[i].y)*0.75;
       dots[i].el.style.left=dots[i].x+'px'; dots[i].el.style.top=dots[i].y+'px';
     }
     requestAnimationFrame(anim);
@@ -419,7 +419,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   initReveal();
   initStagger();
   initParallax();
-  initCounters();
   initParticles();
   initHeroAmbient();
   initHeroEntrance();

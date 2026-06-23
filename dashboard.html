@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="FLOWVA Dashboard">
     <title>Dashboard — FLOWVA</title>
+    <script>
+        (function () {
+            var t = localStorage.getItem('flowva-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
     <link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
     <link rel="shortcut icon" href="/assets/images/favicon.ico" />
@@ -24,7 +30,7 @@
     <div class="modal-overlay" id="delete-modal">
         <div class="modal" style="max-width:460px">
             <div class="modal-header">
-                <h2 style="color:var(--danger)">⚠️ Delete Account</h2>
+                <h2 style="color:var(--danger)">! Delete Account</h2>
                 <button class="modal-close" id="delete-modal-close">✕</button>
             </div>
             <div class="modal-body">
@@ -59,35 +65,35 @@
                 <div class="dash-nav-section">
                     <div class="dash-nav-section-label">Main</div>
                     <button class="dash-nav-item active" data-target="overview">
-                        <span class="dash-nav-icon">📊</span> Overview
+                        Overview
                     </button>
                     <button class="dash-nav-item" data-target="purchases">
-                        <span class="dash-nav-icon">🛒</span> My Purchases
+                        My Purchases
                     </button>
                     <button class="dash-nav-item" data-target="projects">
-                        <span class="dash-nav-icon">📁</span> My Projects
+                        My Projects
                     </button>
                 </div>
                 <div class="dash-nav-section">
                     <div class="dash-nav-section-label">Social</div>
                     <button class="dash-nav-item" data-target="following">
-                        <span class="dash-nav-icon">👥</span> Following
+                        Following
                     </button>
                     <button class="dash-nav-item" data-target="favourites">
-                        <span class="dash-nav-icon">❤️</span> Favourites
+                        Favourites
                     </button>
                 </div>
                 <div class="dash-nav-section">
                     <div class="dash-nav-section-label">Communication</div>
                     <button class="dash-nav-item" data-target="messages" id="nav-messages-buyer">
-                        <span class="dash-nav-icon">💬</span> Messages
+                        Messages
                         <span class="dash-nav-badge" id="msg-badge-buyer" style="display:none">0</span>
                     </button>
                 </div>
                 <div class="dash-nav-section">
                     <div class="dash-nav-section-label">Account</div>
                     <button class="dash-nav-item" data-target="settings">
-                        <span class="dash-nav-icon">⚙️</span> Settings
+                        Settings
                     </button>
                 </div>
             </div>
@@ -97,44 +103,43 @@
                 <div class="dash-nav-section">
                     <div class="dash-nav-section-label">Main</div>
                     <button class="dash-nav-item active" data-target="overview">
-                        <span class="dash-nav-icon">📊</span> Overview
-                    </button>
+                        Overview</button>
                     <button class="dash-nav-item" data-target="templates">
-                        <span class="dash-nav-icon">🎬</span> My Templates
+                        My Templates
                     </button>
                     <button class="dash-nav-item" data-target="upload">
-                        <span class="dash-nav-icon">⬆️</span> Upload
+                        Upload
                     </button>
                     <button class="dash-nav-item" data-target="tutorials-upload">
-                        <span class="dash-nav-icon">🎓</span> Upload Tutorial
+                        Upload Tutorial
                     </button>
                     <button class="dash-nav-item" data-target="projects">
-                        <span class="dash-nav-icon">📁</span> Projects
+                        Projects
                     </button>
                 </div>
                 <div class="dash-nav-section">
                     <div class="dash-nav-section-label">Insights</div>
                     <button class="dash-nav-item" data-target="analytics">
-                        <span class="dash-nav-icon">📈</span> Analytics
+                        Analytics
                     </button>
                     <button class="dash-nav-item" data-target="ratings">
-                        <span class="dash-nav-icon">⭐</span> Ratings &amp; Reviews
+                        Ratings &amp; Reviews
                     </button>
                     <button class="dash-nav-item" data-target="payout">
-                        <span class="dash-nav-icon">💸</span> Payouts
+                        Payouts
                     </button>
                 </div>
                 <div class="dash-nav-section">
                     <div class="dash-nav-section-label">Communication</div>
                     <button class="dash-nav-item" data-target="messages" id="nav-messages-creator">
-                        <span class="dash-nav-icon">💬</span> Messages
+                        Messages
                         <span class="dash-nav-badge" id="msg-badge-creator" style="display:none">0</span>
                     </button>
                 </div>
                 <div class="dash-nav-section">
                     <div class="dash-nav-section-label">Account</div>
                     <button class="dash-nav-item" data-target="settings">
-                        <span class="dash-nav-icon">⚙️</span> Settings
+                        Settings
                     </button>
                 </div>
             </div>
@@ -188,7 +193,7 @@
                     </div>
                     <div class="upgrade-banner" id="creator-upgrade-banner">
                         <div class="upgrade-banner-content">
-                            <h3>🚀 Become a Creator</h3>
+                            <h3>Become a Creator</h3>
                             <p>Start selling your templates and tutorials. Earn 70% of every sale.</p>
                             <div id="upgrade-cta-area">
                                 <button class="btn btn--primary" id="btn-apply-creator">Apply to Become a
@@ -201,7 +206,7 @@
                     <div class="modal-overlay" id="creator-apply-modal">
                         <div class="modal">
                             <div class="modal-header">
-                                <h2>🚀 Apply to Become a Creator</h2>
+                                <h2>Apply to Become a Creator</h2>
                                 <button class="modal-close" id="creator-apply-modal-close">✕</button>
                             </div>
                             <div class="modal-body">
@@ -291,7 +296,7 @@
 
                 <div class="pending-section is-hidden" id="templates-pending-section">
                     <h3 class="panel-subheading">
-                        ⏳ Pending Review
+                        Pending Review
                         <span class="panel-subheading-count" id="templates-pending-count">0</span>
                     </h3>
                     <div class="templates-list" id="my-templates-pending-list"></div>
@@ -308,7 +313,7 @@
             <div class="dash-panel" id="panel-upload">
                 <div class="dash-page-header">
                     <h1>Upload Template</h1>
-                    <p>Drop one file — preview is generated automatically ✨</p>
+                    <p>Drop one file — preview is generated automatically </p>
                 </div>
                 <div class="upload-area">
 
@@ -331,7 +336,7 @@
                         <div class="drop-zone-icon">☁️</div>
                         <h3>Drop your template file here</h3>
                         <p>Video (MP4/WebM) up to 70MB, Image up to 5MB, or PDF up to 10MB<br>
-                            <strong class="drop-zone-highlight">Preview is generated automatically ✨</strong>
+                            <strong class="drop-zone-highlight">Preview is generated automatically </strong>
                         </p>
                         <button class="btn btn--ghost btn--sm" type="button"
                             onclick="document.getElementById('file-input').click()">Choose File</button>
@@ -387,7 +392,7 @@
                             </div>
                             <div class="full-width"
                                 style="background:var(--bg-overlay);border-radius:var(--radius-md);padding:var(--space-5);border:1px solid var(--border)">
-                                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px">💰 Earnings
+                                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px">$ Earnings
                                     breakdown</p>
                                 <div style="display:flex;gap:var(--space-8);flex-wrap:wrap">
                                     <div>
@@ -408,7 +413,7 @@
                         <div id="upload-error"
                             style="display:none;color:var(--danger);font-size:0.85rem;margin-top:8px"></div>
                         <button type="submit" class="btn btn--primary" id="upload-submit-btn"
-                            style="margin-top:var(--space-6)">Submit for Review 🚀</button>
+                            style="margin-top:var(--space-6)">Submit for Review </button>
                         <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px">
                             Reviewed by admin before going live. Preview auto-generated from your file.
                         </p>
@@ -425,7 +430,7 @@
                 <div class="upload-area">
                     <div class="drop-zone" id="tutorial-drop-zone" role="button" tabindex="0">
                         <input type="file" id="tutorial-file-input" accept="video/mp4,video/webm">
-                        <div class="drop-zone-icon">🎓</div>
+                        <div class="drop-zone-icon">▣</div>
                         <h3>Drop your tutorial video here</h3>
                         <p>MP4 or WebM — max 70MB</p>
                         <button class="btn btn--ghost btn--sm" type="button"
@@ -464,7 +469,7 @@
                         <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);
                             border-radius:var(--radius-md);padding:var(--space-4);margin-top:var(--space-4);
                             font-size:0.85rem;color:#10b981">
-                            ℹ️ Tutorials are <strong>free</strong> for all users. They build your reputation and drive
+                            ! Tutorials are <strong>free</strong> for all users. They build your reputation and drive
                             traffic to your paid templates.
                         </div>
 
@@ -486,7 +491,7 @@
                 </div>
                 <div class="pending-section is-hidden" id="tutorials-pending-section" style="margin-top:var(--space-8)">
                     <h3 class="panel-subheading">
-                        ⏳ Pending Review
+                        Pending Review
                         <span class="panel-subheading-count" id="tutorials-pending-count">0</span>
                     </h3>
                     <div class="templates-list" id="my-tutorials-pending-list"></div>
@@ -551,7 +556,7 @@
                         <div>
                             <h3
                                 style="font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:6px">
-                                🎯 Ready to take on a project?
+                                Ready to take on a project?
                             </h3>
                             <p style="font-size:0.85rem;color:var(--text-muted);max-width:420px;line-height:1.6">
                                 Browse open projects from clients, place your bid, and earn. Your accepted bids appear
@@ -741,7 +746,7 @@
 
                     <div class="settings-section">
                         <div class="settings-section-header">
-                            <h3>👤 Profile</h3>
+                            <h3>Profile</h3>
                             <p>Update your public information</p>
                         </div>
                         <div class="settings-section-body">
@@ -801,7 +806,7 @@
 
                     <div class="settings-section">
                         <div class="settings-section-header">
-                            <h3>🔒 Password &amp; Security</h3>
+                            <h3>Password &amp; Security</h3>
                             <p>Keep your account secure</p>
                         </div>
                         <div class="settings-section-body">
@@ -851,7 +856,6 @@
                                 <div style="background:var(--bg-overlay);border:1px solid var(--border);
                                     border-radius:var(--radius-md);padding:var(--space-4);font-size:0.85rem;
                                     display:flex;align-items:center;gap:12px">
-                                    <span style="font-size:1.2rem">🖥️</span>
                                     <div>
                                         <div style="font-weight:600;color:var(--text-primary)">Current device</div>
                                         <div style="color:var(--text-muted);font-size:0.78rem" id="session-info">
@@ -865,7 +869,7 @@
 
                     <div class="settings-section">
                         <div class="settings-section-header">
-                            <h3>🎛️ Preferences</h3>
+                            <h3> Preferences</h3>
                             <p>Customise your experience</p>
                         </div>
                         <div class="settings-section-body">
@@ -910,7 +914,7 @@
 
                     <div class="settings-section">
                         <div class="settings-section-header">
-                            <h3>ℹ️ Account Info</h3>
+                            <h3>Account Info</h3>
                             <p>Your account details</p>
                         </div>
                         <div class="settings-section-body">
@@ -939,7 +943,7 @@
 
                     <div class="settings-section settings-section--danger">
                         <div class="settings-section-header">
-                            <h3>🗑️ Danger Zone</h3>
+                            <h3>Danger Zone</h3>
                             <p>Irreversible actions — proceed with caution</p>
                         </div>
                         <div class="settings-section-body">

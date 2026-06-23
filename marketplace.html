@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Browse thousands of premium motion graphics templates on FLOWVA Marketplace">
     <title>Marketplace — FLOWVA</title>
+    <script>
+        (function () {
+            var t = localStorage.getItem('flowva-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
     <link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
     <link rel="shortcut icon" href="/assets/images/favicon.ico" />
@@ -34,10 +40,10 @@
                 <!-- TOP TABS -->
                 <div style="display:flex;gap:0;border-bottom:none">
                     <button class="market-tab active" data-tab="templates">
-                        🎬 Templates
+                        Templates
                     </button>
                     <button class="market-tab" data-tab="tutorials">
-                        🎓 Tutorials
+                        Tutorials
                     </button>
                 </div>
             </div>
@@ -48,17 +54,18 @@
             <section class="section" style="padding-top:var(--space-8)">
                 <div class="container">
 
-                    <div class="filter-bar" role="search" aria-label="Filter templates">
+                    <div class="filter-bar" role="search" aria-label="Filter templates"
+                        style="margin-bottom:var(--space-8)">
                         <div class="filter-search">
                             <span class="filter-search-icon">🔍</span>
                             <input type="text" id="market-search" placeholder="Search templates, creators…"
                                 aria-label="Search templates">
                         </div>
                         <select class="filter-select" id="market-sort" aria-label="Sort by">
-                            <option value="trending">🔥 Trending</option>
-                            <option value="newest">✨ Newest</option>
-                            <option value="best-selling">💰 Best Selling</option>
-                            <option value="rating">⭐ Top Rated</option>
+                            <option value="trending"> Trending</option>
+                            <option value="newest"> Newest</option>
+                            <option value="best-selling"> Best Selling</option>
+                            <option value="rating"> Top Rated</option>
                             <option value="price-low">Price: Low → High</option>
                             <option value="price-high">Price: High → Low</option>
                         </select>
@@ -69,10 +76,8 @@
                             <option value="high">$35+</option>
                             <option value="free">Free</option>
                         </select>
+                        <div id="category-pills"></div>
                     </div>
-
-                    <div class="filter-bar" id="category-pills" role="tablist" aria-label="Filter by category"
-                        style="margin-bottom:var(--space-8)"></div>
 
                     <div class="template-grid" id="skeleton-grid" aria-hidden="true">
                         <div class="skeleton" style="height:360px;border-radius:var(--radius-lg)"></div>
@@ -123,7 +128,7 @@
                     <div class="template-grid hidden" id="tut-grid" aria-label="Tutorials"></div>
 
                     <div class="empty-state hidden" id="tut-empty">
-                        <div class="empty-state-icon">🎓</div>
+                        <div class="empty-state-icon">▣</div>
                         <h3>No tutorials found</h3>
                         <p>Try a different software filter.</p>
                     </div>

@@ -276,7 +276,7 @@ function isIdle() { return Date.now() - lastActivity > 60000; }
     const res = await api.messages.getMessages(convId);
     if (!res.ok) {
       body.innerHTML = `
-        <div class="chat-error">⚠️ Failed to load.
+        <div class="chat-error">! Failed to load.
           <button class="btn btn--ghost btn--sm" id="retry-msgs">Retry</button>
         </div>`;
       document.getElementById('retry-msgs')?.addEventListener('click', () => loadMessages(convId, true));
@@ -517,7 +517,7 @@ function setupContextMenu(convId) {
       menuEl.innerHTML = `
        <button class="msg-ctx-item" id="ctx-edit">✏️ Edit message</button>
         <button class="msg-ctx-item msg-ctx-item--danger" id="ctx-delete">
-          🗑️ Delete message
+          ✕️ Delete message
         </button>`;
       document.body.appendChild(menuEl);
 

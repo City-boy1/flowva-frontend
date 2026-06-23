@@ -178,15 +178,16 @@ async function getCreatorName(id) {
 }
 
   const CATEGORIES=[
-    {value:'all',label:'✦ All'},{value:'animation',label:'🎬 Animation'},
-    {value:'logo',label:'🎯 Logo'},{value:'social',label:'📱 Social Media'},
-    {value:'motion',label:'⚡ Motion Graphics'},{value:'intro',label:'🎬 Intro'},
-    {value:'flyer',label:'📄 Flyer'},{value:'branding',label:'🎨 Branding'},
-    {value:'youtube',label:'▶️ YouTube Kit'},{value:'slides',label:'📊 Slides'},
-    {value:'gaming',label:'🎮 Gaming'},{value:'effects',label:'✨ Effects'},
-    {value:'event',label:'🎉 Event'},{value:'resume',label:'📋 Resume'},
-    {value:'broadcast',label:'📺 Broadcast'},
+    {value:'all',label:'All'},{value:'animation',label:'Animation'},
+    {value:'logo',label:'Logo'},{value:'social',label:'Social Media'},
+    {value:'motion',label:'Motion Graphics'},{value:'intro',label:'Intro'},
+    {value:'flyer',label:'Flyer'},{value:'branding',label:'Branding'},
+    {value:'youtube',label:'YouTube Kit'},{value:'slides',label:'Slides'},
+    {value:'gaming',label:'Gaming'},{value:'effects',label:'Effects'},
+    {value:'event',label:'Event'},{value:'resume',label:'Resume'},
+    {value:'broadcast',label:'Broadcast'},
   ];
+
 
   // Upgrade existing filter elements
   const searchInput=document.getElementById('market-search');
@@ -199,20 +200,16 @@ async function getCreatorName(id) {
   // Style existing filter bar
   function buildPills() {
     if(!pillsBar)return;
-    pillsBar.innerHTML=CATEGORIES.map(c=>`
-      <button class="filter-pill ${c.value===activeCategory?'active':''}" data-cat="${_esc(c.value)}" style="opacity:0;transform:scale(0.7) translateY(8px);">${_esc(c.label)}</button>`).join('');
-    Array.from(pillsBar.children).forEach((p,i)=>{
-      p.style.transition=`opacity 0.35s ease ${i*35}ms,transform 0.45s cubic-bezier(0.34,1.56,0.64,1) ${i*35}ms`;
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{p.style.opacity='1';p.style.transform='scale(1) translateY(0)';}));
-    });
-    pillsBar.querySelectorAll('.filter-pill').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        activeCategory=btn.dataset.cat;
-        pillsBar.querySelectorAll('.filter-pill').forEach(b=>b.classList.toggle('active',b.dataset.cat===activeCategory));
-        visibleCount=12;applyFilters();
-      });
+    pillsBar.innerHTML=`<select class="filter-select" id="category-select" size="1" style="max-height:42px">
+      ${CATEGORIES.map(c=>`<option value="${_esc(c.value)}" ${c.value===activeCategory?'selected':''}>${_esc(c.label)}</option>`).join('')}
+    </select>`;
+    pillsBar.querySelector('#category-select').addEventListener('change', function() {
+      activeCategory = this.value;
+      visibleCount = 12;
+      applyFilters();
     });
   }
+
 
   async function fetchTemplates() {
     const skelGrid=document.getElementById('skeleton-grid');
@@ -222,7 +219,7 @@ async function getCreatorName(id) {
     const res=await api.templates.list({limit:100});
     skelGrid?.classList.add('hidden');
     if(!res.ok||!res.data?.templates){
-      if(grid)grid.innerHTML=`<div class="mkt-empty"><div class="mkt-empty-icon">⚠️</div><h3>Failed to load</h3><p>Please refresh the page.</p></div>`;
+      if(grid)grid.innerHTML=`<div class="mkt-empty"><div class="mkt-empty-icon">!</div><h3>Failed to load</h3><p>Please refresh the page.</p></div>`;
       return;
     }
     allTemplates=res.data.templates;
@@ -299,7 +296,7 @@ async function getCreatorName(id) {
           <div class="mkt-card-thumb" style="background:${GRADS[i%GRADS.length]};">
             ${previewUrl?`<img src="${_esc(previewUrl)}" alt="${_esc(t.title)}" loading="lazy">`:'' }
             ${isVideo?`<video src="${_esc(prevVid)}" muted loop playsinline preload="none"></video>`:''}
-            ${!previewUrl&&!isVideo?`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.3;position:absolute;inset:0;">🎬</div>`:''}
+            ${!previewUrl&&!isVideo?`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.3;position:absolute;inset:0;">▶</div>`:''}
             <div class="mkt-card-overlay">
               <button class="btn btn--ghost btn--sm preview-btn"
                 data-id="${_esc(String(t._id??t.id))}"
@@ -616,7 +613,7 @@ if(_fk) localStorage.setItem(_fk, JSON.stringify(favorites));
         media.innerHTML=`<img src="${_esc(previewUrl)}" alt="${_esc(title)}" style="width:100%;max-height:220px;object-fit:cover;display:block;">`;
       } else {
         media.style.background='linear-gradient(135deg,#1a0a3e,#4c1d95)';
-        media.innerHTML=`<span style="font-size:4rem;">🎬</span>`;
+        media.innerHTML=`<span style="font-size:4rem;">▶</span>`;
       }
     }
     const t=allTemplates.find(x=>String(x._id??x.id)===String(id));
@@ -898,7 +895,7 @@ if(tsWrap && tsInput){
       return `
         <div class="tutorial-card" data-videourl="${_esc(t.videoUrl??'')}" data-title="${_esc(t.title)}" style="cursor:pointer;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color 0.3s ease,transform 0.3s ease,box-shadow 0.3s ease;opacity:0;transform:translateY(32px) scale(0.96);">
           <div style="position:relative;aspect-ratio:16/9;overflow:hidden;background:${GRADS[i%GRADS.length]};">
-            ${t.thumbnailUrl?`<img src="${_esc(t.thumbnailUrl)}" alt="${_esc(t.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.6s ease;">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.3;">🎓</div>`}
+            ${t.thumbnailUrl?`<img src="${_esc(t.thumbnailUrl)}" alt="${_esc(t.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.6s ease;">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.3;">▣</div>`}
             <div style="position:absolute;inset:0;background:rgba(0,0,0,0.28);display:flex;align-items:center;justify-content:center;transition:background 0.25s ease;">
               <div class="tut-play-btn" style="width:56px;height:56px;background:rgba(124,58,237,0.88);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),background 0.2s ease;box-shadow:0 8px 24px rgba(124,58,237,0.4);">
                 <span style="color:#fff;font-size:1.3rem;margin-left:3px;">▶</span>
