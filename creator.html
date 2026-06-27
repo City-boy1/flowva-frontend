@@ -18,6 +18,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Flowva" />
     <link rel="manifest" href="/assets/images/site.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/homepage.css">
     <link rel="stylesheet" href="css/creator.css">
@@ -94,38 +98,8 @@
                 <div class="template-grid" id="creator-templates-grid"></div>
             </div>
 
-            <!-- Reviews panel -->
-            <div id="tab-reviews" class="creator-tab-panel hidden">
-                <div style="display:flex;flex-direction:column;gap:var(--space-5);max-width:700px">
-                    <div class="card" style="padding:var(--space-5)">
-                        <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:12px">
-                            <div class="avatar avatar--sm avatar--placeholder"
-                                style="background:#0ea5e9;font-size:0.7rem">MK</div>
-                            <div>
-                                <div style="font-weight:600;font-size:0.9rem">Motion Kings</div>
-                                <div style="color:#f59e0b;font-size:0.85rem">★★★★★</div>
-                            </div>
-                            <div style="margin-left:auto;font-size:0.75rem;color:var(--text-muted)">2 weeks ago</div>
-                        </div>
-                        <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6">Incredible quality. The
-                            cinematic intro pack exceeded all our expectations. Clean, well-organised files and fast
-                            delivery.</p>
-                    </div>
-                    <div class="card" style="padding:var(--space-5)">
-                        <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:12px">
-                            <div class="avatar avatar--sm avatar--placeholder"
-                                style="background:#10b981;font-size:0.7rem">NB</div>
-                            <div>
-                                <div style="font-weight:600;font-size:0.9rem">Nadia B.</div>
-                                <div style="color:#f59e0b;font-size:0.85rem">★★★★★</div>
-                            </div>
-                            <div style="margin-left:auto;font-size:0.75rem;color:var(--text-muted)">1 month ago</div>
-                        </div>
-                        <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6">Professional,
-                            responsive, and incredibly talented. Will definitely hire again for future projects!</p>
-                    </div>
-                </div>
-            </div>
+            <!-- Reviews panel — populated by JS -->
+            <div id="tab-reviews" class="creator-tab-panel hidden"></div>
 
             <!-- About panel -->
             <div id="tab-about" class="creator-tab-panel hidden"></div>

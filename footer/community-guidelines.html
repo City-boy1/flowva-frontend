@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../assets/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+    <link rel="shortcut icon" href="../assets/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/images/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Flowva" />
+    <link rel="manifest" href="../assets/images/site.webmanifest" />
+    <title>Community Guidelines — Flowva</title>
+    <script>(function () { var t = localStorage.getItem('flowva-theme') || 'light'; document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        /* ── Page-specific styles ── */
+        .legal-hero {
+            padding: calc(var(--navbar-h) + 64px) 0 64px;
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0, 123, 255, 0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 90% 50%, rgba(255, 46, 147, 0.1) 0%, transparent 60%),
+                var(--bg-base);
+            text-align: center;
+        }
+
+        .legal-hero .page-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-soft);
+            border: 1px solid rgba(0, 123, 255, 0.25);
+            border-radius: var(--radius-full);
+            padding: 6px 18px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-hover);
+            margin-bottom: 24px;
+        }
+
+        .legal-hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .legal-hero p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 580px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .legal-meta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .legal-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .legal-meta-item svg {
+            opacity: 0.6;
+        }
+
+        /* Layout */
+        .legal-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 40px;
+            align-items: start;
+            padding: 64px 0 100px;
+        }
+
+        @media (max-width: 900px) {
+            .legal-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .legal-toc {
+                display: none;
+            }
+        }
+
+        /* TOC sidebar */
+        .legal-toc {
+            position: sticky;
+            top: calc(var(--navbar-h) + 24px);
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .toc-title {
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .toc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .toc-link {
+            display: block;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.845rem;
+            color: var(--text-secondary);
+            transition: var(--transition-base);
+            border-left: 2px solid transparent;
+        }
+
+        .toc-link:hover,
+        .toc-link.active {
+            color: var(--accent-hover);
+            background: var(--accent-soft);
+            border-left-color: var(--accent);
+        }
+
+        /* Content */
+        .legal-content {
+            min-width: 0;
+        }
+
+        .legal-section {
+            margin-bottom: 56px;
+            scroll-margin-top: calc(var(--navbar-h) + 32px);
+        }
+
+        .legal-section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            background: var(--accent-soft);
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--accent-hover);
+        }
+
+        .legal-section h2 {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .legal-section p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+        }
+
+        .legal-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Rule list */
+        .rule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .rule-card {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            transition: var(--transition-slow);
+        }
+
+        .rule-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .rule-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .rule-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .rule-dot--allow {
+            background: var(--success);
+        }
+
+        .rule-dot--forbid {
+            background: var(--danger);
+        }
+
+        .rule-dot--caution {
+            background: var(--warning);
+        }
+
+        .rule-card h4 {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .rule-card p {
+            font-size: 0.835rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Inline list */
+        .policy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .policy-list li {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.93rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .policy-list li svg {
+            flex-shrink: 0;
+            margin-top: 3px;
+            color: var(--accent-hover);
+        }
+
+        /* Enforcement table */
+        .enforcement-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            margin-top: 16px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .enforcement-table th {
+            background: var(--bg-overlay);
+            padding: 14px 16px;
+            text-align: left;
+            font-family: var(--font-display);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .enforcement-table td {
+            padding: 14px 16px;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: top;
+            line-height: 1.6;
+        }
+
+        .enforcement-table tr:hover td {
+            background: var(--accent-soft);
+        }
+
+        /* CTA banner */
+        .guidelines-cta {
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.12), rgba(255, 46, 147, 0.08));
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: 48px;
+            text-align: center;
+        }
+
+        .guidelines-cta h3 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+
+        .guidelines-cta p {
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto 28px;
+            font-size: 0.95rem;
+        }
+
+        .cta-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Divider */
+        .section-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 48px 0;
+        }
+
+        [data-theme="light"] .rule-card {
+            background: var(--bg-surface);
+        }
+
+        [data-theme="light"] .enforcement-table th {
+            background: var(--bg-overlay);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <main class="page-content">
+
+        <!-- Hero -->
+        <section class="legal-hero">
+            <div class="container--narrow">
+                <div class="page-eyebrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    Community
+                </div>
+                <h1>Community Guidelines</h1>
+                <p>Flowva is built on trust, creativity, and mutual respect. These guidelines define how creators and
+                    buyers are expected to conduct themselves on our platform.</p>
+                <div class="legal-meta">
+                    <span class="legal-meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        Effective: June 1, 2026
+                    </span>
+                    <span class="legal-meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        ~8 min read
+                    </span>
+                    <span class="legal-meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        Questions? flowva3@gmail.com
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Body -->
+        <section class="section" style="padding-top:0">
+            <div class="container">
+                <div class="legal-layout">
+
+                    <!-- TOC -->
+                    <aside class="legal-toc">
+                        <p class="toc-title">On This Page</p>
+                        <nav class="toc-list">
+                            <a class="toc-link active" href="#introduction">Introduction</a>
+                            <a class="toc-link" href="#creator-conduct">Creator Conduct</a>
+                            <a class="toc-link" href="#buyer-conduct">Buyer Conduct</a>
+                            <a class="toc-link" href="#originality">Originality & IP</a>
+                            <a class="toc-link" href="#anti-fraud">Anti-Fraud Policy</a>
+                            <a class="toc-link" href="#communication">Communication</a>
+                            <a class="toc-link" href="#community-chat">Community Chat</a>
+                            <a class="toc-link" href="#prohibited">Prohibited Content</a>
+                            <a class="toc-link" href="#enforcement">Enforcement</a>
+                            <a class="toc-link" href="#appeals">Appeals</a>
+                        </nav>
+                    </aside>
+
+                    <!-- Content -->
+                    <div class="legal-content">
+
+                        <div class="legal-section" id="introduction">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                    </svg>
+                                </div>
+                                <h2>Introduction</h2>
+                            </div>
+                            <p>Flowva is a trusted digital marketplace connecting designers, motion graphics artists,
+                                animators, and buyers from over 60 countries. Our platform is built to empower creators
+                                to earn fairly while giving buyers access to high-quality creative assets.</p>
+                            <p>These guidelines apply to every user — whether you are uploading a template, purchasing
+                                one, posting a job, hiring a freelancer, or participating in the Flowva community chat.
+                                Continued use of the platform constitutes acceptance of these guidelines.</p>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="creator-conduct">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M12 20h9" />
+                                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                    </svg>
+                                </div>
+                                <h2>Creator Conduct</h2>
+                            </div>
+                            <p>Creators are the backbone of Flowva. We expect a high standard of professionalism,
+                                quality, and honesty in everything you publish and every interaction you have on the
+                                platform.</p>
+                            <div class="rule-grid">
+                                <div class="rule-card">
+                                    <div class="rule-card-header">
+                                        <span class="rule-dot rule-dot--allow"></span>
+                                        <h4>Upload Original Work</h4>
+                                    </div>
+                                    <p>All templates must be your own original creation. Work created using tools such
+                                        as Photoshop, After Effects, Canva, Figma, Alight Motion, and others must
+                                        reflect your genuine skill and effort.</p>
+                                </div>
+                                <div class="rule-card">
+                                    <div class="rule-card-header">
+                                        <span class="rule-dot rule-dot--allow"></span>
+                                        <h4>Accurate Descriptions</h4>
+                                    </div>
+                                    <p>Titles, categories, previews, and descriptions must honestly represent your
+                                        template. Misleading listings will be removed and may result in account
+                                        suspension.</p>
+                                </div>
+                                <div class="rule-card">
+                                    <div class="rule-card-header">
+                                        <span class="rule-dot rule-dot--allow"></span>
+                                        <h4>Deliver on Commitments</h4>
+                                    </div>
+                                    <p>If you accept a project or freelance job, you are expected to deliver within
+                                        agreed timelines, communicate proactively, and handle revisions professionally.
+                                    </p>
+                                </div>
+                                <div class="rule-card">
+                                    <div class="rule-card-header">
+                                        <span class="rule-dot rule-dot--caution"></span>
+                                        <h4>Proper Licensing</h4>
+                                    </div>
+                                    <p>Any third-party assets (fonts, stock elements, plugins) included in a template
+                                        must be properly licensed for commercial resale. Disclose all asset sources in
+                                        your listing description.</p>
+                                </div>
+                                <div class="rule-card">
+                                    <div class="rule-card-header">
+                                        <span class="rule-dot rule-dot--forbid"></span>
+                                        <h4>No Stolen Assets</h4>
+                                    </div>
+                                    <p>Uploading templates that were made by another creator without permission — or
+                                        passing off purchased bundles as your own — is strictly prohibited and will
+                                        result in permanent removal.</p>
+                                </div>
+                                <div class="rule-card">
+                                    <div class="rule-card-header">
+                                        <span class="rule-dot rule-dot--forbid"></span>
+                                        <h4>No Fake Reviews</h4>
+                                    </div>
+                                    <p>Soliciting, purchasing, or otherwise manipulating your own ratings is prohibited.
+                                        Flowva actively monitors for review manipulation and will take enforcement
+                                        action.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="buyer-conduct">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                                        <line x1="3" y1="6" x2="21" y2="6" />
+                                        <path d="M16 10a4 4 0 0 1-8 0" />
+                                    </svg>
+                                </div>
+                                <h2>Buyer Conduct</h2>
+                            </div>
+                            <p>Buyers are valued members of the Flowva community. When purchasing templates, posting
+                                projects, or hiring freelancers, you are expected to act in good faith and treat
+                                creators with respect.</p>
+                            <ul class="policy-list">
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Pay for every template you download. Attempting to share, resell, or redistribute
+                                    purchased files is a violation of your license agreement.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Provide clear, realistic briefs when posting projects. Vague or misleading briefs
+                                    that bait creators are against our policy.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Do not request free samples or unpaid work as a condition of a job post or project
+                                    brief.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Raise disputes through the Flowva support system only — not through chargebacks or
+                                    payment reversals without first contacting support.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Leave honest, constructive reviews. Reviews must reflect your genuine experience and
+                                    may not be used as leverage against creators.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="originality">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="12" y1="8" x2="12" y2="12" />
+                                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                                    </svg>
+                                </div>
+                                <h2>Originality &amp; Intellectual Property</h2>
+                            </div>
+                            <p>Flowva takes intellectual property seriously. All uploaded work must be original and must
+                                not infringe on any trademarks, copyrights, or other proprietary rights.</p>
+                            <ul class="policy-list">
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Do not upload templates that incorporate trademarked logos, brand assets, or
+                                    copyrighted characters without written authorization from the rights holder.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Do not copy or closely replicate templates from other creators and list them as your
+                                    own original work.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Stock assets included in your template must be licensed for commercial
+                                    redistribution. Extended or editorial licenses may be required.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    If you believe your intellectual property has been infringed, contact us at
+                                    <strong>flowva3@gmail.com</strong> with evidence and we will investigate promptly.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="anti-fraud">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                        <line x1="12" y1="8" x2="12" y2="12" />
+                                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                                    </svg>
+                                </div>
+                                <h2>Anti-Fraud Policy</h2>
+                            </div>
+                            <p>Flowva uses an escrow-based payment system to protect both buyers and creators. Any
+                                attempt to circumvent this system, conduct off-platform transactions, or manipulate the
+                                escrow release process is a serious violation.</p>
+                            <div class="rule-grid">
+                                <div class="rule-card">
+                                    <div class="rule-card-header">
+                                        <span class="rule-dot rule-dot--forbid"></span>
+                                        <h4>No Off-Platform Payments</h4>
+                                    </div>
+                                    <p>Requesting or accepting payment outside of Flowva's escrow system is strictly
+                                        prohibited and voids all dispute protections for both parties.</p>
+                                </div>
+                                <div class="rule-card">
+                                    <div class="rule-card-header">
+                                        <span class="rule-dot rule-dot--forbid"></span>
+                                        <h4>No Chargeback Abuse</h4>
+                                    </div>
+                                    <p>Filing fraudulent chargebacks for digital goods that were delivered as described
+                                        is a violation of our policy and will result in permanent account termination.
+                                    </p>
+                                </div>
+                                <div class="rule-card">
+                                    <div class="rule-card-header">
+                                        <span class="rule-dot rule-dot--forbid"></span>
+                                        <h4>No Account Sharing</h4>
+                                    </div>
+                                    <p>Each Flowva account must be owned and operated by one person. Sharing credentials
+                                        or selling accounts is prohibited.</p>
+                                </div>
+                                <div class="rule-card">
+                                    <div class="rule-card-header">
+                                        <span class="rule-dot rule-dot--forbid"></span>
+                                        <h4>No Multiple Accounts</h4>
+                                    </div>
+                                    <p>Creating multiple accounts to circumvent bans, inflate download counts, or
+                                        receive multiple free-tier benefits is not allowed.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="communication">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                    </svg>
+                                </div>
+                                <h2>Respectful Communication</h2>
+                            </div>
+                            <p>All communication through Flowva's messaging system — between creators and buyers, or in
+                                the community chat — must remain professional and respectful.</p>
+                            <ul class="policy-list">
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    No harassment, threats, insults, or discriminatory language directed at any user.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    No unsolicited promotional messages, spam, or affiliate links sent through the
+                                    messaging system.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Do not attempt to redirect buyers to external websites or off-platform tools to
+                                    conduct transactions.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    All files shared through messages must be safe, virus-free, and relevant to the
+                                    project at hand.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="community-chat">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                </div>
+                                <h2>Community Chat</h2>
+                            </div>
+                            <p>Flowva provides a dedicated community group chat for creators to connect, share
+                                knowledge, seek feedback, and collaborate. This space is a privilege, not a right.</p>
+                            <ul class="policy-list">
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Keep discussions relevant to design, animation, templates, and creative work.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Constructive criticism is welcome; personal attacks are not.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Do not flood the chat with excessive self-promotion. One post per new template is
+                                    reasonable.
+                                </li>
+                                <li>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Moderators have the authority to remove messages, mute users, or ban members who
+                                    repeatedly violate community standards.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="prohibited">
+                            <div class="legal-section-header">
+                                <div class="section-icon"
+                                    style="background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); color: var(--danger);">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                                    </svg>
+                                </div>
+                                <h2>Prohibited Content</h2>
+                            </div>
+                            <p>The following types of content are strictly prohibited on Flowva under any circumstances:
+                            </p>
+                            <div class="rule-grid">
+                                <div class="rule-card">
+                                    <div class="rule-card-header"><span class="rule-dot rule-dot--forbid"></span>
+                                        <h4>Adult or Explicit Content</h4>
+                                    </div>
+                                    <p>Templates, previews, or messages containing pornographic or sexually explicit
+                                        material.</p>
+                                </div>
+                                <div class="rule-card">
+                                    <div class="rule-card-header"><span class="rule-dot rule-dot--forbid"></span>
+                                        <h4>Hate Speech</h4>
+                                    </div>
+                                    <p>Content that promotes discrimination, hatred, or violence based on race,
+                                        ethnicity, religion, gender, sexuality, disability, or nationality.</p>
+                                </div>
+                                <div class="rule-card">
+                                    <div class="rule-card-header"><span class="rule-dot rule-dot--forbid"></span>
+                                        <h4>Malicious Files</h4>
+                                    </div>
+                                    <p>Uploading templates that contain malware, spyware, ransomware, or any code
+                                        designed to harm the user's device or data.</p>
+                                </div>
+                                <div class="rule-card">
+                                    <div class="rule-card-header"><span class="rule-dot rule-dot--forbid"></span>
+                                        <h4>Illegal Content</h4>
+                                    </div>
+                                    <p>Any content that violates applicable law in the creator's or buyer's
+                                        jurisdiction, including but not limited to DMCA violations.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="enforcement">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z" />
+                                        <path
+                                            d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+                                        <path
+                                            d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z" />
+                                        <path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z" />
+                                        <path
+                                            d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z" />
+                                        <path
+                                            d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z" />
+                                        <path
+                                            d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z" />
+                                        <path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z" />
+                                    </svg>
+                                </div>
+                                <h2>Enforcement</h2>
+                            </div>
+                            <p>Flowva reserves the right to take enforcement action in proportion to the severity and
+                                frequency of guideline violations. The following table outlines our general enforcement
+                                approach:</p>
+                            <table class="enforcement-table">
+                                <thead>
+                                    <tr>
+                                        <th>Violation Level</th>
+                                        <th>Examples</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="badge badge--warning">Minor</span></td>
+                                        <td>Incomplete listing description, minor communication issue</td>
+                                        <td>Warning notice via email</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge--warning">Moderate</span></td>
+                                        <td>Misleading template description, off-platform payment request</td>
+                                        <td>Listing removal + 7-day suspension</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge--danger">Serious</span></td>
+                                        <td>IP theft, fake reviews, chargeback abuse</td>
+                                        <td>Account suspension pending investigation</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge--danger">Severe</span></td>
+                                        <td>Malicious files, hate speech, fraud, repeated violations</td>
+                                        <td>Permanent account termination and escrow forfeiture</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="appeals">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                        <polyline points="9 22 9 12 15 12 15 22" />
+                                    </svg>
+                                </div>
+                                <h2>Appeals</h2>
+                            </div>
+                            <p>If you believe an enforcement action was taken in error, you may submit an appeal within
+                                14 days of notification. Send your appeal to <strong>flowva3@gmail.com</strong> with the
+                                subject line "Account Appeal — [Your Username]" and include a clear explanation and any
+                                supporting evidence.</p>
+                            <p>Flowva will review all appeals fairly and respond within 5–7 business days. Decisions on
+                                appeals are final.</p>
+                        </div>
+
+                        <div class="guidelines-cta">
+                            <h3>Have Questions About These Guidelines?</h3>
+                            <p>Our support team is here to help you understand what is and isn't permitted on the
+                                platform.</p>
+                            <div class="cta-actions">
+                                <a href="contact.html" class="btn btn--primary">Contact Support</a>
+                                <a href="support.html" class="btn btn--ghost">Visit Help Center</a>
+                            </div>
+                        </div>
+
+                    </div><!-- /.legal-content -->
+                </div><!-- /.legal-layout -->
+            </div><!-- /.container -->
+        </section>
+
+    </main>
+
+    <!-- Shared Footer -->
+    <footer style="background:var(--bg-surface);border-top:1px solid var(--border);padding:48px 0 32px;">
+        <div class="container">
+            <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:space-between;margin-bottom:40px;">
+                <div style="max-width:280px;">
+                    <div class="nav-logo" style="margin-bottom:12px;">Flowva</div>
+                    <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.7;">A trusted digital marketplace
+                        connecting creators and buyers worldwide.</p>
+                </div>
+                <div style="display:flex;gap:60px;flex-wrap:wrap;">
+                    <div>
+                        <p
+                            style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">
+                            Legal</p>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a href="community-guidelines.html"
+                                style="font-size:0.875rem;color:var(--accent-hover);">Community Guidelines</a>
+                            <a href="privacy.html" style="font-size:0.875rem;color:var(--text-secondary);">Privacy
+                                Policy</a>
+                            <a href="terms.html" style="font-size:0.875rem;color:var(--text-secondary);">Terms of
+                                Service</a>
+                        </div>
+                    </div>
+                    <div>
+                        <p
+                            style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">
+                            Help</p>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a href="support.html" style="font-size:0.875rem;color:var(--text-secondary);">Support
+                                Center</a>
+                            <a href="contact.html" style="font-size:0.875rem;color:var(--text-secondary);">Contact
+                                Us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                style="border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:center;">
+                <p style="font-size:0.8rem;color:var(--text-muted);">&copy; 2026 Flowva. All rights reserved.</p>
+                <p style="font-size:0.8rem;color:var(--text-muted);">flowva3@gmail.com</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // TOC active state on scroll
+        const sections = document.querySelectorAll('.legal-section');
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    tocLinks.forEach(l => l.classList.remove('active'));
+                    const active = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+                    if (active) active.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-20% 0% -60% 0%' });
+        sections.forEach(s => observer.observe(s));
+    </script>
+    <script type="module" src="../js/core/navbar.js"></script>
+</body>
+
+</html>

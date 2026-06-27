@@ -23,6 +23,22 @@ function timeAgo(dateStr) {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
+function youtubeEmbed(url, title) {
+  if (!url) return '';
+  try {
+    const u = new URL(url);
+    let id = null;
+    if (u.hostname.includes('youtu.be')) id = u.pathname.slice(1);
+    else id = u.searchParams.get('v');
+    if (!id) return '';
+    return `<iframe width="80" height="50" src="https://www.youtube.com/embed/${id}"
+      frameborder="0" allowfullscreen
+      style="border-radius:6px;flex-shrink:0"
+      title="${_esc(title)}"></iframe>`;
+  } catch { return ''; }
+}
+
+
 function animateCounter(el, target) {
   const duration = 1400;
   const start = performance.now();
@@ -174,7 +190,6 @@ function applyRoleUI() {
   const creatorNav   = document.getElementById('creator-nav');
   const buyerOview   = document.getElementById('buyer-overview');
   const creatorOview = document.getElementById('creator-overview');
-  const postCta      = document.getElementById('post-project-cta');
   const projSub      = document.getElementById('projects-subtitle');
   const overSub      = document.getElementById('overview-subtitle');
 
@@ -184,7 +199,6 @@ function applyRoleUI() {
     if (buyerOview)   buyerOview.style.display   = 'none';
     if (creatorOview) creatorOview.style.display = '';
     if (overSub)      overSub.textContent = 'Your performance at a glance';
-    if (postCta)      postCta.style.display = 'none';
     const creatorCta = document.getElementById('creator-marketplace-cta');
     if (creatorCta)   creatorCta.style.display = '';
   } else {
@@ -193,7 +207,6 @@ function applyRoleUI() {
     if (buyerOview)   buyerOview.style.display   = '';
     if (creatorOview) creatorOview.style.display = 'none';
     if (overSub)      overSub.textContent = 'Your activity at a glance';
-    if (postCta)      postCta.style.display = '';
     const creatorCta = document.getElementById('creator-marketplace-cta');
     if (creatorCta)   creatorCta.style.display = 'none';
     if (projSub)      projSub.textContent = isCreator() ? 'Projects you\'ve bid on' : "Projects you've posted";
@@ -511,15 +524,107 @@ async function loadMyTutorials() {
     return;
   }
 
-  list.innerHTML = visible.map(t => `
-    <div class="project-item">
-      <div class="project-thumb">▣</div>
-      <div class="project-info">
+list.innerHTML = visible.map(t => {
+    const ytThumb = (() => {
+      try {
+        const u = new URL(t.youtubeUrl || '');
+        const id = u.hostname.includes('youtu.be')
+          ? u.pathname.slice(1)
+          : u.searchParams.get('v');
+        return id ? `<img src="https://img.youtube.com/vi/${id}/default.jpg"
+          style="width:80px;height:50px;object-fit:cover;border-radius:6px;flex-shrink:0">` : '';
+      } catch { return ''; }
+    })();
+    const thumb = ytThumb
+      ? ytThumb
+      : t.thumbnailUrl
+        ? `<img src="${_esc(t.thumbnailUrl)}" style="width:80px;height:50px;object-fit:cover;border-radius:6px;flex-shrink:0">`
+        : `<div style="width:80px;height:50px;background:var(--bg-overlay);border-radius:6px;display:flex;align-items:center;justify-content:center">
+             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+           </div>`;
+      const ytUrl = t.youtubeUrl || '';
+    return `
+    <div class="project-item" style="cursor:pointer" data-yturl="${_esc(ytUrl)}" data-title="${_esc(t.title)}">
+      <div style="width:80px;flex-shrink:0">${thumb}</div>
+      <div class="project-info" style="flex:1;min-width:0">
         <h4>${_esc(t.title)}</h4>
-        <p>${_esc((t.software ?? '').toString())} · ${timeAgo(t.createdAt)}</p>
+        <p>${_esc((t.category ?? t.software ?? '').toString())} · ${timeAgo(t.createdAt)}</p>
       </div>
+      ${ytUrl ? `<a href="${_esc(ytUrl)}" target="_blank" rel="noopener"
+        class="btn btn--ghost btn--sm"
+        style="flex-shrink:0;font-size:0.78rem"
+        onclick="event.stopPropagation()">▶ Watch</a>` : ''}
     </div>
-  `).join('');
+  `;
+}).join('');
+
+list.querySelectorAll('.project-item[data-yturl]').forEach(card => {
+  card.addEventListener('click', e => {
+    if (e.target.closest('a')) return;
+    const url   = card.dataset.yturl;
+    const title = card.dataset.title;
+    if (!url) return;
+
+    function getYtId(u) {
+      try {
+        const p = new URL(u);
+        if (p.hostname.includes('youtu.be')) return p.pathname.slice(1);
+        return p.searchParams.get('v');
+      } catch { return null; }
+    }
+    const ytId = getYtId(url);
+
+    document.getElementById('tut-dash-modal')?.remove();
+    const m = document.createElement('div');
+    m.id = 'tut-dash-modal';
+    m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+    m.innerHTML = `
+      <div style="background:var(--bg-raised);border-radius:var(--radius-lg);max-width:780px;width:100%;position:relative;overflow:hidden">
+        <button id="tut-dash-close" style="position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text-primary);font-size:1.4rem;cursor:pointer;z-index:1">✕</button>
+        <div style="padding:16px 20px;font-weight:700;border-bottom:1px solid var(--border)">${_esc(title)}</div>
+        ${ytId
+          ? `<iframe width="100%" height="420"
+              src="https://www.youtube.com/embed/${ytId}?autoplay=1"
+              frameborder="0" allow="autoplay;encrypted-media" allowfullscreen
+              style="display:block;background:#000;"></iframe>`
+          : `<video controls autoplay playsinline style="width:100%;max-height:480px;display:block;background:#000">
+               <source src="${_esc(url)}" type="video/mp4">
+             </video>`
+        }
+      </div>`;
+    m.querySelector('#tut-dash-close').addEventListener('click', () => m.remove());
+    m.addEventListener('click', e => { if (e.target === m) m.remove(); });
+    document.addEventListener('keydown', function esc(e) {
+      if (e.key === 'Escape') { m.remove(); document.removeEventListener('keydown', esc); }
+    });
+    document.body.appendChild(m);
+  });
+});
+}
+
+function renderJobCard(j) {
+  const c = j.content ?? {};
+  const title = c.title ?? 'Untitled Role';
+  const statusBadge = { open:'badge--accent', filled:'badge--success', closed:'badge--muted' }[j.status] ?? 'badge--muted';
+  const statusLabel = j.status === 'open' ? 'Open' : j.status === 'filled' ? 'Filled' : 'Closed';
+  const typeLabel = j.jobType === 'full-time' ? 'Full-Time Role' : 'Contract Role';
+  const fields = (c.fields ?? []).slice(0, 3);
+  const salary = c.salary && (c.salary.min || c.salary.max) ? `$${c.salary.min ?? '—'}–${c.salary.max ?? '—'} / ${_esc(c.salary.period ?? '')}` : '—';
+  const actions = (!isCreator() && j.status === 'open')
+    ? `<button class="btn btn--primary btn--sm view-applicants-btn" data-id="${_esc(j.id)}" data-title="${_esc(title)}"> View Applicants</button>` : '';
+  return `
+    <div class="project-item" data-id="${_esc(j.id)}" style="flex-direction:column;align-items:flex-start;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px;width:100%">
+        <div class="project-thumb">${c.logoUrl ? `<img src="${_esc(c.logoUrl)}" style="width:100%;height:100%;object-fit:cover;border-radius:6px">` : '💼'}</div>
+        <div class="project-info" style="flex:1;min-width:0">
+          <h4>${_esc(title)}</h4>
+          <p><span style="font-size:0.72rem;background:var(--bg-overlay);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-muted);margin-right:6px">${_esc(typeLabel)}</span>${_esc(c.company ?? '')} · Salary: ${_esc(salary)}</p>
+        </div>
+        <span class="badge ${statusBadge}" style="flex-shrink:0">${_esc(statusLabel)}</span>
+      </div>
+      ${fields.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap">${fields.map(f=>`<span style="font-size:0.72rem;background:var(--bg-overlay);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-muted)">${_esc(f)}</span>`).join('')}</div>` : ''}
+      <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;margin-top:4px">${actions}</div>
+    </div>`;
 }
 
 async function loadProjects() {
@@ -527,40 +632,51 @@ async function loadProjects() {
   if (!list) return;
   list.innerHTML = '<p style="color:var(--text-muted);font-size:0.9rem">Loading…</p>';
   const userId = AppState.getUser()?.id ?? AppState.getUser()?._id;
-const res = await api.projects.list(
-  isCreator()
-    ? { scope: 'dashboard', userId, role: 'creator' }
-    : { scope: 'dashboard', userId, role: 'client' }
-);
-  if (!res.ok || !res.data?.projects?.length) {
+
+  // Load both freelance projects and roles in parallel
+  const [res, jobsRes] = await Promise.all([
+    api.projects.list(
+      isCreator()
+        ? { scope: 'dashboard', userId, role: 'creator' }
+        : { scope: 'dashboard', userId, role: 'client' }
+    ),
+    !isCreator() ? api.jobs.list({ postedBy: userId }) : Promise.resolve({ ok: false }),
+  ]);
+
+  const projects = res.ok ? (res.data?.projects ?? []) : [];
+  const jobs     = jobsRes.ok ? (jobsRes.data?.jobs ?? []) : [];
+
+  if (!projects.length && !jobs.length) {
     list.innerHTML = isCreator()
       ? `<div class="empty-state" style="padding:40px 20px;text-align:center">
            <h3>No bids yet</h3>
-           <p style="color:var(--text-muted);margin-top:8px;font-size:0.9rem">
-             Browse the project marketplace and submit a bid to see your projects here.
-           </p>
-           <a href="project-marketplace.html" class="btn btn--primary" style="margin-top:16px">
-             Browse Projects
-           </a>
+           <p style="color:var(--text-muted);margin-top:8px;font-size:0.9rem">Browse the project marketplace and submit a bid.</p>
+           <a href="project-marketplace.html" class="btn btn--primary" style="margin-top:16px">Browse Projects</a>
          </div>`
       : `<div class="empty-state" style="padding:40px 20px;text-align:center">
-           <h3>No projects yet</h3>
-           <p style="color:var(--text-muted);margin-top:8px;font-size:0.9rem">
-             Post your first project and get bids from talented creators.
-           </p>
-           <a href="project-marketplace.html" class="btn btn--primary" style="margin-top:16px">
-             Post a Project
-           </a>
+           <h3>No projects or roles yet</h3>
+           <p style="color:var(--text-muted);margin-top:8px;font-size:0.9rem">Post a freelance project or a full-time role.</p>
          </div>`;
     return;
   }
-  list.innerHTML = res.data.projects.map(p => {
+
+  let html = '';
+  if (projects.length) {
+    html += `<div style="font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-hover);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)">Freelance Projects</div>`;
+    html += projects.map(p => {
   const title = p.content?.title ?? p.title ?? 'Project';
-  const statusBadge = {
-    OPEN: 'badge--accent', IN_PROGRESS: 'badge--warning',
+ const statusBadge = {
+    PENDING: 'badge--warning', OPEN: 'badge--accent', IN_PROGRESS: 'badge--warning',
     COMPLETED: 'badge--success', DISPUTED: 'badge--danger',
     DELIVERED: 'badge--warning', REVISION_REQUESTED: 'badge--warning',
   }[p.status] ?? 'badge--muted';
+
+  const statusLabel = p.status === 'PENDING' ? 'Under Review' : p.status;
+
+  // Determine project type label from content
+  const projectType = p.content?.jobType === 'full-time' ? 'Full-Time Role'
+    : p.content?.jobType === 'contract' ? 'Contract Role'
+    : 'One-off Project';
 
   const actions = [];
 
@@ -570,10 +686,16 @@ const res = await api.projects.list(
       data-id="${_esc(p.id)}" data-title="${_esc(title)}"> Deliver</button>`);
   }
 
-  // Client: view bids on open project
-  if (!isCreator() && p.status === 'OPEN') {
+  // Client: view bids on open freelance project
+  if (!isCreator() && p.status === 'OPEN' && p.type !== 'JOB_ROLE') {
     actions.push(`<button class="btn btn--primary btn--sm view-bids-btn"
       data-id="${_esc(p.id)}" data-title="${_esc(title)}"> View Bids</button>`);
+  }
+
+  // Client: view applicants on open full-time/contract role
+  if (!isCreator() && p.status === 'OPEN' && p.type === 'JOB_ROLE') {
+    actions.push(`<button class="btn btn--primary btn--sm view-applicants-btn"
+      data-id="${_esc(p.id)}" data-title="${_esc(title)}"> View Applicants</button>`);
   }
 
   // Client: approve or request revision
@@ -606,18 +728,27 @@ const res = await api.projects.list(
       <div style="display:flex;align-items:center;gap:10px;width:100%">
         <div class="project-thumb">📁</div>
         <div class="project-info" style="flex:1;min-width:0">
-          <h4>${_esc(title)}</h4>
-          <p>Budget: $${p.budget ?? '—'} · Deadline: ${deadline}</p>
+           <h4>${_esc(title)}</h4>
+          <p>
+            <span style="font-size:0.72rem;background:var(--bg-overlay);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-muted);margin-right:6px">${_esc(projectType)}</span>
+            Budget: $${p.budget ?? '—'} · Deadline: ${deadline}
+          </p>
+          ${p.status === 'PENDING' ? `<p style="font-size:0.78rem;color:var(--warning);margin:2px 0 0 0">⏳ Under admin review — will go live once approved</p>` : ''}
         </div>
-        <span class="badge ${statusBadge}" style="flex-shrink:0">${_esc(p.status ?? '')}</span>
-      </div>
+            <span class="badge ${statusBadge}" style="flex-shrink:0">${_esc(statusLabel)}</span>      </div>
       ${desc ? `<p style="font-size:0.83rem;color:var(--text-secondary);line-height:1.5;margin:0 0 4px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${_esc(desc)}</p>` : ''}
       ${skills.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap">${skills.map(s => `<span style="font-size:0.72rem;background:var(--bg-overlay);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-muted)">${_esc(s)}</span>`).join('')}</div>` : ''}
       <div style="display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap;margin-top:4px">
         ${actions.join('')}
       </div>
     </div>`;
-}).join('');
+    }).join('');
+  }
+  if (jobs.length) {
+    html += `<div style="font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#7c3aed;margin:${projects.length ? '32px' : '0'} 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)">Full-Time &amp; Contract Roles</div>`;
+    html += jobs.map(j => renderJobCard(j)).join('');
+  }
+  list.innerHTML = html;
 
 // Deliver
 list.querySelectorAll('.deliver-btn').forEach(btn => {
@@ -661,7 +792,8 @@ list.querySelectorAll('.deliver-btn').forEach(btn => {
     }
 
     document.getElementById('deliver-project-name').textContent = `Project: ${title}`;
-    document.getElementById('deliver-file-url').value = '';
+    const deliverFileInput = document.getElementById('deliver-file-input');
+    if (deliverFileInput) deliverFileInput.value = '';
     document.getElementById('deliver-note').value = '';
     document.getElementById('deliver-error').style.display = 'none';
     document.getElementById('deliver-modal').classList.add('open');
@@ -784,22 +916,38 @@ list.querySelectorAll('.view-bids-btn').forEach(btn => {
           <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;margin-bottom:10px">${_esc(b.content?.proposal ?? '')}</p>
           ${b.status === 'PENDING' ? `
             <div style="display:flex;gap:8px">
-              <button class="btn btn--primary btn--sm accept-bid-btn" data-project-id="${_esc(projectId)}" data-bid-id="${_esc(b.id)}">✓ Accept Bid</button>
+              <button class="btn btn--primary btn--sm accept-bid-btn"
+              data-project-id="${_esc(projectId)}"
+              data-bid-id="${_esc(b.id)}"
+              data-creator-id="${_esc(b.creatorId ?? '')}"
+              data-creator-name="${_esc(b.creatorName ?? 'Creator')}"
+              data-amount="${Number(b.amount ?? 0)}">✓ Accept Bid</button>
               <button class="btn btn--danger btn--sm reject-bid-btn" data-project-id="${_esc(projectId)}" data-bid-id="${_esc(b.id)}">✕ Reject</button>
             </div>` : ''}
         </div>`).join('');
 
       body.querySelectorAll('.accept-bid-btn').forEach(ab => {
-        ab.addEventListener('click', async () => {
-          if (!confirm('Accept this bid? The project will move to In Progress and the creator will be notified.')) return;
-          ab.disabled = true; ab.textContent = 'Accepting…';
-          const r = await api.projects.acceptBid(ab.dataset.projectId, ab.dataset.bidId);
-          if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); ab.disabled = false; ab.textContent = '✓ Accept Bid'; return; }
-          Toast.show('Bid accepted! Project is now In Progress. Proceed to payment to fund escrow.', 'success');
-          document.getElementById('bids-modal').classList.remove('open');
-          loadProjects();
-        });
-      });
+  ab.addEventListener('click', async () => {
+    if (!confirm('Accept this bid? The project will move to In Progress and the creator will be notified.')) return;
+    ab.disabled = true; ab.textContent = 'Accepting…';
+    const r = await api.projects.acceptBid(ab.dataset.projectId, ab.dataset.bidId);
+    if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); ab.disabled = false; ab.textContent = '✓ Accept Bid'; return; }
+    document.getElementById('bids-modal').classList.remove('open');
+    loadProjects();
+
+    // ── Open escrow payment modal ──────────────────────────────────────────
+    const bidAmount = Number(ab.closest('[data-bid-id]')
+      ?.querySelector('strong')?.textContent?.replace('$','') ?? 0);
+    openEscrowPaymentModal({
+      projectId:  ab.dataset.projectId,
+      bidId:      ab.dataset.bidId,
+      creatorId:  ab.dataset.creatorId ?? '',
+      creatorName: ab.closest('[data-bid-id]')?.querySelector('strong')?.closest('div')
+                    ?.querySelector('strong')?.textContent ?? 'Creator',
+      amount:     bidAmount,
+    });
+  });
+});
 
       body.querySelectorAll('.reject-bid-btn').forEach(rb => {
         rb.addEventListener('click', async () => {
@@ -813,6 +961,115 @@ list.querySelectorAll('.view-bids-btn').forEach(btn => {
     }
 
     document.getElementById('bids-modal').classList.add('open');
+  });
+});
+
+list.querySelectorAll('.view-applicants-btn').forEach(btn => {
+  btn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const jobId    = btn.dataset.id;
+    const jobTitle = btn.dataset.title;
+    btn.disabled = true; btn.textContent = 'Loading…';
+    const res = await api.jobs.getApplicants(jobId);
+    btn.disabled = false; btn.textContent = ' View Applicants';
+    if (!res.ok) { Toast.show(res.error ?? 'Could not load applicants', 'error'); return; }
+
+    const applicants = res.data?.applicants ?? [];
+
+    if (!document.getElementById('applicants-modal')) {
+      const m = document.createElement('div');
+      m.className = 'modal-overlay';
+      m.id = 'applicants-modal';
+      m.innerHTML = `
+        <div class="modal" style="max-width:620px">
+          <div class="modal-header">
+            <h2 id="applicants-modal-title">Applicants</h2>
+            <button class="modal-close" onclick="document.getElementById('applicants-modal').classList.remove('open')">✕</button>
+          </div>
+          <div class="modal-body" id="applicants-modal-body" style="max-height:65vh;overflow-y:auto"></div>
+        </div>`;
+      m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+      document.body.appendChild(m);
+    }
+
+    document.getElementById('applicants-modal-title').textContent = `Applicants for: ${jobTitle}`;
+    const body = document.getElementById('applicants-modal-body');
+
+    if (!applicants.length) {
+      body.innerHTML = '<p style="color:var(--text-muted);padding:20px 0">No applications yet.</p>';
+    } else {
+      body.innerHTML = applicants.map(a => `
+        <div class="card" style="padding:var(--space-4);margin-bottom:var(--space-3)" data-applicant-id="${_esc(a.userId)}">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            ${a.avatarUrl
+              ? `<img src="${_esc(a.avatarUrl)}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0">`
+              : `<div style="width:44px;height:44px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;font-size:0.9rem">
+                  ${_esc((a.name || '?').charAt(0).toUpperCase())}
+                 </div>`}
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:0.95rem">${_esc(a.name ?? 'Applicant')}</div>
+              <div style="font-size:0.78rem;color:var(--text-muted)">${_esc(a.field ?? '')} · Applied ${timeAgo(a.appliedAt)}</div>
+            </div>
+            <span class="badge badge--${a.status === 'ACCEPTED' ? 'success' : a.status === 'REJECTED' ? 'danger' : 'warning'}"
+              style="flex-shrink:0">${_esc(a.status ?? 'PENDING')}</span>
+          </div>
+
+          ${a.coverLetter ? `<p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;margin-bottom:10px;padding:10px 14px;background:var(--bg-overlay);border-radius:var(--radius-md)">${_esc(a.coverLetter)}</p>` : ''}
+
+          ${a.portfolioUrl ? `<a href="${_esc(a.portfolioUrl)}" target="_blank" rel="noopener" style="font-size:0.8rem;color:var(--accent-hover);display:inline-flex;align-items:center;gap:4px;margin-bottom:10px">
+            → View Portfolio
+          </a>` : ''}
+
+          ${a.status === 'PENDING' ? `
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn btn--success btn--sm accept-applicant-btn"
+                data-job-id="${_esc(jobId)}"
+                data-user-id="${_esc(a.userId)}"
+                data-name="${_esc(a.name ?? '')}">
+                ✓ Accept
+              </button>
+              <button class="btn btn--danger btn--sm reject-applicant-btn"
+                data-job-id="${_esc(jobId)}"
+                data-user-id="${_esc(a.userId)}"
+                data-name="${_esc(a.name ?? '')}">
+                ✕ Reject
+              </button>
+              <a href="creator.html?id=${_esc(a.userId)}" target="_blank"
+                class="btn btn--ghost btn--sm" style="font-size:0.78rem">
+                View Profile
+              </a>
+            </div>` : ''}
+        </div>`).join('');
+
+      // Accept applicant
+      body.querySelectorAll('.accept-applicant-btn').forEach(ab => {
+  ab.addEventListener('click', async () => {
+    if (!confirm(`Accept ${ab.dataset.name} for this role?`)) return;
+    ab.disabled = true; ab.textContent = 'Accepting…';
+    const r = await api.jobs.acceptApplicant(ab.dataset.jobId, ab.dataset.userId);
+    if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); ab.disabled = false; ab.textContent = '✓ Accept'; return; }
+    Toast.show(`${ab.dataset.name} accepted!`, 'success');
+    document.getElementById('applicants-modal').classList.remove('open');
+    const convId = r.data?.conversationId;
+    if (convId) sessionStorage.setItem('fv_open_conversation', convId);
+    sessionStorage.setItem('fv_nav_target', 'messages');
+    setTimeout(() => { window.location.href = 'messages.html'; }, 600);
+  });
+});
+      // Reject applicant
+      body.querySelectorAll('.reject-applicant-btn').forEach(rb => {
+        rb.addEventListener('click', async () => {
+          if (!confirm(`Reject ${rb.dataset.name}'s application?`)) return;
+          rb.disabled = true; rb.textContent = 'Rejecting…';
+          const r = await api.jobs.rejectApplicant(rb.dataset.jobId, rb.dataset.userId);
+          if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); rb.disabled = false; rb.textContent = '✕ Reject'; return; }
+          Toast.show(`${rb.dataset.name} rejected.`, 'info');
+          rb.closest('[data-applicant-id]').remove();
+        });
+      });
+    }
+
+    document.getElementById('applicants-modal').classList.add('open');
   });
 });
 
@@ -1033,10 +1290,22 @@ async function initPayoutPanel() {
   if (balEl)     balEl.textContent = '…';
   if (pendingEl) pendingEl.textContent = 'Loading…';
 
+  // Ensure we have a fresh user object with country populated
+  const meRes = await api.auth.me();
+  if (meRes.ok && meRes.data?.user) {
+    AppState.setAuth(AppState.getToken(), { ...AppState.getUser(), ...meRes.data.user });
+  }
+  const userCountry = (AppState.getUser()?.country ?? '').toUpperCase();
+  const isGhana     = userCountry === 'GH';
+
+  // Show Paystack payout block for Ghanaian creators
+  const paystackWrap = document.getElementById('paystack-payout-wrap');
+  if (paystackWrap) paystackWrap.style.display = isGhana ? 'block' : 'none';
+
   const walletRes = await api.payouts.getWallet();
   if (walletRes.ok && walletRes.data?.wallet) {
     const w = walletRes.data.wallet;
-    if (balEl)     balEl.textContent = `$${Number(w.availableBalance ?? 0).toFixed(2)} USDC`;
+    if (balEl)     balEl.textContent = `$${Number(w.availableBalance ?? 0).toFixed(2)} USD`;
     if (pendingEl) pendingEl.textContent = `$${Number(w.pendingBalance ?? 0).toFixed(2)} pending`;
   } else {
     if (balEl)     balEl.textContent = '$—';
@@ -1051,21 +1320,35 @@ async function initPayoutPanel() {
 
   if (method === 'USDC_WALLET') {
     if (usdcInfo) usdcInfo.style.display = 'block';
-    const addrEl = document.getElementById('payout-wallet-address');
-    if (addrEl) addrEl.textContent = s?.solanaAddress ?? 'Not set';
+    const skrillEl = document.getElementById('skrill-email');
+    const greyEl   = document.getElementById('grey-account');
+    const psAcctEl = document.getElementById('paystack-account');
+    const psTypeEl = document.getElementById('paystack-type');
+    if (skrillEl) skrillEl.value = s?.skrillEmail ?? '';
+    if (greyEl)   greyEl.value   = s?.greyAccount ?? '';
+    if (psAcctEl && s?.paystackAccount) psAcctEl.value = s.paystackAccount;
+    if (psTypeEl && s?.paystackType)    psTypeEl.value = s.paystackType;
   } else {
     if (usdcInfo) usdcInfo.style.display = 'none';
   }
 
-  // Save wallet address
-  document.getElementById('save-wallet-btn')?.addEventListener('click', async () => {
-    const addr = document.getElementById('new-wallet-address')?.value.trim();
-    if (!addr || addr.length < 32) { Toast.show('Enter a valid Solana wallet address', 'warning'); return; }
-    const res = await api.payouts.updateSettings({ primaryMethod: 'USDC_WALLET', solanaAddress: addr });
-    if (!res.ok) { Toast.show(res.error ?? 'Failed to save', 'error'); return; }
-    Toast.show('Wallet address updated ✓', 'success');
-    document.getElementById('payout-wallet-address').textContent = addr;
-    document.getElementById('new-wallet-address').value = '';
+document.getElementById('save-wallet-btn')?.addEventListener('click', async () => {
+    const skrill = document.getElementById('skrill-email')?.value.trim();
+    const grey   = document.getElementById('grey-account')?.value.trim();
+    const psType = document.getElementById('paystack-type')?.value ?? '';
+    const psAcct = document.getElementById('paystack-account')?.value.trim() ?? '';
+    if (!skrill && !grey && !(isGhana && psAcct)) {
+        Toast.show('Please enter at least one payout method', 'warning');
+        return;
+    }
+    const res = await api.payouts.updateSettings({
+        skrillEmail:     skrill,
+        greyAccount:     grey,
+        paystackType:    isGhana ? psType  : undefined,
+        paystackAccount: isGhana ? psAcct  : undefined,
+    });
+    if (!res.ok) { Toast.show(res.error ?? 'Failed to save payout details', 'error'); return; }
+    Toast.show('Payout details saved ✓', 'success');
   });
 
   loadPayoutHistory();
@@ -1353,184 +1636,256 @@ function bindToggle(btnId, inputId) {
 }
 
 function initUploadPanel() {
-  const dropZone   = document.getElementById('drop-zone');
-  const fileInput  = document.getElementById('file-input');
-  const uploadForm = document.getElementById('upload-form');
+  // ── Wizard state ──────────────────────────────────────────────────────────
+  let wizStep = 1;
+  let wizCategory = null;    // e.g. 'motion', 'design', 'animation', '3d', 'universal'
+  let wizDevice   = 'desktop';
   let templateFile = null;
+  let previewFile  = null;
+  let thumbFile    = null;
 
-  function showLocalPreview(file) {
-    const wrap  = document.getElementById('auto-preview-wrap');
-    const box   = document.getElementById('auto-preview-box');
-    const info  = document.getElementById('file-info');
-    const inner = document.getElementById('file-info-inner');
-    if (!wrap || !box) return;
+  // Detect device
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  wizDevice = isMobile ? 'mobile' : 'desktop';
+  const hintEl = document.getElementById('wiz-device-hint');
+  if (hintEl) hintEl.textContent = `We detected you're on a ${wizDevice === 'mobile' ? 'mobile device' : 'desktop'}. Choose your template category below.`;
 
-    if (info && inner) {
-      info.style.display = 'block';
-      const emoji = file.type.startsWith('image/') ? '🖼' : file.type.startsWith('video/') ? '▶' : '📦';
-      inner.innerHTML = `
-        <span>${emoji}</span>
-        <span style="font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_esc(file.name)}</span>
-        <span style="font-size:0.75rem;color:var(--text-muted)">${(file.size/1024/1024).toFixed(1)}MB</span>`;
-    }
-
-    wrap.style.display = 'block';
-    box.innerHTML = '';
-
-    if (file.type.startsWith('image/')) {
-      const img = document.createElement('img');
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-      img.src = URL.createObjectURL(file);
-      box.appendChild(img);
-    }  else if (file.type.startsWith('video/')) {
-  // Show actual playable video so creator can verify it's correct
-  const vid = document.createElement('video');
-  vid.controls   = true;
-  vid.muted      = true;
-  vid.playsInline = true;
-  vid.style.cssText = 'width:100%;height:100%;object-fit:contain;border-radius:var(--radius-md);';
-  vid.src = URL.createObjectURL(file);
-  box.appendChild(vid);
-} else {
-      box.innerHTML = `<div style="text-align:center"><div style="font-size:0.85rem;color:var(--text-muted)">Preview will be auto-generated on upload</div></div>`;
-    }
+  if (isMobile) {
+    document.querySelector('.wiz-tab[data-device="mobile"]')?.classList.add('active');
+    document.querySelector('.wiz-tab[data-device="desktop"]')?.classList.remove('active');
+    document.getElementById('wiz-cats-desktop').style.display = 'none';
+    document.getElementById('wiz-cats-mobile').style.display = 'grid';
   }
 
-  function handleFile(file) {
-    if (!file) return;
-    const isVideo = file.type.startsWith('video/');
-    const isImage = file.type.startsWith('image/');
-    const isPdf   = file.type === 'application/pdf';
-    const isZip   = file.type === 'application/zip' || file.type === 'application/x-zip-compressed';
+  // ── Helper: go to step ────────────────────────────────────────────────────
+  function goTo(step) {
+    wizStep = step;
+    document.querySelectorAll('.wizard-screen').forEach((el, i) => {
+      el.classList.toggle('active', i + 1 === step);
+    });
+    document.querySelectorAll('.upload-step').forEach(el => {
+      const n = parseInt(el.dataset.step);
+      el.classList.toggle('active', n === step);
+    });
+  }
 
-    if (isZip) {
-      Toast.show('ZIP files are not supported. Please upload a video, image, or PDF template.', 'error');
-      return;
-    }
-    if (!isVideo && !isImage && !isPdf) {
-      Toast.show('Unsupported file type. Please upload a video, image, or PDF.', 'error');
-      return;
-    }
+  // ── Step 1: device tabs ───────────────────────────────────────────────────
+  document.querySelectorAll('.wiz-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      wizDevice = tab.dataset.device;
+      document.querySelectorAll('.wiz-tab').forEach(t => t.classList.toggle('active', t === tab));
+      document.getElementById('wiz-cats-desktop').style.display = wizDevice === 'desktop' ? 'grid' : 'none';
+      document.getElementById('wiz-cats-mobile').style.display  = wizDevice === 'mobile'  ? 'grid' : 'none';
+      wizCategory = null;
+      document.getElementById('wiz-next-1').disabled = true;
+      document.querySelectorAll('.wiz-cat-card').forEach(c => c.classList.remove('selected'));
+    });
+  });
 
-    const maxBytes = isVideo ? 70 * 1024 * 1024
-                   : isImage ?  5 * 1024 * 1024
-                   :            10 * 1024 * 1024; // pdf
-    const maxLabel = isVideo ? '70MB' : isImage ? '5MB' : '10MB';
-    if (file.size > maxBytes) {
-      Toast.show(`${isVideo ? 'Video' : isImage ? 'Image' : 'PDF'} files must be under ${maxLabel}. Please compress and try again.`, 'error');
-      return;
-    }
+  // ── Step 1: category select ───────────────────────────────────────────────
+  const CAT_ACCEPT = {
+    motion:           'video/mp4,.aep,.aet,.mogrt,.prproj,.drp,.fcpxml,.motion,.veg,.hfp',
+    design:           '.psd,.psb,.ai,.eps,.svg,.ait,.indd,.idml,.indt,.cdr,.cdt,.afdesign,.afphoto,.afpub,.sketch,.fig,.procreate,.kra,.pxd',
+    animation:        '.blend,.c4d,.ma,.mb,.max,.moho,.xsh,.fla,.xfl',
+    '3d':             '.obj,.fbx,.glb,.gltf,.stl',
+    universal:        'image/png,image/jpeg,application/pdf,video/mp4,video/quicktime,.gif',
+    'mobile-design':  '.plp,.ibis,.pxd',
+    'mobile-animation':'.alm,.kmproject,.vnproj',
+    capcut:           '',
+  };
+
+  document.querySelectorAll('.wiz-cat-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.wiz-cat-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      wizCategory = card.dataset.cat;
+      document.getElementById('wiz-next-1').disabled = false;
+    });
+  });
+
+  document.getElementById('wiz-next-1')?.addEventListener('click', () => {
+    // Update accepted file types for step 2
+    const accept = CAT_ACCEPT[wizCategory] ?? '';
+    document.getElementById('wiz-file-input').accept = accept;
+    const hintText = {
+      motion: 'AEP, MOGRT, PRPROJ, DRP, MP4…',
+      design: 'PSD, AI, EPS, SVG, FIG, INDD…',
+      animation: 'BLEND, C4D, MA, FLA, SPINE…',
+      '3d': 'OBJ, FBX, GLB, GLTF, STL…',
+      universal: 'PNG, JPG, PDF, MP4, MOV, GIF',
+      'mobile-design': 'PLP, IbisPaint (.ibis), PXD…',
+      'mobile-animation': 'ALM (Alight), KMPROJECT (Kinemaster), VNProj…',
+      capcut: 'Paste CapCut link in Details step',
+    }[wizCategory] ?? '';
+    const hintSpan = document.getElementById('wiz-accepted-hint');
+    if (hintSpan) hintSpan.textContent = `— Accepted: ${hintText}`;
+    goTo(2);
+  });
+
+  // ── Step 2: file drops ────────────────────────────────────────────────────
+  function bindDrop(zoneId, inputId, infoId, onFile) {
+    const zone  = document.getElementById(zoneId);
+    const input = document.getElementById(inputId);
+    const info  = document.getElementById(infoId);
+    zone?.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone?.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone?.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('dragover'); if (e.dataTransfer.files[0]) { input.files = e.dataTransfer.files; onFile(e.dataTransfer.files[0], info); } });
+    input?.addEventListener('change', () => { if (input.files[0]) onFile(input.files[0], info); });
+  }
+
+  function showFileInfo(file, infoEl) {
+    if (!infoEl) return;
+    const emoji = file.type.startsWith('image/') ? '🖼' : file.type.startsWith('video/') ? '▶' : '📦';
+    infoEl.style.display = 'flex';
+    infoEl.innerHTML = `<span>${emoji}</span><span style="font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_esc(file.name)}</span><span style="font-size:0.75rem;color:var(--text-muted)">${(file.size/1024/1024).toFixed(1)}MB</span>`;
+  }
+
+  bindDrop('wiz-drop-zone', 'wiz-file-input', 'wiz-file-info', (file, info) => {
     templateFile = file;
-    showLocalPreview(file);
-  }
-  dropZone?.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-  dropZone?.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-  dropZone?.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
-  fileInput?.addEventListener('change', () => handleFile(fileInput.files?.[0]));
+    showFileInfo(file, info);
+    document.getElementById('wiz-next-2').disabled = !thumbFile;
+  });
 
-  uploadForm?.addEventListener('submit', async e => {
-    e.preventDefault();
-    const title    = document.getElementById('tmpl-title')?.value.trim();
-    const category = document.getElementById('tmpl-category')?.value;
-    const price    = document.getElementById('tmpl-price')?.value;
-    const desc     = document.getElementById('tmpl-desc')?.value.trim();
-    const software = document.getElementById('tmpl-software')?.value.trim();
-    const errorEl  = document.getElementById('upload-error');
+  bindDrop('wiz-preview-zone', 'wiz-preview-input', 'wiz-preview-info', (file, info) => {
+    if (file.size > 200 * 1024 * 1024) { Toast.show('Preview video must be under 200MB', 'error'); return; }
+    previewFile = file;
+    showFileInfo(file, info);
+  });
 
-    if (!title || !category || !price || !desc) {
-      if (errorEl) { errorEl.textContent = 'Please fill all required fields.'; errorEl.style.display = 'block'; }
+  bindDrop('wiz-thumb-zone', 'wiz-thumb-input', null, (file) => {
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type)) { Toast.show('Thumbnail must be JPEG or PNG', 'error'); return; }
+    if (file.size > 5 * 1024 * 1024) { Toast.show('Thumbnail must be under 5MB', 'error'); return; }
+    thumbFile = file;
+    const preview = document.getElementById('wiz-thumb-preview');
+    const img     = document.getElementById('wiz-thumb-img');
+    if (preview && img) { img.src = URL.createObjectURL(file); preview.style.display = 'block'; }
+    document.getElementById('wiz-next-2').disabled = !templateFile;
+  });
+
+  document.getElementById('wiz-back-2')?.addEventListener('click', () => goTo(1));
+  document.getElementById('wiz-next-2')?.addEventListener('click', () => goTo(3));
+
+  // ── Step 3: details ───────────────────────────────────────────────────────
+  document.getElementById('wiz-price')?.addEventListener('input', function () {
+    const p = parseFloat(this.value) || 0;
+    document.getElementById('wiz-creator-earn').textContent  = `$${(p * 0.8).toFixed(2)}`;
+    document.getElementById('wiz-platform-earn').textContent = `$${(p * 0.2).toFixed(2)}`;
+  });
+
+  document.getElementById('wiz-back-3')?.addEventListener('click', () => goTo(2));
+  document.getElementById('wiz-next-3')?.addEventListener('click', () => {
+    const title  = document.getElementById('wiz-title')?.value.trim();
+    const subcat = document.getElementById('wiz-subcategory')?.value;
+    const price  = document.getElementById('wiz-price')?.value;
+    const desc   = document.getElementById('wiz-desc')?.value.trim();
+    const errEl  = document.getElementById('wiz-details-error');
+    if (!title || !subcat || !price || !desc) {
+      errEl.textContent = 'Please fill all required fields.';
+      errEl.style.display = 'block';
       return;
     }
-    if (!templateFile) {
-      if (errorEl) { errorEl.textContent = 'Please select a template file.'; errorEl.style.display = 'block'; }
-      return;
+    errEl.style.display = 'none';
+
+    // Populate review
+    const catLabel = { motion:'Motion Graphics', design:'Graphic Design', animation:'Animation 2D/3D', '3d':'3D Assets', universal:'Universal Export', 'mobile-design':'Mobile Design', 'mobile-animation':'Mobile Animation', capcut:'CapCut Link' };
+    document.getElementById('rev-category').textContent = catLabel[wizCategory] ?? wizCategory;
+    document.getElementById('rev-title').textContent    = title;
+    document.getElementById('rev-price').textContent    = `$${parseFloat(price).toFixed(2)} USD`;
+    document.getElementById('rev-software').textContent = document.getElementById('wiz-software')?.value || '—';
+    document.getElementById('rev-file').textContent     = templateFile?.name ?? '—';
+
+    // Show thumb preview in review
+    const revThumb = document.getElementById('wiz-review-thumb');
+    if (revThumb && thumbFile) {
+      revThumb.innerHTML = `<img src="${URL.createObjectURL(thumbFile)}" style="width:100%;max-width:320px;border-radius:var(--radius-md);border:1px solid var(--border)">`;
     }
-    if (errorEl) errorEl.style.display = 'none';
+
+    goTo(4);
+  });
+
+  // ── Step 4: submit ────────────────────────────────────────────────────────
+  document.getElementById('wiz-back-4')?.addEventListener('click', () => goTo(3));
+
+  document.getElementById('wiz-submit-btn')?.addEventListener('click', async () => {
+    const errEl = document.getElementById('wiz-submit-error');
+    errEl.style.display = 'none';
 
     const formData = new FormData();
-    formData.append('title',       title);
-    formData.append('category',    category);
-    formData.append('price',       price);
-    formData.append('description', desc);
-    formData.append('software',    JSON.stringify(software ? software.split(',').map(s => s.trim()) : []));
-    formData.append('tags',        JSON.stringify([]));
-    formData.append('currency',    'USD');
-    formData.append('file',        templateFile);
+    formData.append('title',       document.getElementById('wiz-title').value.trim());
+    formData.append('category',    document.getElementById('wiz-subcategory').value);
+    formData.append('price',       document.getElementById('wiz-price').value);
+    formData.append('description', document.getElementById('wiz-desc').value.trim());
+    formData.append('software',    JSON.stringify(
+      (document.getElementById('wiz-software')?.value || '')
+        .split(',').map(s => s.trim()).filter(Boolean)
+    ));
+    formData.append('tags',     JSON.stringify([]));
+    formData.append('currency', 'USD');
+    formData.append('file',     templateFile);
+    if (thumbFile)   formData.append('thumbnail', thumbFile);
+    if (previewFile) formData.append('preview',   previewFile);
 
-    const btn = document.getElementById('upload-submit-btn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Preparing…'; }
+    const btn = document.getElementById('wiz-submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-9-9"/></svg> Uploading 0%…`;
 
-    // Refresh token before starting — large uploads can outlive a short-lived JWT
     await api.restoreSession().catch(() => {});
-
-    if (btn) btn.textContent = 'Uploading 0%…';
-
     const res = await api.upload('/templates', formData, pct => {
-  if (btn) btn.textContent = pct < 100
-    ? `Uploading ${pct}%…`
-    : '⚙️ Processing on server…';  // ← shows after 100% while Cloudinary processes
-});
+      btn.innerHTML = pct < 100
+        ? `Uploading ${pct}%…`
+        : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-9-9"/></svg> Processing…`;
+    });
 
-    if (btn) { btn.disabled = false; btn.textContent = 'Submit for Review'; }
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Submit for Review`;
+
     if (!res.ok) {
-      // Show specific field errors from Zod if present
-      if (res.data?.errors?.length) {
-        const msgs = res.data.errors.map(e => `${e.field}: ${e.message}`).join('\n');
-        if (errorEl) { errorEl.textContent = msgs; errorEl.style.display = 'block'; }
-      } else {
-        Toast.show(res.data?.message ?? res.error ?? 'Upload failed', 'error');
-      }
+      errEl.textContent = res.data?.message ?? res.error ?? 'Upload failed. Please try again.';
+      errEl.style.display = 'block';
       return;
     }
 
     Toast.show('Template submitted! Pending admin review before going live.', 'success');
-    uploadForm.reset();
-    templateFile = null;
-    document.getElementById('auto-preview-wrap').style.display = 'none';
-    document.getElementById('file-info').style.display = 'none';
+    // Reset wizard
+    templateFile = null; previewFile = null; thumbFile = null; wizCategory = null;
+    document.querySelectorAll('.wiz-cat-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('wiz-next-1').disabled = true;
+    document.getElementById('wiz-next-2').disabled = true;
+    document.getElementById('wiz-file-info').style.display   = 'none';
+    document.getElementById('wiz-preview-info').style.display = 'none';
+    document.getElementById('wiz-thumb-preview').style.display = 'none';
+    goTo(1);
     activateTab('templates');
   });
 }
 
 async function initTutorialUploadPanel() {
-  const dropZone  = document.getElementById('tutorial-drop-zone');
-const tplSelect = document.getElementById('tut-template');
-if (tplSelect) {
-  const userId = AppState.getUser()?.id ?? AppState.getUser()?._id;
-  const res = await api.templates.list({ creatorId: userId, limit: 50, status: 'APPROVED' });
-  if (res.ok && res.data?.templates?.length) {
-    res.data.templates.forEach(t => {
-      const opt = document.createElement('option');
-      opt.value = String(t._id ?? t.id);
-      opt.textContent = t.title;
-      tplSelect.appendChild(opt);
-    });
-  }
-}
-  const fileInput = document.getElementById('tutorial-file-input');
-  const previewEl = document.getElementById('tutorial-preview');
   const tutForm   = document.getElementById('tutorial-form');
-  let tutorialFile = null;
+const previewEl = document.getElementById('tutorial-preview');
+  const ytInput = document.getElementById('tut-youtube-url');
+  const ytPreview = document.getElementById('tut-yt-preview');
+  const ytIframe  = document.getElementById('tut-yt-iframe');
 
-  dropZone?.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-  dropZone?.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-  function handleTutorialFile(f) {
-    if (!f) return;
-    if (!f.type.startsWith('video/')) {
-      Toast.show('Please select a video file (MP4 or WebM).', 'error');
-      return;
-    }
-    if (f.size > 70 * 1024 * 1024) {
-      Toast.show('Tutorial videos must be under 70MB. Please compress your video first (try HandBrake or ffmpeg).', 'error');
-      return;
-    }
-    tutorialFile = f;
-    renderTutPreview(f);
+  function getYouTubeId(url) {
+    try {
+      const u = new URL(url);
+      const validHosts = ['www.youtube.com', 'youtube.com', 'youtu.be'];
+      if (!validHosts.includes(u.hostname)) return null;
+      if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+      return u.searchParams.get('v') || null;
+    } catch { return null; }
   }
 
-  dropZone?.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleTutorialFile(e.dataTransfer.files[0]); });
-  fileInput?.addEventListener('change', () => handleTutorialFile(fileInput.files?.[0]));
-
+  ytInput?.addEventListener('input', () => {
+    const id = getYouTubeId(ytInput.value.trim());
+    if (id) {
+      ytIframe.src = `https://www.youtube.com/embed/${id}`;
+      ytPreview.style.display = 'block';
+    } else {
+      ytPreview.style.display = 'none';
+      ytIframe.src = '';
+    }
+  });
   function renderTutPreview(f) {
     if (!previewEl) return;
     previewEl.innerHTML = `<div class="preview-file"><span>▶</span><span style="font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_esc(f.name)}</span><span style="font-size:0.75rem;color:var(--text-muted)">${(f.size/1024/1024).toFixed(1)}MB</span></div>`;
@@ -1545,48 +1900,32 @@ if (tplSelect) {
     if (!title || !software || !desc) {
       if (errorEl) { errorEl.textContent = 'Please fill all required fields.'; errorEl.style.display = 'block'; } return;
     }
-    if (tutorialFile.size > 70 * 1024 * 1024) {
-      if (errorEl) { errorEl.textContent = 'Video must be under 70MB. Please compress it first.'; errorEl.style.display = 'block'; } return;
+    const youtubeUrl = document.getElementById('tut-youtube-url')?.value.trim();
+    const youtubeId  = getYouTubeId(youtubeUrl || '');
+    if (!youtubeId) {
+      if (errorEl) { errorEl.textContent = 'Please paste a valid YouTube URL.'; errorEl.style.display = 'block'; } return;
     }
     if (errorEl) errorEl.style.display = 'none';
-    const formData = new FormData();
-    formData.append('title',       title);
-    formData.append('software',    software);
-    formData.append('description', desc);
-    const linkedTemplate = document.getElementById('tut-template')?.value;
-    if (linkedTemplate) formData.append('templateId', linkedTemplate);
-    formData.append('video', tutorialFile);
-    const btn = document.getElementById('tutorial-submit-btn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Preparing…'; }
+ const linkedTemplate = document.getElementById('tut-template')?.value;
 
-    // Refresh token before starting — large uploads can outlive a short-lived JWT
+    const btn = document.getElementById('tutorial-submit-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+
     await api.restoreSession().catch(() => {});
 
-    if (btn) btn.textContent = 'Uploading 0%…';
-    // Spinner that cycles while Cloudinary processes after 100%
-    let spinInterval = null;
-    const spinFrames = ['⚙️ Processing ·', '⚙️ Processing ··', '⚙️ Processing ···', '⚙️ Processing ····'];
-    let spinIdx = 0;
-
-    const res = await api.tutorials.upload(formData, pct => {
-      if (pct < 100) {
-        if (spinInterval) { clearInterval(spinInterval); spinInterval = null; }
-        if (btn) btn.textContent = `Uploading ${pct}%…`;
-      } else {
-        if (!spinInterval) {
-          spinInterval = setInterval(() => {
-            if (btn) btn.textContent = spinFrames[spinIdx % spinFrames.length];
-            spinIdx++;
-          }, 400);
-        }
-      }
+    const res = await api.post('/tutorials', {
+      title,
+      category: software,
+      description: desc,
+      youtubeUrl,
+      ...(linkedTemplate ? { templateId: linkedTemplate } : {}),
     });
-
-    if (spinInterval) { clearInterval(spinInterval); spinInterval = null; }
     if (btn) { btn.disabled = false; btn.textContent = 'Submit Tutorial for Review'; }
     if (!res.ok) { Toast.show(res.error ?? 'Upload failed', 'error'); return; }
     Toast.show('Tutorial submitted for review!', 'success');
-    tutForm.reset(); tutorialFile = null;
+    tutForm.reset();
+    if (ytInput) ytInput.value = '';
+    if (ytPreview) { ytPreview.style.display = 'none'; ytIframe.src = ''; }
     if (previewEl) previewEl.innerHTML = '';
     loadMyTutorials();
   });
@@ -1804,6 +2143,8 @@ function activateTab(target) {
   if (target === 'projects')                               loadProjects();
   if (target === 'following')                              loadFollowing();
   if (target === 'favourites')                             loadFavourites();
+  if (target === 'faqs') { /* static content, nothing to load */ }
+if (target === 'community-guidelines') { /* static content, nothing to load */ }
   if (target === 'upload'            && !_uploadInited)   { initUploadPanel();         _uploadInited    = true; }
   if (target === 'tutorials-upload'  && !_tutUploadInited){ initTutorialUploadPanel(); _tutUploadInited = true; }
   if (target === 'settings') { initSettingsPanel(); }
@@ -1898,10 +2239,243 @@ function openRatingModal(orderId, creatorId) {
   });
 }
 
+async function openEscrowPaymentModal({ projectId, bidId, creatorId, creatorName, amount }) {
+  const modal   = document.getElementById('escrow-payment-modal');
+  const errEl   = document.getElementById('escrow-pay-error');
+  const fee     = +(amount * 0.20).toFixed(2);
+  const total   = +(amount + fee).toFixed(2);
+
+  document.getElementById('escrow-amount-display').textContent = `$${amount.toFixed(2)}`;
+  document.getElementById('escrow-fee-display').textContent    = `$${fee.toFixed(2)}`;
+  document.getElementById('escrow-total-display').textContent  = `$${total.toFixed(2)}`;
+  if (errEl) errEl.style.display = 'none';
+
+  // Fresh country check — same pattern as initPayoutPanel
+  const meRes = await api.auth.me().catch(() => ({ ok: false }));
+  if (meRes.ok && meRes.data?.user) {
+    AppState.setAuth(AppState.getToken(), { ...AppState.getUser(), ...meRes.data.user });
+  }
+  const isGhana = (AppState.getUser()?.country ?? '').toUpperCase() === 'GH';
+
+  // Show/hide Paystack payment option
+  const psOpt = document.getElementById('escrow-paystack-opt');
+  if (psOpt) psOpt.style.display = isGhana ? '' : 'none';
+
+  const methodSel      = document.getElementById('escrow-pay-method');
+  const cardFields     = document.getElementById('escrow-card-fields');
+  const paystackFields = document.getElementById('escrow-paystack-fields');
+
+  function refreshMethodUI() {
+    const v = methodSel.value;
+    if (cardFields)     cardFields.style.display     = v === 'card'     ? 'block' : 'none';
+    if (paystackFields) paystackFields.style.display = v === 'paystack' ? 'block' : 'none';
+  }
+  // Default to Paystack for Ghana, card otherwise
+  methodSel.value = isGhana ? 'paystack' : 'card';
+  refreshMethodUI();
+
+  // Remove stale listeners by cloning the select
+  const freshMethod = methodSel.cloneNode(true);
+  methodSel.replaceWith(freshMethod);
+  freshMethod.value = isGhana ? 'paystack' : 'card';
+  refreshMethodUI();
+  freshMethod.addEventListener('change', () => {
+    const v = freshMethod.value;
+    if (cardFields)     cardFields.style.display     = v === 'card'     ? 'block' : 'none';
+    if (paystackFields) paystackFields.style.display = v === 'paystack' ? 'block' : 'none';
+  });
+
+  // Card number / expiry formatting
+  const cardNumEl = document.getElementById('escrow-card-number');
+  const cardExpEl = document.getElementById('escrow-card-expiry');
+  if (cardNumEl) {
+    const freshNum = cardNumEl.cloneNode(true);
+    cardNumEl.replaceWith(freshNum);
+    freshNum.addEventListener('input', function () {
+      this.value = this.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim().slice(0,19);
+    });
+  }
+  if (cardExpEl) {
+    const freshExp = cardExpEl.cloneNode(true);
+    cardExpEl.replaceWith(freshExp);
+    freshExp.addEventListener('input', function () {
+      this.value = this.value.replace(/\D/g,'').replace(/^(\d{2})(\d)/,'$1/$2').slice(0,5);
+    });
+  }
+
+  // Close handlers
+  ['escrow-modal-close','escrow-modal-cancel'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const fresh = el.cloneNode(true);
+    el.replaceWith(fresh);
+    fresh.addEventListener('click', () => modal.classList.remove('open'));
+  });
+  modal.onclick = e => { if (e.target === modal) modal.classList.remove('open'); };
+
+  // Pay button — clone to strip stale listeners
+  const payBtn = document.getElementById('escrow-pay-btn');
+  const freshPayBtn = payBtn.cloneNode(true);
+  payBtn.replaceWith(freshPayBtn);
+
+  freshPayBtn.addEventListener('click', async () => {
+    if (errEl) errEl.style.display = 'none';
+    const method = document.getElementById('escrow-pay-method')?.value
+                ?? freshMethod.value;
+
+    // ── Validate ──────────────────────────────────────────────────────────
+    if (method === 'card') {
+      const num = document.getElementById('escrow-card-number')?.value.replace(/\s/g,'');
+      const exp = document.getElementById('escrow-card-expiry')?.value;
+      const cvv = document.getElementById('escrow-card-cvv')?.value;
+      if (!num || num.length < 13 || !exp || !cvv || cvv.length < 3) {
+        if (errEl) { errEl.textContent = 'Please complete your card details'; errEl.style.display = 'block'; }
+        return;
+      }
+    }
+    if (method === 'paystack') {
+      const num = document.getElementById('escrow-paystack-number')?.value.trim();
+      if (!num) {
+        if (errEl) { errEl.textContent = 'Please enter your mobile money or bank account number'; errEl.style.display = 'block'; }
+        return;
+      }
+    }
+
+    freshPayBtn.disabled    = true;
+    freshPayBtn.textContent = 'Processing…';
+
+    let payRes;
+
+    if (method === 'paystack') {
+      // ── Paystack MoMo / Bank charge ──────────────────────────────────
+      payRes = await api.payments.paystackMomoCharge({
+        projectId,
+        bidId,
+        amount:   total,
+        currency: 'GHS',
+        phone:    document.getElementById('escrow-paystack-number')?.value.trim(),
+        network:  document.getElementById('escrow-paystack-network')?.value,
+        meta:     { creatorId, creatorName },
+      });
+    } else if (method === 'card') {
+      // ── Card via your payment initializer ────────────────────────────
+      payRes = await api.payments.initialize({
+        projectId,
+        bidId,
+        amount:      total,
+        currency:    'USD',
+        callbackUrl: `${window.location.origin}/payment-callback.html`,
+        meta:        { creatorId, creatorName, type: 'escrow' },
+      });
+      // For card, redirect to hosted payment page
+      if (payRes.ok && payRes.data?.authorizationUrl) {
+        window.location.href = payRes.data.authorizationUrl;
+        return;
+      }
+    } else {
+      // PayPal or other — initialize generic
+      payRes = await api.payments.initialize({
+        projectId,
+        bidId,
+        amount:      total,
+        currency:    'USD',
+        method,
+        callbackUrl: `${window.location.origin}/payment-callback.html`,
+        meta:        { creatorId, creatorName, type: 'escrow' },
+      });
+      if (payRes.ok && payRes.data?.authorizationUrl) {
+        window.location.href = payRes.data.authorizationUrl;
+        return;
+      }
+    }
+
+    freshPayBtn.disabled    = false;
+    freshPayBtn.textContent = '🔒 Pay & Fund Escrow';
+
+    if (!payRes.ok) {
+      if (errEl) {
+        errEl.textContent = payRes.error ?? 'Payment failed. Please try again.';
+        errEl.style.display = 'block';
+      }
+      return;
+    }
+
+    // ── Payment succeeded — fund escrow on backend ────────────────────
+    const escrowRes = await api.projects.fundEscrow({
+      projectId,
+      bidId,
+      amount:    total,
+      method,
+      reference: payRes.data?.reference ?? payRes.data?.data?.reference ?? '',
+    });
+
+    if (!escrowRes.ok) {
+      if (errEl) {
+        errEl.textContent = escrowRes.error ?? 'Escrow funding failed. Contact support.';
+        errEl.style.display = 'block';
+      }
+      return;
+    }
+
+    modal.classList.remove('open');
+    Toast.show('Escrow funded! The creator has been notified to begin work. ✓', 'success');
+
+    // ── Auto-open message thread with the creator ─────────────────────
+    if (creatorId) {
+      const msgRes = await api.messages.startConversation(
+        creatorId,
+        `Hi! I just funded the escrow for our project. Looking forward to working with you! 🎉`
+      );
+      if (msgRes.ok) {
+        const convId = msgRes.data?.conversationId ?? msgRes.data?.conversation?._id ?? creatorId;
+        sessionStorage.setItem('fv_open_conversation', convId);
+      }
+      // Navigate to messages regardless
+      sessionStorage.setItem('fv_nav_target', 'messages');
+      setTimeout(() => { window.location.href = 'messages.html'; }, 800);
+    }
+
+    loadProjects();
+  });
+
+  modal.classList.add('open');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (!AppState.isLoggedIn()) { window.location.replace('login.html'); return; }
 
   applyRoleUI();
+
+  const hireEntry = document.getElementById('hire-entry');
+const projectsWrap = document.getElementById('projects-list-wrap');
+const toggleBtn = document.getElementById('toggle-projects-btn');
+
+if (!isCreator() && hireEntry) {
+    hireEntry.style.display = 'block';
+    // Auto-expand if coming from a deep link or redirect
+    const autoExpand = !!(sessionStorage.getItem('fv_nav_target') === 'projects' || window.location.hash === '#projects');
+    let projectsVisible = autoExpand;
+    if (autoExpand) {
+        projectsWrap.style.display = 'block';
+        loadProjects();
+        if (toggleBtn) toggleBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg> Hide projects`;
+    }
+    toggleBtn?.addEventListener('click', () => {
+        projectsVisible = !projectsVisible;
+        projectsWrap.style.display = projectsVisible ? 'block' : 'none';
+
+        toggleBtn.innerHTML = projectsVisible
+            ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg> Hide projects`
+            : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> View my projects`;
+        if (projectsVisible) loadProjects();
+    });
+} else if (isCreator() && projectsWrap) {
+    projectsWrap.style.display = 'block';
+    const browseBar = document.createElement('div');
+    browseBar.style.cssText = 'margin-bottom:var(--space-5)';
+    browseBar.innerHTML = `<a href="project-marketplace.html" class="btn btn--primary btn--sm">🔎 Browse Project Marketplace</a>`;
+    projectsWrap.parentNode.insertBefore(browseBar, projectsWrap);
+}
 
   const sidebarToggleBtn = document.getElementById('sidebar-toggle');
   const sidebar          = document.getElementById('dash-sidebar');
@@ -1933,7 +2507,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const pendingTarget = sessionStorage.getItem('fv_nav_target');
   sessionStorage.removeItem('fv_nav_target');
   const hash = window.location.hash.slice(1);
-  activateTab(pendingTarget || hash || 'overview');
+  const initialTab = pendingTarget || hash || 'overview';
+  activateTab(initialTab);
+
+
+  // Auto-expand projects list for buyers landing on #projects
+  if (initialTab === 'projects' && !isCreator()) {
+    const projectsWrapEl = document.getElementById('projects-list-wrap');
+    const toggleBtnEl    = document.getElementById('toggle-projects-btn');
+    if (projectsWrapEl) projectsWrapEl.style.display = 'block';
+    if (toggleBtnEl) toggleBtnEl.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg> Hide projects`;
+    loadProjects();
+  }
 
   if (isCreator()) {
     loadCreatorOverview();

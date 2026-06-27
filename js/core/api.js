@@ -9,6 +9,7 @@
 
 import AppState from './state.js';
 let BASE_URL = 'https://flowva-backend-ztai.onrender.com/api';
+let _baseUrlReady = null;
 
 async function _resolveBaseUrl() {
   if (window.FLOWVA_API_URL) {
@@ -27,7 +28,7 @@ async function _resolveBaseUrl() {
   }
 }
 
-_resolveBaseUrl();
+_baseUrlReady = _resolveBaseUrl();
 let _refreshPromise = null;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -107,6 +108,7 @@ function _showRateLimitToast(retryAfter) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function request(method, path, body = null, retry = true) {
+  await _baseUrlReady;   // ← add this
   const headers = { 'Content-Type': 'application/json' };
   const token = AppState.getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -270,13 +272,13 @@ const api = {
   },
 
   // ── Payments / Checkout ───────────────────────────────────────────────────
-  // Helio only. No Paystack, no Flutterwave.
-  // initialize returns { authorizationUrl, reference, orderId }
-  // redirect buyer to authorizationUrl (hel.io/pay/...) then poll verify
-  payments: {
-    initialize: (payload) => request('POST', '/payments/initialize', payload),
-    verify:     (reference) => request('GET', `/payments/verify/${reference}`),
-    // webhook/helio is called by Helio directly — not called from frontend
+ payments: {
+    initialize:        (payload)    => request('POST', '/payments/initialize', payload),
+    verify:            (reference)  => request('GET',  `/payments/verify/${reference}`),
+    // Paystack — Ghana buyers only
+    paystackInit:      (payload)    => request('POST', '/payments/paystack/initialize', payload),
+    paystackVerify:    (reference)  => request('GET',  `/payments/paystack/verify/${reference}`),
+    paystackMomoCharge:(payload)    => request('POST', '/payments/paystack/charge-momo', payload),
   },
 
   // ── Payouts ───────────────────────────────────────────────────────────────
@@ -286,8 +288,6 @@ const api = {
   payouts: {
     getWallet:      ()        => request('GET', '/payouts/wallet'),
     getSettings:    ()        => request('GET', '/payouts/settings'),
-    // Update creator's Solana USDC wallet address from dashboard
-    // payload: { solanaAddress: string }
     updateSettings: (payload) => request('PUT', '/payouts/settings', payload),
     getHistory:     ()        => request('GET', '/payouts/history'),
   },
@@ -335,15 +335,37 @@ const api = {
     requestRevision:  (projectId, note)  => request('POST',   `/projects/${projectId}/revision`, { note }),
     openDispute:      (projectId, reason)=> request('POST',   `/projects/${projectId}/dispute`, { reason }),
     uploadAttachment: (formData, onProg) => upload('/projects/upload-attachment', formData, onProg),
+    fundEscrow:       (payload)          => request('POST', '/projects/fund-escrow', payload),
   },
+
+  // ── Jobs (Full-Time / Contract) ───────────────────────────────────────────
+  jobs: {
+    list: (params = {}) => {
+        const qs = new URLSearchParams(params).toString();
+        return request('GET', `/jobs${qs ? `?${qs}` : ''}`);
+    },
+    get:    (id)      => request('GET',    `/jobs/${id}`),
+    create: (payload) => request('POST',   '/jobs', payload),
+    update: (id, payload) => request('PUT', `/jobs/${id}`, payload),
+    delete: (id)      => request('DELETE', `/jobs/${id}`),
+    apply:          (id, payload) => request('POST',   `/jobs/${id}/apply`, payload),
+    getApplicants:  (id)          => request('GET',    `/jobs/${id}/applicants`),
+    acceptApplicant:(id, userId)  => request('POST',   `/jobs/${id}/applicants/${userId}/accept`),
+    rejectApplicant:(id, userId)  => request('POST',   `/jobs/${id}/applicants/${userId}/reject`),
+    uploadLogo:     (formData)    => upload('/jobs/logo', formData),
+},
 
   // ── Messages ──────────────────────────────────────────────────────────────
   messages: {
-    getConversations:  ()                       => request('GET',   '/messages/conversations'),
-    getMessages:       (conversationId)         => request('GET',   `/messages/${conversationId}`),
-    send:              (conversationId, payload)=> request('POST',  `/messages/${conversationId}`, payload),
-    startConversation: (recipientId, payload)   => request('POST',  '/messages/start', { recipientId, ...payload }),
-    edit:              (messageId, payload)     => request('PATCH', `/messages/${messageId}`, payload),
+    getConversations:  ()                            => request('GET',   '/messages/conversations'),
+    getMessages:       (conversationId)              => request('GET',   `/messages/${conversationId}`),
+    send:              (conversationId, payload)     => request('POST',  `/messages/${conversationId}`, payload),
+    startConversation: (recipientId, initialMessage) => request('POST',  '/messages/start', {
+      recipientId,
+      ...(initialMessage ? { message: initialMessage } : {}),
+    }),
+    edit:              (messageId, payload)          => request('PATCH', `/messages/${messageId}`, payload),
+    markRead:          (conversationId)              => request('PATCH', `/messages/${conversationId}/read`),
   },
 
   // ── Notifications ─────────────────────────────────────────────────────────

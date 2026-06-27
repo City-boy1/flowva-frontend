@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="FAQs — Common questions about Flowva payments, escrow, uploading templates, and account setup.">
+    <script>(function () { var t = localStorage.getItem('flowva-theme') || 'light'; document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="icon" type="image/png" href="../assets/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+    <link rel="shortcut icon" href="../assets/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/images/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Flowva" />
+    <link rel="manifest" href="../assets/images/site.webmanifest" />
+    <title>FAQs — FLOWVA</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            margin: 0;
+        }
+
+        .faq-hero {
+            padding: 110px 24px 64px;
+            text-align: center;
+            background: var(--bg-surface);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .faq-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 60%, var(--accent-glow) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .faq-hero-eyebrow {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--accent-hover);
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-glow);
+            border-radius: var(--radius-full);
+            padding: 5px 16px;
+            margin-bottom: 20px;
+        }
+
+        .faq-hero h1 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            font-family: var(--font-display);
+            color: var(--text-primary);
+            margin: 0 0 16px;
+            letter-spacing: -0.03em;
+        }
+
+        .faq-hero p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* search */
+        .faq-search-wrap {
+            max-width: 480px;
+            margin: 32px auto 0;
+            position: relative;
+        }
+
+        .faq-search-wrap input {
+            width: 100%;
+            padding: 14px 20px 14px 48px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--bg-overlay);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .faq-search-wrap input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .faq-search-wrap input:focus {
+            border-color: var(--border-focus);
+        }
+
+        .faq-search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        /* categories */
+        .faq-categories {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 40px 24px 0;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-cat-btn {
+            padding: 8px 18px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border);
+            background: var(--bg-raised);
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .faq-cat-btn:hover,
+        .faq-cat-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        /* accordion */
+        .faq-body {
+            max-width: 760px;
+            margin: 48px auto 80px;
+            padding: 0 24px;
+        }
+
+        .faq-group {
+            margin-bottom: 40px;
+        }
+
+        .faq-group-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-hover);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border, #e5e7eb);
+        }
+
+        .faq-item {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
+            overflow: hidden;
+            background: var(--bg-raise);
+            transition: border-color 0.2s;
+        }
+
+        .faq-item.open {
+            border-color: var(--border-hover);
+        }
+
+        .faq-q {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 18px 22px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: left;
+        }
+
+        .faq-q-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--bg-overlay);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1rem;
+            color: var(--accent);
+            transition: transform 0.25s ease, background 0.2s;
+        }
+
+        .faq-item.open .faq-q-icon {
+            transform: rotate(45deg);
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, padding 0.25s ease;
+            padding: 0 22px;
+        }
+
+        .faq-item.open .faq-a {
+            max-height: 400px;
+            padding: 0 22px 20px;
+        }
+
+        .faq-a p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.75;
+            margin: 0;
+        }
+
+        /* still need help */
+        .faq-help {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 40px;
+            text-align: center;
+            max-width: 760px;
+            margin: 0 auto 80px;
+        }
+
+        .faq-help h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 0 10px;
+            color: var(--text-primary);
+        }
+
+        .faq-help p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin: 0 0 24px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <section class="faq-hero">
+        <div class="faq-hero-eyebrow">Help Center</div>
+        <h1>Frequently Asked Questions</h1>
+        <p>Common questions about payments, escrow, uploading templates, commissions, and account setup.</p>
+        <div class="faq-search-wrap">
+            <span class="faq-search-icon">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="7" />
+                    <path stroke-linecap="round" d="M21 21l-4.35-4.35" />
+                </svg>
+            </span>
+            <input type="text" id="faq-search" placeholder="Search questions…">
+        </div>
+    </section>
+
+    <div class="faq-categories">
+        <button class="faq-cat-btn active" data-cat="all">All</button>
+        <button class="faq-cat-btn" data-cat="payments">Payments</button>
+        <button class="faq-cat-btn" data-cat="creators">For Creators</button>
+        <button class="faq-cat-btn" data-cat="buyers">For Buyers</button>
+        <button class="faq-cat-btn" data-cat="account">Account</button>
+        <button class="faq-cat-btn" data-cat="uploads">Uploads</button>
+    </div>
+
+    <div class="faq-body">
+
+        <div class="faq-group" data-cat="payments">
+            <div class="faq-group-title">Payments & Escrow</div>
+            <div class="faq-item">
+                <button class="faq-q">How do payments work on Flowva? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Flowva uses an escrow system. When a buyer purchases a template or hires a creator, funds are
+                        held securely by Flowva and only released to the creator once the buyer confirms satisfaction.
+                        This protects both parties throughout every transaction.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">What payment methods does Flowva accept? <span
+                        class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Buyers can pay using Skrill, Grey, Mastercard, or Bank Account. Flowva does not use Paystack or
+                        cryptocurrency payments. Escrow secures the payment but does not process it directly.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How do creators receive payouts? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Creators receive payouts in USD only via Skrill or Grey. Skrill payouts go to your registered
+                        Skrill email address. Grey payouts go to your Grey account number or email. Add your payout
+                        details in Dashboard → Payouts → Payout Settings.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">When are payouts processed? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Payouts are processed weekly or monthly depending on your selected payout frequency. You can set
+                        your preference in Dashboard → Payouts → Settings. All payouts are made in USD only.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How much do creators earn per sale? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Creators keep 80% of every sale. The first 50 creators on Flowva earn a special 90% commission
+                        rate as a founding reward. Flowva retains 20% (or 10% for early adopters) as a platform fee.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-group" data-cat="creators">
+            <div class="faq-group-title">For Creators</div>
+            <div class="faq-item">
+                <button class="faq-q">How do I become a creator on Flowva? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Sign up for a free account, then apply to become a creator from your Dashboard Overview. You'll
+                        need to provide a portfolio link, list the software you use, and write a short bio. Applications
+                        are reviewed within 48 hours and you'll receive an email with the outcome.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">Can mobile creators upload templates? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Yes. If your software can generate a template file, you can sell it on Flowva. We accept mobile
+                        formats including Alight Motion (.alm), KineMaster (.kmproject), VN Editor (.vnproj), CapCut
+                        template links, Pixellab (.plp), and IbisPaint (.ibis) files.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">What file types are accepted for templates? <span
+                        class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Flowva accepts a wide range: Graphic design (PSD, AI, FIG, SVG, CDR, Sketch, Procreate), motion
+                        graphics (AEP, PRPROJ, MOGRT, DRP), animation (BLEND, C4D, MA, FLA), mobile (ALM, KMPROJECT,
+                        CapCut links), 3D assets (OBJ, FBX, GLB), and universal exports (PNG, JPG, PDF, MP4, MOV). Size
+                        limits range from 200MB for exports up to 1.5GB for animation files.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How long does template review take? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>The Flowva admin team reviews all submitted templates before they go live. This typically takes
+                        24–48 hours. You'll receive an email once your template is approved or if changes are needed.
+                        You can track pending templates in Dashboard → My Templates.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How do I set my template price? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>You set the price when uploading your template. Prices must be in USD. We recommend browsing
+                        similar templates on the marketplace to price competitively. The upload form shows you your
+                        estimated earnings (80% of your set price) in real time.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How do tutorials work? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Tutorials are hosted on YouTube and embedded directly on Flowva for viewers to watch. Upload your
+                        tutorial to YouTube first (set it to Public or Unlisted), then paste the YouTube link in
+                        Dashboard → Upload Tutorial. Tutorials are free for all Flowva users and help drive traffic to
+                        your paid templates.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How do I add my payout details? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Go to Dashboard → Payouts → Payout Settings. Enter your Skrill email (the email registered with
+                        your Skrill account) or your Grey account details. You only need to add one method. Payouts are
+                        made in USD only.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-group" data-cat="buyers">
+            <div class="faq-group-title">For Buyers</div>
+            <div class="faq-item">
+                <button class="faq-q">How do I purchase a template? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Browse the marketplace, click Buy on any template, and complete checkout using Skrill, Grey,
+                        Mastercard, or Bank Account. Your payment is held in escrow and the download link is released
+                        immediately after confirmation.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">Can I preview a template before buying? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Yes. Every template has a Preview button that shows a video or image preview. Click Preview on
+                        any template card to watch it before purchasing.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">Can I get a refund on a purchased template? <span
+                        class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Because templates are digital downloads, refunds are handled case-by-case. If the template was
+                        not delivered as described or there was a technical issue, contact flowva3@gmail.com with your
+                        order details. Do not initiate a chargeback without first contacting Flowva support.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">Can I share or resell a template I purchased? <span
+                        class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>No. Purchased templates are licensed for your personal or commercial use only. Sharing,
+                        redistributing, or reselling purchased files is a violation of your license and Flowva's Terms
+                        of Service.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How do I hire a freelancer for a one-off project? <span
+                        class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Go to the Project Marketplace and click Freelance. Post your project brief with your budget and
+                        deadline and receive bids from creators. Review each bid, accept the one that suits you, and
+                        payment goes into escrow. You only release funds once you're happy with the delivery.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">What is the difference between Freelance and Contract / Long-term hiring? <span
+                        class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Freelance projects are one-off, fixed-scope engagements with a set budget and deadline — ideal
+                        for a single deliverable like a logo or video. Contract / Long-term roles are ongoing
+                        engagements where you post a role, receive applications, and hire a creator for a monthly
+                        retainer or extended commitment. Both are available in the Project Marketplace under their
+                        respective tabs.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How do I post a contract or long-term role? <span
+                        class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Go to the Project Marketplace, switch to the Contract / Long-term tab, and click Post a Contract
+                        Role. Fill in the job title, company, description, salary range, location, and required fields.
+                        Creators will apply and you can review their cover letters and portfolios before accepting.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">What happens after I accept a bid or application? <span
+                        class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>For freelance projects, accepting a bid opens a direct message thread with the creator to discuss
+                        next steps and fund escrow to begin work. For contract roles, accepting an application notifies
+                        the creator and opens a conversation so you can arrange terms and onboarding.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How do I raise a dispute on a project? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>If you are unsatisfied with a delivery, you can open a dispute from your project dashboard before
+                        approving the delivery. Flowva's admin team will review the case within 48 hours and decide
+                        whether to release funds to the creator or refund you. Never file a chargeback without first
+                        going through this process.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How do I rate a creator after a completed order? <span
+                        class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>After a completed and confirmed order, you'll see a Rate button in Dashboard → My Purchases. You
+                        can leave a star rating and optional written review. Ratings help other buyers make informed
+                        decisions and reward quality creators.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-group" data-cat="payments">
+            <div class="faq-group-title">Escrow & Safety</div>
+            <div class="faq-item">
+                <button class="faq-q">How does Flowva's escrow system work? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>When a buyer makes a payment, funds are held in Flowva's escrow — a secure holding layer — rather
+                        than going directly to the creator. Once the transaction is confirmed and any dispute window
+                        closes, escrow releases the creator's share. Escrow protects both parties from fraud and ensures
+                        creators are paid fairly.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">Can I request payment outside of Flowva? <span
+                        class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>No. Requesting or accepting payment outside of Flowva's escrow system is strictly prohibited and
+                        voids all dispute protections for both the buyer and creator. All transactions — including
+                        freelance work and contract roles — must go through Flowva's platform.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-group" data-cat="account">
+            <div class="faq-group-title">Account & Settings</div>
+            <div class="faq-item">
+                <button class="faq-q">How do I change my password? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Go to Dashboard → Settings → Password & Security. Enter your current password, your new password
+                        (minimum 6 characters), and confirm it. Changing your password signs you out of all other active
+                        sessions automatically.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">Can I change my email address? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Email addresses cannot be changed from the dashboard at this time. Please contact our support
+                        team at flowva3@gmail.com and we'll assist you with the change.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How do I delete my account? <span class="faq-q-icon">+</span></button>
+                <div class="faq-a">
+                    <p>Go to Dashboard → Settings → Danger Zone → Delete Account. You'll need to enter your password to
+                        confirm. Account deletion is permanent and irreversible. You must have a zero balance before
+                        deleting.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Still need help -->
+    <div style="padding: 0 24px;">
+        <div class="faq-help">
+            <h3>Still have a question?</h3>
+            <p>Our support team is here to help. Reach out and we'll get back to you as soon as possible.</p>
+            <div class="btn-row">
+                <a href="contact.html" class="btn btn--primary">Contact Us</a>
+                <a href="support.html" class="btn btn--ghost">Visit Support</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/core/navbar.js"></script>
+    <script>
+        // Accordion
+        document.querySelectorAll('.faq-q').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.closest('.faq-item');
+                const isOpen = item.classList.contains('open');
+                document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+                if (!isOpen) item.classList.add('open');
+            });
+        });
+
+        // Category filter
+        document.querySelectorAll('.faq-cat-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.faq-cat-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const cat = btn.dataset.cat;
+                document.querySelectorAll('.faq-group').forEach(g => {
+                    g.style.display = (cat === 'all' || g.dataset.cat === cat) ? '' : 'none';
+                });
+            });
+        });
+
+        // Search
+        document.getElementById('faq-search').addEventListener('input', function () {
+            const q = this.value.toLowerCase();
+            document.querySelectorAll('.faq-item').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(q) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+
+</html>

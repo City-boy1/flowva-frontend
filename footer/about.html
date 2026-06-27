@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="About Flowva — A trusted digital marketplace connecting creators and buyers worldwide.">
+    <script>(function () { var t = localStorage.getItem('flowva-theme') || 'light'; document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="icon" type="image/png" href="../assets/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+    <link rel="shortcut icon" href="../assets/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/images/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Flowva" />
+    <link rel="manifest" href="../assets/images/site.webmanifest" />
+    <title>About — FLOWVA</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            margin: 0;
+        }
+
+        /* ── HERO ── */
+        .about-hero {
+            position: relative;
+            padding: 120px 24px 80px;
+            text-align: center;
+            overflow: hidden;
+            background: var(--bg-raised);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .about-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 60% 30%, var(--accent-glow) 0%, transparent 60%),
+                radial-gradient(ellipse at 15% 80%, var(--accent-pink-soft) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .about-hero-eyebrow {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--accent-hover);
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-glow);
+            border-radius: var(--radius-full);
+            padding: 5px 16px;
+            margin-bottom: 24px;
+        }
+
+        .about-hero h1 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            font-family: var(--font-display);
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin: 0 0 20px;
+        }
+
+        .about-hero h1 span {
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .about-hero p {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 36px;
+            line-height: 1.75;
+        }
+
+        .about-hero-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ── SHARED LAYOUT ── */
+        .about-section {
+            padding: 80px 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .about-section--alt {
+            background: var(--bg-surface);
+            max-width: 100%;
+            padding: 80px 24px;
+        }
+
+        .about-section--alt .about-section-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-eyebrow {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--accent-hover);
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 800;
+            font-family: var(--font-display);
+            letter-spacing: -0.02em;
+            margin: 0 0 16px;
+            color: var(--text-primary);
+        }
+
+        .section-lead {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.75;
+            max-width: 620px;
+            margin-bottom: 48px;
+        }
+
+        /* ── MISSION PILLARS ── */
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .pillar-card {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 32px 28px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-accent);
+        }
+
+        .pillar-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            background: var(--accent-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+        }
+
+        .pillar-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: var(--font-display);
+            margin: 0 0 10px;
+            color: var(--text-primary);
+        }
+
+        .pillar-card p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* ── HOW IT WORKS ── */
+        .how-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+            counter-reset: steps;
+        }
+
+        .how-step {
+            position: relative;
+            padding-top: 20px;
+        }
+
+        .how-step-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent));
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+
+        .how-step h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: var(--font-display);
+            margin: 0 0 8px;
+            color: var(--text-primary);
+        }
+
+        .how-step p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin: 0;
+        }
+
+        /* ── PAYMENT / ESCROW BANNER ── */
+        .escrow-banner {
+            background: linear-gradient(135deg, #0f0a1e, #1a0a3e);
+            border-radius: 20px;
+            padding: 56px 48px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 48px;
+            flex-wrap: wrap;
+            margin-top: 80px;
+        }
+
+        .escrow-banner-text {
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .escrow-banner-text h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 0 0 14px;
+            letter-spacing: -0.02em;
+        }
+
+        .escrow-banner-text p {
+            font-size: 0.92rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.75;
+            margin: 0 0 24px;
+        }
+
+        .escrow-stats {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .escrow-stat-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: var(--font-display);
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .escrow-stat-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .escrow-badge {
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .escrow-badge-inner {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            border: 2px solid var(--accent-glow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            color: var(--accent-hover);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            gap: 4px;
+        }
+
+        .escrow-badge-inner span:first-child {
+            font-size: 2rem;
+        }
+
+        /* ── GLOBAL REACH ── */
+        .countries-wrap {
+            margin-top: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .country-pill {
+            padding: 6px 14px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* ── CTA ── */
+        .about-cta {
+            text-align: center;
+            padding: 80px 24px;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
+        }
+
+        .about-cta h2 {
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            font-weight: 800;
+            font-family: var(--font-display);
+            margin: 0 0 16px;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        .about-cta p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin: 0 0 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 640px) {
+            .about-hero {
+                padding: 100px 20px 60px;
+            }
+
+            .escrow-banner {
+                padding: 36px 24px;
+            }
+
+            .about-section {
+                padding: 56px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <!-- HERO -->
+    <section class="about-hero">
+        <div class="about-hero-eyebrow">Our Story</div>
+        <h1>Built for <span>Creators</span>,<br>Trusted by Buyers</h1>
+        <p>Flowva is a trusted digital marketplace connecting creators and buyers worldwide — with secure escrow
+            payments, real earnings, and a growing creative community.</p>
+        <div class="about-hero-actions">
+            <a href="/marketplace.html" class="btn btn--primary">Browse Templates</a>
+            <a href="/creator.html" class="btn btn--ghost">Meet Creators</a>
+        </div>
+    </section>
+
+    <!-- MISSION -->
+    <section class="about-section">
+        <div class="section-eyebrow">What We Believe</div>
+        <h2 class="section-title">A marketplace built on trust</h2>
+        <p class="section-lead">Flowva exists to give creative professionals — from mobile designers to 3D motion
+            artists — a fair, secure place to sell their work and grow their income globally.</p>
+        <div class="pillars-grid">
+            <div class="pillar-card">
+                <div class="pillar-icon">
+                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4-4 4 4 4-8 4 4" />
+                    </svg>
+                </div>
+                <h3>For Every Creator</h3>
+                <p>Whether you design on a phone or a workstation, if your software generates a template, you can sell
+                    it on Flowva. Mobile and desktop creators are equally welcome.</p>
+            </div>
+            <div class="pillar-card">
+                <div class="pillar-icon">
+                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.8">
+                        <rect x="5" y="11" width="14" height="10" rx="2" />
+                        <path stroke-linecap="round" d="M8 11V7a4 4 0 018 0v4" />
+                    </svg>
+                </div>
+                <h3>Escrow-Secured Payments</h3>
+                <p>Every transaction is protected through Flowva's escrow system. Funds are held securely and released
+                    to creators only after buyer confirmation — no risk for either side.</p>
+            </div>
+            <div class="pillar-card">
+                <div class="pillar-icon">
+                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.8">
+                        <circle cx="12" cy="12" r="9" />
+                        <path stroke-linecap="round"
+                            d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1.1 3 2.5S13.7 12 12 12s-3 1.1-3 2.5S10.3 17 12 17s3-1.1 3-2.5" />
+                    </svg>
+                </div>
+                <h3>Real Earnings</h3>
+                <p>Creators keep 80% of every sale — or 90% if they're among our first 50 creators. Payouts are made in
+                    USD via Skrill or Grey, weekly or monthly.</p>
+            </div>
+            <div class="pillar-card">
+                <div class="pillar-icon">
+                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.8">
+                        <circle cx="12" cy="12" r="9" />
+                        <path stroke-linecap="round" d="M2 12h20M12 3a15 15 0 010 18M12 3a15 15 0 000 18" />
+                    </svg>
+                </div>
+                <h3>Global Reach</h3>
+                <p>Flowva supports buyers and creators across Africa, Europe, the Americas, Asia-Pacific, and the Middle
+                    East — with payment options that work locally.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <div class="about-section--alt">
+        <div class="about-section-inner">
+            <div class="section-eyebrow">How It Works</div>
+            <h2 class="section-title">Simple for creators. Simple for buyers.</h2>
+            <p class="section-lead">Flowva removes the friction from buying and selling creative assets — so you can
+                focus on the work.</p>
+            <div class="how-steps">
+                <div class="how-step">
+                    <div class="how-step-num">1</div>
+                    <h4>Sign Up</h4>
+                    <p>Create your account in minutes. Buyers can browse immediately. Creators apply for a creator
+                        account and get reviewed within 48 hours.</p>
+                </div>
+                <div class="how-step">
+                    <div class="how-step-num">2</div>
+                    <h4>Upload or Browse</h4>
+                    <p>Creators upload templates — from PSD files to After Effects projects to mobile formats like
+                        Alight Motion. Buyers browse by category, software, or creator.</p>
+                </div>
+                <div class="how-step">
+                    <div class="how-step-num">3</div>
+                    <h4>Buy Securely</h4>
+                    <p>Buyers pay via Skrill, Grey, Mastercard, or Bank Account. Funds go into escrow instantly —
+                        protecting both parties throughout the transaction.</p>
+                </div>
+                <div class="how-step">
+                    <div class="how-step-num">4</div>
+                    <h4>Download & Earn</h4>
+                    <p>Buyers download immediately after payment is confirmed. Creators receive their earnings — 80% of
+                        every sale — paid out in USD on their chosen schedule.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESCROW BANNER -->
+    <section class="about-section">
+        <div class="escrow-banner">
+            <div class="escrow-banner-text">
+                <h2>Escrow-Secured. Always.</h2>
+                <p>Flowva holds every payment in escrow and releases funds only when both parties are satisfied. No
+                    risk. No drama. Just clean, verified transactions between creators and buyers.</p>
+                <div class="escrow-stats">
+                    <div>
+                        <div class="escrow-stat-val">80%</div>
+                        <div class="escrow-stat-label">Creators keep per sale</div>
+                    </div>
+                    <div>
+                        <div class="escrow-stat-val">90%</div>
+                        <div class="escrow-stat-label">First 50 creators earn</div>
+                    </div>
+                    <div>
+                        <div class="escrow-stat-val">USD</div>
+                        <div class="escrow-stat-label">Payouts in USD only</div>
+                    </div>
+                </div>
+            </div>
+            <div class="escrow-badge">
+                <div class="escrow-badge-inner">
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.6">
+                        <rect x="5" y="11" width="14" height="10" rx="2" />
+                        <path stroke-linecap="round" d="M8 11V7a4 4 0 018 0v4" />
+                    </svg>
+                    <span>Escrow</span>
+                    <span>Protected</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GLOBAL REACH -->
+    <div class="about-section--alt">
+        <div class="about-section-inner">
+            <div class="section-eyebrow">Global Reach</div>
+            <h2 class="section-title">Supported countries</h2>
+            <p class="section-lead">Flowva supports creators and buyers across these countries via Skrill and Grey.
+                Payouts are made in USD only.</p>
+            <div class="countries-wrap">
+                <!-- Africa -->
+                <span class="country-pill">🇬🇭 Ghana</span><span class="country-pill">🇳🇬 Nigeria</span>
+                <span class="country-pill">🇰🇪 Kenya</span><span class="country-pill">🇿🇦 South Africa</span>
+                <span class="country-pill">🇪🇬 Egypt</span><span class="country-pill">🇪🇹 Ethiopia</span>
+                <span class="country-pill">🇲🇦 Morocco</span><span class="country-pill">🇹🇿 Tanzania</span>
+                <span class="country-pill">🇺🇬 Uganda</span><span class="country-pill">🇸🇳 Senegal</span>
+                <span class="country-pill">🇿🇲 Zambia</span><span class="country-pill">🇿🇼 Zimbabwe</span>
+                <span class="country-pill">🇲🇼 Malawi</span><span class="country-pill">🇲🇺 Mauritius</span>
+                <span class="country-pill">🇱🇸 Lesotho</span><span class="country-pill">🇲🇬 Madagascar</span>
+                <span class="country-pill">🇲🇿 Mozambique</span><span class="country-pill">🇩🇿 Algeria</span>
+                <!-- Europe -->
+                <span class="country-pill">🇬🇧 United Kingdom</span><span class="country-pill">🇩🇪 Germany</span>
+                <span class="country-pill">🇫🇷 France</span><span class="country-pill">🇳🇱 Netherlands</span>
+                <span class="country-pill">🇪🇸 Spain</span><span class="country-pill">🇮🇹 Italy</span>
+                <span class="country-pill">🇸🇪 Sweden</span><span class="country-pill">🇳🇴 Norway</span>
+                <span class="country-pill">🇵🇱 Poland</span><span class="country-pill">🇨🇭 Switzerland</span>
+                <span class="country-pill">🇧🇪 Belgium</span><span class="country-pill">🇦🇹 Austria</span>
+                <!-- Americas -->
+                <span class="country-pill">🇺🇸 United States</span><span class="country-pill">🇨🇦 Canada</span>
+                <span class="country-pill">🇧🇷 Brazil</span><span class="country-pill">🇲🇽 Mexico</span>
+                <span class="country-pill">🇦🇷 Argentina</span><span class="country-pill">🇨🇱 Chile</span>
+                <span class="country-pill">🇵🇪 Peru</span>
+                <!-- Asia-Pacific -->
+                <span class="country-pill">🇮🇳 India</span><span class="country-pill">🇨🇳 China</span>
+                <span class="country-pill">🇸🇬 Singapore</span><span class="country-pill">🇲🇾 Malaysia</span>
+                <span class="country-pill">🇹🇭 Thailand</span><span class="country-pill">🇻🇳 Vietnam</span>
+                <span class="country-pill">🇦🇺 Australia</span><span class="country-pill">🇳🇿 New Zealand</span>
+                <!-- Middle East -->
+                <span class="country-pill">🇸🇦 Saudi Arabia</span><span class="country-pill">🇦🇪 UAE</span>
+                <span class="country-pill">🇶🇦 Qatar</span><span class="country-pill">🇰🇼 Kuwait</span>
+                <span class="country-pill">🇮🇱 Israel</span><span class="country-pill">🇹🇷 Turkey</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <section class="about-cta">
+        <h2>Ready to join Flowva?</h2>
+        <p>Upload your templates, post a project, or browse thousands of creative assets from verified creators
+            worldwide.</p>
+        <div class="btn-row">
+            <a href="/signup.html" class="btn btn--primary">Get Started Free</a>
+            <a href="contact.html" class="btn btn--ghost">Contact Us</a>
+        </div>
+    </section>
+
+    <script type="module" src="../js/core/navbar.js"></script>
+</body>
+
+</html>

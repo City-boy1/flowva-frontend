@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Role — FLOWVA</title>
+    <script>
+        (function () {
+            var t = localStorage.getItem('flowva-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        .par-hero {
+            padding: calc(var(--navbar-h) + 56px) 0 48px;
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124, 58, 237, 0.12) 0%, transparent 70%),
+                var(--bg-base);
+            text-align: center;
+        }
+
+        .par-hero .page-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(124, 58, 237, 0.08);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: var(--radius-full);
+            padding: 6px 18px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #7c3aed;
+            margin-bottom: 22px;
+        }
+
+        .par-hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(1.9rem, 5vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--text-primary) 40%, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 14px;
+        }
+
+        .par-hero p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Job type selector */
+        .par-type-grid {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .par-type-card {
+            flex: 1;
+            min-width: 200px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            cursor: pointer;
+            background: var(--bg-surface);
+            transition: border-color 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .par-type-card:hover {
+            border-color: #7c3aed;
+        }
+
+        .par-type-card.selected {
+            border-color: #7c3aed;
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .par-type-card input[type="radio"] {
+            display: none;
+        }
+
+        .par-type-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: rgba(124, 58, 237, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .par-type-label {
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: var(--text-primary);
+        }
+
+        .par-type-desc {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Body layout */
+        .par-body {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 32px;
+            align-items: start;
+            padding: 48px 0 100px;
+        }
+
+        @media (max-width: 860px) {
+            .par-body {
+                grid-template-columns: 1fr;
+            }
+
+            .par-sidebar {
+                order: -1;
+            }
+        }
+
+        /* Form */
+        .par-form-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+        }
+
+        @media (max-width: 600px) {
+            .par-form-card {
+                padding: 24px;
+            }
+        }
+
+        .par-section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #7c3aed;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .par-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .par-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .par-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .par-form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .par-label {
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .par-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .par-input,
+        .par-select,
+        .par-textarea {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .par-input::placeholder,
+        .par-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .par-input:focus,
+        .par-select:focus,
+        .par-textarea:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .par-input.error,
+        .par-select.error,
+        .par-textarea.error {
+            border-color: var(--danger);
+        }
+
+        .par-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 14px) center;
+            padding-right: 36px;
+            cursor: pointer;
+        }
+
+        .par-textarea {
+            resize: vertical;
+            min-height: 140px;
+        }
+
+        .par-form-error {
+            font-size: 0.78rem;
+            color: var(--danger);
+            display: none;
+        }
+
+        .par-form-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 28px 0;
+        }
+
+        /* Salary row */
+        .par-salary-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 120px;
+            gap: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .par-salary-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Logo upload */
+        .par-logo-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .par-logo-zone:hover {
+            border-color: #7c3aed;
+            background: rgba(124, 58, 237, 0.03);
+        }
+
+        .par-logo-preview {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            background: var(--bg-overlay);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .par-logo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Sidebar */
+        .par-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: calc(var(--navbar-h) + 24px);
+        }
+
+        .par-info-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .par-info-card h3 {
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .par-tip {
+            display: flex;
+            gap: 10px;
+            font-size: 0.83rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .par-tip-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(124, 58, 237, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #7c3aed;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+
+        /* Submit */
+        .par-submit-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        #par-global-error {
+            display: none;
+            font-size: 0.84rem;
+            color: var(--danger);
+            margin-top: 12px;
+        }
+
+        /* Success */
+        #par-success {
+            display: none;
+            text-align: center;
+            padding: 80px 24px;
+        }
+
+        .par-success-icon {
+            width: 72px;
+            height: 72px;
+            background: rgba(124, 58, 237, 0.08);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            color: #7c3aed;
+        }
+
+        #par-success h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        #par-success p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 460px;
+            margin: 0 auto 28px;
+            line-height: 1.7;
+        }
+
+        /* Breadcrumb */
+        .par-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .par-breadcrumb a {
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        .par-breadcrumb a:hover {
+            color: #7c3aed;
+        }
+
+        .par-breadcrumb-sep {
+            opacity: 0.4;
+        }
+
+        /* Fields tag wrap — reused from post-a-job pattern */
+        /* .paj-tags-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--bg-raised);
+            min-height: 48px;
+            align-items: center;
+            transition: border-color 0.2s;
+            cursor: default;
+        } */
+    </style>
+</head>
+
+<body>
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <main class="page-content">
+
+        <section class="par-hero">
+            <div class="container--narrow">
+                <div class="page-eyebrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <rect x="2" y="7" width="20" height="14" rx="2" />
+                        <path d="M16 7V5a2 2 0 0 0-4 0v2" />
+                    </svg>
+                    For Employers
+                </div>
+                <h1>Post a Role</h1>
+                <p>Reach thousands of creative professionals. Post a full-time or contract role and start receiving
+                    applications today.</p>
+            </div>
+        </section>
+
+        <section class="section" style="padding-top:0">
+            <div class="container">
+
+                <nav class="par-breadcrumb">
+                    <a href="index.html">Home</a>
+                    <span class="par-breadcrumb-sep">›</span>
+                    <a href="dashboard.html#projects">Dashboard</a>
+                    <span class="par-breadcrumb-sep">›</span>
+                    <span>Post a Role</span>
+                </nav>
+
+                <div id="par-success">
+                    <div class="par-success-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    </div>
+                    <h2>Role Submitted for Review!</h2>
+                    <p>Your role listing is under review by our team. Once approved it will be visible to creators who
+                        can apply directly.</p>
+                    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+                        <a href="dashboard.html#projects" class="btn btn--primary btn--lg">View in Dashboard</a>
+                    </div>
+                </div>
+
+                <div class="par-body" id="par-form-wrap">
+
+                    <div>
+                        <form class="par-form-card" id="par-form" novalidate>
+
+                            <!-- Job Type -->
+                            <div class="par-section-label">Job Type</div>
+                            <div class="par-type-grid">
+                                <label class="par-type-card selected" id="type-fulltime-card">
+                                    <input type="radio" name="job-type" value="full-time" checked>
+                                    <div class="par-type-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed"
+                                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="2" y="7" width="20" height="14" rx="2" />
+                                            <path d="M16 7V5a2 2 0 0 0-4 0v2" />
+                                            <path d="M12 12v4" />
+                                            <path d="M10 14h4" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="par-type-label">Full-Time</div>
+                                        <div class="par-type-desc">Permanent employment role</div>
+                                    </div>
+                                </label>
+                                <label class="par-type-card" id="type-contract-card">
+                                    <input type="radio" name="job-type" value="contract">
+                                    <div class="par-type-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed"
+                                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                            <line x1="16" y1="13" x2="8" y2="13" />
+                                            <line x1="16" y1="17" x2="8" y2="17" />
+                                            <polyline points="10 9 9 9 8 9" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="par-type-label">Contract</div>
+                                        <div class="par-type-desc">Fixed-term or project-based</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="par-form-divider"></div>
+
+                            <!-- Job Details -->
+                            <div class="par-section-label">Job Details</div>
+
+                            <div class="par-form-group">
+                                <label class="par-label" for="par-title">Job Title <span
+                                        style="color:var(--danger)">*</span></label>
+                                <input class="par-input" type="text" id="par-title" maxlength="150"
+                                    placeholder="e.g. Senior Motion Graphics Designer">
+                                <span class="par-form-error" id="err-title">Please enter a job title.</span>
+                            </div>
+
+                            <div class="par-form-group">
+                                <label class="par-label">Creative Fields <span style="color:var(--danger)">*</span>
+                                    <span style="font-weight:400;color:var(--text-muted);font-size:0.78rem"> — select
+                                        all that apply</span>
+                                </label>
+
+                                <!-- Dropdown picker -->
+                                <select class="par-select" id="par-field-picker">
+                                    <option value="">Add a field…</option>
+                                    <optgroup label="Design">
+                                        <option value="graphic-design">Graphic Design</option>
+                                        <option value="ui-ux">UI / UX Design</option>
+                                        <option value="branding">Branding &amp; Identity</option>
+                                        <option value="print-design">Print Design</option>
+                                        <option value="packaging">Packaging Design</option>
+                                        <option value="illustration">Illustration</option>
+                                        <option value="typography">Typography</option>
+                                    </optgroup>
+                                    <optgroup label="Motion &amp; Video">
+                                        <option value="motion-graphics">Motion Graphics</option>
+                                        <option value="2d-animation">2D Animation</option>
+                                        <option value="3d-animation">3D Animation</option>
+                                        <option value="video-editing">Video Editing</option>
+                                        <option value="vfx">Visual Effects (VFX)</option>
+                                        <option value="filmmaking">Filmmaking &amp; Direction</option>
+                                    </optgroup>
+                                    <optgroup label="Photography">
+                                        <option value="photography">Photography</option>
+                                        <option value="photo-editing">Photo Editing &amp; Retouching</option>
+                                    </optgroup>
+                                    <optgroup label="Digital &amp; Web">
+                                        <option value="web-design">Web Design</option>
+                                        <option value="social-media">Social Media Design</option>
+                                        <option value="content-creation">Content Creation</option>
+                                        <option value="digital-marketing">Digital Marketing</option>
+                                    </optgroup>
+                                    <optgroup label="3D &amp; Interactive">
+                                        <option value="3d-modeling">3D Modeling</option>
+                                        <option value="ar-vr">AR / VR Design</option>
+                                        <option value="game-design">Game Design</option>
+                                        <option value="product-design">Product Design</option>
+                                    </optgroup>
+                                    <optgroup label="Other">
+                                        <option value="art-direction">Art Direction</option>
+                                        <option value="creative-direction">Creative Direction</option>
+                                        <option value="copywriting">Copywriting</option>
+                                        <option value="other">Other</option>
+                                    </optgroup>
+                                </select>
+
+                                <!-- Selected fields appear as tags here -->
+                                <div class="paj-tags-wrap" id="par-fields-wrap" style="margin-top:10px;min-height:44px">
+                                    <span id="par-fields-placeholder"
+                                        style="font-size:0.85rem;color:var(--text-muted);padding:2px 4px">
+                                        No fields selected yet
+                                    </span>
+                                </div>
+                                <input type="hidden" id="par-field">
+                                <span class="par-form-error" id="err-field">Please select at least one creative
+                                    field.</span>
+                                <span class="par-hint">You can select up to 5 fields.</span>
+                            </div>
+
+                            <div class="par-form-group">
+                                <label class="par-label" for="par-company">Company Name <span
+                                        style="color:var(--danger)">*</span></label>
+                                <input class="par-input" type="text" id="par-company" maxlength="120"
+                                    placeholder="e.g. Pixel Studio Ltd">
+                                <span class="par-form-error" id="err-company">Please enter your company name.</span>
+                            </div>
+
+                            <div class="par-form-group">
+                                <label class="par-label" for="par-desc">Job Description <span
+                                        style="color:var(--danger)">*</span></label>
+                                <textarea class="par-textarea" id="par-desc" rows="7" maxlength="6000"
+                                    placeholder="Describe responsibilities, requirements, what a typical day looks like, and what makes this role exciting…"></textarea>
+                                <div style="display:flex;justify-content:space-between;margin-top:4px">
+                                    <span class="par-form-error" id="err-desc">Please describe the role (at least 50
+                                        characters).</span>
+                                    <span class="par-hint" id="desc-count" style="margin-left:auto">0 / 6000</span>
+                                </div>
+                            </div>
+
+                            <div class="par-form-divider"></div>
+
+                            <!-- Location & Salary -->
+                            <div class="par-section-label">Location &amp; Compensation</div>
+
+                            <div class="par-form-group">
+                                <label class="par-label" for="par-location">Job Location <span
+                                        style="color:var(--danger)">*</span></label>
+                                <select class="par-select" id="par-location">
+                                    <option value="">Select location type</option>
+                                    <option value="remote">Remote — Anywhere</option>
+                                    <option value="hybrid">Hybrid</option>
+                                    <option value="onsite">On-site</option>
+                                </select>
+                                <span class="par-form-error" id="err-location">Please select a location type.</span>
+                            </div>
+
+                            <div class="par-form-group" id="city-group" style="display:none">
+                                <label class="par-label" for="par-city">City / Country</label>
+                                <input class="par-input" type="text" id="par-city" placeholder="e.g. Accra, Ghana">
+                            </div>
+
+                            <div class="par-form-group">
+                                <label class="par-label">Salary Range <span
+                                        style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+                                <div class="par-salary-row">
+                                    <div>
+                                        <input class="par-input" type="number" id="par-salary-min" placeholder="Min"
+                                            min="0" step="100">
+                                    </div>
+                                    <div>
+                                        <input class="par-input" type="number" id="par-salary-max" placeholder="Max"
+                                            min="0" step="100">
+                                    </div>
+                                    <div>
+                                        <select class="par-select" id="par-salary-period" style="padding-right:28px">
+                                            <option value="year">/ year</option>
+                                            <option value="month">/ month</option>
+                                            <option value="hour">/ hour</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <span class="par-hint">Leave blank to show "Salary not disclosed"</span>
+                            </div>
+
+                            <div class="par-form-divider"></div>
+
+                            <!-- Company Branding -->
+                            <div class="par-section-label">Company Branding <span
+                                    style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.72rem;color:var(--text-muted)">(optional)</span>
+                            </div>
+
+                            <div class="par-form-group">
+                                <label class="par-label">Company Logo</label>
+                                <div class="par-logo-zone" id="par-logo-zone" tabindex="0" role="button"
+                                    aria-label="Upload company logo">
+                                    <div class="par-logo-preview" id="par-logo-preview">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="var(--text-muted)" stroke-width="1.5">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                                            <circle cx="8.5" cy="8.5" r="1.5" />
+                                            <polyline points="21 15 16 10 5 21" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div
+                                            style="font-size:0.85rem;font-weight:600;color:var(--text-primary);margin-bottom:3px">
+                                            Upload logo</div>
+                                        <div style="font-size:0.78rem;color:var(--text-muted)">PNG, JPG or SVG · Max 2MB
+                                            · Recommended 200×200px</div>
+                                    </div>
+                                    <input type="file" id="par-logo-input"
+                                        accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none">
+                                </div>
+                                <span class="par-hint" id="par-logo-name"></span>
+                            </div>
+
+                            <div class="par-form-group">
+                                <label class="par-label" for="par-website">Company Website</label>
+                                <input class="par-input" type="url" id="par-website"
+                                    placeholder="https://yourcompany.com">
+                            </div>
+
+                            <!-- Submit -->
+                            <div id="par-global-error">Something went wrong. Please try again.</div>
+                            <div class="par-submit-row">
+                                <button type="submit" class="btn btn--primary btn--lg" id="par-submit-btn">Post
+                                    Role</button>
+                                <a href="dashboard.html#projects" class="btn btn--ghost">Cancel</a>
+                            </div>
+
+                            <p style="font-size:0.75rem;color:var(--text-muted);margin-top:14px;line-height:1.6">
+                                By posting, you agree to Flowva's <a href="footer/terms.html"
+                                    style="color:#7c3aed">Terms of Service</a>.
+                            </p>
+                        </form>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <aside class="par-sidebar">
+                        <div
+                            style="background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(0,123,255,0.06));border:1px solid rgba(124,58,237,0.18);border-radius:var(--radius-lg);padding:24px">
+                            <h3
+                                style="font-family:var(--font-display);font-size:0.95rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed"
+                                    stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
+                                Who sees this?
+                            </h3>
+                            <p style="font-size:0.83rem;color:var(--text-secondary);line-height:1.65;margin:0">Your role
+                                will be visible to all verified Flowva creators matching your creative field.</p>
+                        </div>
+
+                        <div class="par-info-card">
+                            <h3>Tips for a great listing</h3>
+                            <div class="par-tip">
+                                <div class="par-tip-icon">1</div><span>Be specific about seniority level and day-to-day
+                                    responsibilities.</span>
+                            </div>
+                            <div class="par-tip">
+                                <div class="par-tip-icon">2</div><span>Include the tools and software the candidate
+                                    needs to know.</span>
+                            </div>
+                            <div class="par-tip">
+                                <div class="par-tip-icon">3</div><span>Adding a salary range gets significantly more
+                                    qualified applicants.</span>
+                            </div>
+                            <div class="par-tip">
+                                <div class="par-tip-icon">4</div><span>A company logo builds trust and increases
+                                    application rates.</span>
+                            </div>
+                        </div>
+
+                        <div
+                            style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;text-align:center">
+                            <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:14px;line-height:1.6">Need
+                                short-term help instead?</p>
+                            <a href="post-a-job.html" class="btn btn--ghost"
+                                style="width:100%;justify-content:center">Hire a Freelancer →</a>
+                        </div>
+                    </aside>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import AppState from './js/core/state.js';
+        import api from './js/core/api.js';
+
+        if (!AppState.isLoggedIn()) {
+            window.location.replace('login.html?redirect=post-a-role.html');
+        }
+
+        // ── Toast ───────────────────────────────────────────────────────────────
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toast-container');
+            if (!c) return;
+            const t = document.createElement('div');
+            t.className = `toast toast--${type}`;
+            t.textContent = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3500);
+        }
+
+        // ── Job type toggle ──────────────────────────────────────────────────────
+        const cards = document.querySelectorAll('.par-type-card');
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                cards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                card.querySelector('input[type="radio"]').checked = true;
+            });
+        });
+
+        // ── Location → show city field ───────────────────────────────────────────
+        document.getElementById('par-location').addEventListener('change', function () {
+            document.getElementById('city-group').style.display =
+                (this.value === 'hybrid' || this.value === 'onsite') ? 'flex' : 'none';
+        });
+
+        // ── Char counter ─────────────────────────────────────────────────────────
+        const descEl = document.getElementById('par-desc');
+        descEl.addEventListener('input', () => {
+            document.getElementById('desc-count').textContent = `${descEl.value.length} / 6000`;
+        });
+
+        // ── Logo upload ──────────────────────────────────────────────────────────
+        const logoZone = document.getElementById('par-logo-zone');
+        const logoInput = document.getElementById('par-logo-input');
+        const logoPrev = document.getElementById('par-logo-preview');
+        const logoName = document.getElementById('par-logo-name');
+        let logoFile = null;
+
+        logoZone.addEventListener('click', () => logoInput.click());
+        logoZone.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') logoInput.click();
+        });
+        logoInput.addEventListener('change', () => {
+            const f = logoInput.files?.[0];
+            if (!f) return;
+            if (f.size > 2 * 1024 * 1024) { showToast('Logo must be under 2MB', 'error'); return; }
+            logoFile = f;
+            logoName.textContent = f.name;
+            const reader = new FileReader();
+            reader.onload = ev => { logoPrev.innerHTML = `<img src="${ev.target.result}" alt="Logo preview">`; };
+            reader.readAsDataURL(f);
+        });
+
+        // ── Multi-field picker ───────────────────────────────────────────────────
+        const fieldPicker = document.getElementById('par-field-picker');
+        const fieldsWrap = document.getElementById('par-fields-wrap');
+        const fieldsHidden = document.getElementById('par-field');
+        const fieldsPlaceholder = document.getElementById('par-fields-placeholder');
+        const selectedFields = [];   // ← lives here permanently, never resets
+
+        const FIELD_LABELS = {
+            'graphic-design': 'Graphic Design', 'ui-ux': 'UI / UX Design', 'branding': 'Branding & Identity',
+            'print-design': 'Print Design', 'packaging': 'Packaging Design', 'illustration': 'Illustration',
+            'typography': 'Typography', 'motion-graphics': 'Motion Graphics', '2d-animation': '2D Animation',
+            '3d-animation': '3D Animation', 'video-editing': 'Video Editing', 'vfx': 'Visual Effects (VFX)',
+            'filmmaking': 'Filmmaking & Direction', 'photography': 'Photography',
+            'photo-editing': 'Photo Editing & Retouching', 'web-design': 'Web Design',
+            'social-media': 'Social Media Design', 'content-creation': 'Content Creation',
+            'digital-marketing': 'Digital Marketing', '3d-modeling': '3D Modeling', 'ar-vr': 'AR / VR Design',
+            'game-design': 'Game Design', 'product-design': 'Product Design', 'art-direction': 'Art Direction',
+            'creative-direction': 'Creative Direction', 'copywriting': 'Copywriting', 'other': 'Other',
+        };
+
+        function renderFieldTags() {
+            // Remove old tags only, keep placeholder span
+            fieldsWrap.querySelectorAll('.par-field-tag').forEach(t => t.remove());
+
+            if (selectedFields.length === 0) {
+                fieldsPlaceholder.style.display = 'inline';
+            } else {
+                fieldsPlaceholder.style.display = 'none';
+                selectedFields.forEach((val, i) => {
+                    const tag = document.createElement('span');
+                    tag.className = 'par-field-tag';
+                    tag.style.cssText = [
+                        'display:inline-flex', 'align-items:center', 'gap:6px',
+                        'background:rgba(124,58,237,0.12)', 'color:#7c3aed',
+                        'border:1px solid rgba(124,58,237,0.3)', 'border-radius:999px',
+                        'padding:5px 12px', 'font-size:0.8rem', 'font-weight:600',
+                        'font-family:inherit'
+                    ].join(';');
+                    tag.innerHTML = `
+                    <span>${FIELD_LABELS[val] ?? val}</span>
+                    <button type="button" data-i="${i}" aria-label="Remove ${FIELD_LABELS[val] ?? val}"
+                      style="background:none;border:none;cursor:pointer;color:#7c3aed;
+                             font-size:1.1rem;line-height:1;padding:0 0 0 2px;opacity:0.7;
+                             display:flex;align-items:center" >×</button>`;
+                    fieldsWrap.appendChild(tag);
+                });
+            }
+            fieldsHidden.value = selectedFields.join(',');
+            // Clear validation error as soon as something is selected
+            if (selectedFields.length > 0) {
+                document.getElementById('err-field').style.display = 'none';
+            }
+        }
+
+        // Add field when picker changes
+        fieldPicker.addEventListener('change', () => {
+            const val = fieldPicker.value;
+            fieldPicker.value = ''; // reset immediately so it feels responsive
+            if (!val) return;
+            if (selectedFields.includes(val)) {
+                showToast('Already added', 'warning');
+                return;
+            }
+            if (selectedFields.length >= 5) {
+                showToast('Maximum 5 fields allowed', 'warning');
+                return;
+            }
+            selectedFields.push(val);
+            renderFieldTags();
+        });
+
+        // Remove field when × is clicked
+        fieldsWrap.addEventListener('click', e => {
+            const btn = e.target.closest('button[data-i]');
+            if (!btn) return;
+            selectedFields.splice(parseInt(btn.dataset.i), 1);
+            renderFieldTags();
+        });
+
+        renderFieldTags(); // draw initial empty state
+
+        // ── Validation ───────────────────────────────────────────────────────────
+        function showError(id, show) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = show ? 'block' : 'none';
+        }
+        function markInput(id, error) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('error', error);
+        }
+
+        function validateForm() {
+            let valid = true;
+            const title = document.getElementById('par-title').value.trim();
+            const company = document.getElementById('par-company').value.trim();
+            const desc = descEl.value.trim();
+            const location = document.getElementById('par-location').value;
+
+            const titleErr = !title;
+            showError('err-title', titleErr); markInput('par-title', titleErr);
+            if (titleErr) valid = false;
+
+            const fieldErr = selectedFields.length === 0;
+            showError('err-field', fieldErr);
+            if (fieldErr) valid = false;
+
+            const compErr = !company;
+            showError('err-company', compErr); markInput('par-company', compErr);
+            if (compErr) valid = false;
+
+            const descErr = desc.length < 50;
+            showError('err-desc', descErr); markInput('par-desc', descErr);
+            if (descErr) valid = false;
+
+            const locErr = !location;
+            showError('err-location', locErr); markInput('par-location', locErr);
+            if (locErr) valid = false;
+
+            return valid;
+        }
+
+        // ── Submit ───────────────────────────────────────────────────────────────
+        const form = document.getElementById('par-form');
+        const submitBtn = document.getElementById('par-submit-btn');
+        const globalError = document.getElementById('par-global-error');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            globalError.style.display = 'none';
+            if (!validateForm()) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Posting…';
+
+            let logoUrl = null;
+            if (logoFile) {
+                submitBtn.textContent = 'Uploading logo…';
+                const fd = new FormData();
+                fd.append('logo', logoFile);
+                const up = await api.jobs.uploadLogo(fd);
+                if (up.ok && up.data?.url) logoUrl = up.data.url;
+            }
+
+            const salaryMin = document.getElementById('par-salary-min').value;
+            const salaryMax = document.getElementById('par-salary-max').value;
+            const salaryPeriod = document.getElementById('par-salary-period').value;
+            const jobType = document.querySelector('input[name="job-type"]:checked').value;
+            const location = document.getElementById('par-location').value;
+            const city = document.getElementById('par-city').value.trim();
+
+            const payload = {
+                title: document.getElementById('par-title').value.trim(),
+                jobType,
+                fields: selectedFields,          // full array for display
+                field: selectedFields[0] ?? '', // primary for backwards compat
+                company: document.getElementById('par-company').value.trim(),
+                description: descEl.value.trim(),
+                location,
+                city: city || null,
+                salary: (salaryMin || salaryMax) ? {
+                    min: salaryMin ? parseFloat(salaryMin) : null,
+                    max: salaryMax ? parseFloat(salaryMax) : null,
+                    period: salaryPeriod,
+                    currency: 'USD',
+                } : null,
+                logoUrl,
+                website: document.getElementById('par-website').value.trim() || null,
+                postedBy: AppState.getUser()?.id ?? AppState.getUser()?._id,
+                status: 'open',
+            };
+
+            try {
+                await api.restoreSession();
+                const res = await api.jobs.create(payload);
+                if (!res.ok) throw new Error(res.error ?? 'Server error');
+                document.getElementById('par-form-wrap').style.display = 'none';
+                document.getElementById('par-success').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) {
+                globalError.textContent = err.message || 'Something went wrong. Please try again.';
+                globalError.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Post Role';
+            }
+        });
+    </script>
+
+    <script type="module" src="js/core/navbar.js"></script>
+</body>
+
+</html>

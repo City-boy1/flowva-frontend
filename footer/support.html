@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../assets/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+    <link rel="shortcut icon" href="../assets/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/images/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Flowva" />
+    <link rel="manifest" href="../assets/images/site.webmanifest" />
+    <title>Help Center — Flowva</title>
+    <script>(function () { var t = localStorage.getItem('flowva-theme') || 'light'; document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        /* ── Support hero ── */
+        .support-hero {
+            padding: calc(var(--navbar-h) + 64px) 0 72px;
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0, 123, 255, 0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 90% 50%, rgba(255, 46, 147, 0.1) 0%, transparent 60%),
+                var(--bg-base);
+            text-align: center;
+        }
+
+        .support-hero .page-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-soft);
+            border: 1px solid rgba(0, 123, 255, 0.25);
+            border-radius: var(--radius-full);
+            padding: 6px 18px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-hover);
+            margin-bottom: 24px;
+        }
+
+        .support-hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .support-hero p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 560px;
+            margin: 0 auto 32px;
+            line-height: 1.7;
+        }
+
+        /* ── Search ── */
+        .support-search {
+            position: relative;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .support-search svg {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .support-search input {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            padding: 14px 20px 14px 46px;
+            font-size: 0.92rem;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .support-search input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .support-search input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.12);
+        }
+
+        /* ── Quick links ── */
+        .quick-links {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .quick-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            padding: 8px 16px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: var(--transition-base);
+            cursor: pointer;
+        }
+
+        .quick-link:hover {
+            color: var(--accent-hover);
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .quick-link svg {
+            color: var(--accent-hover);
+            opacity: 0.8;
+        }
+
+        /* ── Topic cards grid ── */
+        .topics-section {
+            padding: 72px 0 0;
+        }
+
+        .section-title-block {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-title-block h2 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 10px;
+        }
+
+        .section-title-block p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 480px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .topic-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            cursor: pointer;
+            transition: var(--transition-slow);
+            text-decoration: none;
+            display: block;
+        }
+
+        .topic-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .topic-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: var(--accent-soft);
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            color: var(--accent-hover);
+            transition: background 0.2s;
+        }
+
+        .topic-card:hover .topic-icon {
+            background: rgba(0, 123, 255, 0.18);
+        }
+
+        .topic-card h3 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 8px;
+        }
+
+        .topic-card p {
+            color: var(--text-secondary);
+            font-size: 0.845rem;
+            line-height: 1.65;
+            margin: 0;
+        }
+
+        .topic-card .topic-arrow {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent-hover);
+        }
+
+        /* ── FAQs ── */
+        .faqs-section {
+            padding: 72px 0;
+            scroll-margin-top: calc(var(--navbar-h) + 24px);
+        }
+
+        .faq-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 36px;
+            justify-content: center;
+        }
+
+        .faq-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border);
+            background: transparent;
+            font-size: 0.84rem;
+            font-weight: 500;
+            font-family: var(--font-body);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .faq-tab:hover {
+            color: var(--accent-hover);
+            border-color: var(--accent);
+        }
+
+        .faq-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .faq-list {
+            max-width: 760px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .faq-item {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .faq-item.open {
+            border-color: rgba(0, 123, 255, 0.35);
+        }
+
+        .faq-question {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 20px 24px;
+            text-align: left;
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .faq-question svg {
+            flex-shrink: 0;
+            color: var(--text-muted);
+            transition: transform 0.25s;
+        }
+
+        .faq-item.open .faq-question svg {
+            transform: rotate(180deg);
+            color: var(--accent-hover);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .faq-answer-inner {
+            padding: 0 24px 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .faq-answer-inner a {
+            color: var(--accent-hover);
+            font-weight: 500;
+        }
+
+        .faq-answer-inner strong {
+            color: var(--text-primary);
+        }
+
+        /* ── Ticket submission ── */
+        .ticket-section {
+            padding: 0 0 100px;
+        }
+
+        .ticket-card {
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.1), rgba(255, 46, 147, 0.06));
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: 56px 48px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: center;
+        }
+
+        @media (max-width: 720px) {
+            .ticket-card {
+                grid-template-columns: 1fr;
+                padding: 36px 28px;
+                text-align: center;
+            }
+
+            .ticket-card .cta-actions {
+                justify-content: center;
+            }
+        }
+
+        .ticket-card h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 10px;
+        }
+
+        .ticket-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 440px;
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+
+        .cta-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .ticket-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+
+        .ticket-stat {
+            text-align: center;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px 28px;
+        }
+
+        .ticket-stat .stat-num {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--accent), #6c63ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+        }
+
+        .ticket-stat span:last-child {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* ── Section divider ── */
+        .section-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0;
+        }
+
+        /* ── Search filter ── */
+        .faq-panel {
+            display: none;
+        }
+
+        .faq-panel.active {
+            display: block;
+        }
+
+        [data-theme="light"] .topic-card {
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        [data-theme="light"] .support-search input {
+            background: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <main class="page-content">
+
+        <!-- Hero -->
+        <section class="support-hero">
+            <div class="container--narrow">
+                <div class="page-eyebrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    Help Center
+                </div>
+                <h1>How Can We Help?</h1>
+                <p>Find answers to common questions about payments, templates, accounts, and more — or submit a support
+                    ticket and we'll respond within 1–3 business days.</p>
+
+                <div class="support-search">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input type="text" id="faqSearch" placeholder="Search for answers..."
+                        oninput="filterFaqs(this.value)" />
+                </div>
+
+                <div class="quick-links">
+                    <button class="quick-link" onclick="jumpTo('payments')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" />
+                            <line x1="1" y1="10" x2="23" y2="10" />
+                        </svg>
+                        Payments & Payouts
+                    </button>
+                    <button class="quick-link" onclick="jumpTo('uploads')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                        Uploading Templates
+                    </button>
+                    <button class="quick-link" onclick="jumpTo('accounts')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        Account & Settings
+                    </button>
+                    <button class="quick-link" onclick="jumpTo('escrow')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                        Escrow & Safety
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Topic Cards -->
+        <section class="topics-section">
+            <div class="container">
+                <div class="section-title-block">
+                    <h2>Browse by Topic</h2>
+                    <p>Pick a category to find the answers most relevant to you.</p>
+                </div>
+                <div class="topics-grid">
+
+                    <a href="#payments" class="topic-card" onclick="setTab('payments')">
+                        <div class="topic-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" />
+                                <line x1="1" y1="10" x2="23" y2="10" />
+                            </svg>
+                        </div>
+                        <h3>Payments &amp; Payouts</h3>
+                        <p>How payouts work, supported wallets (Skrill & Grey), payout frequency, currencies, and
+                            commission rates.</p>
+                        <div class="topic-arrow">View answers <svg width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                            </svg></div>
+                    </a>
+
+                    <a href="#uploads" class="topic-card" onclick="setTab('uploads')">
+                        <div class="topic-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                        </div>
+                        <h3>Uploading Templates</h3>
+                        <p>Accepted file types, size limits, how templates are stored, preview images, and creator
+                            plans.</p>
+                        <div class="topic-arrow">View answers <svg width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                            </svg></div>
+                    </a>
+
+                    <a href="#accounts" class="topic-card" onclick="setTab('accounts')">
+                        <div class="topic-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </div>
+                        <h3>Account &amp; Settings</h3>
+                        <p>Managing your profile, dashboard, payout settings, verification, and account security.</p>
+                        <div class="topic-arrow">View answers <svg width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                            </svg></div>
+                    </a>
+
+                    <a href="#escrow" class="topic-card" onclick="setTab('escrow')">
+                        <div class="topic-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                        </div>
+                        <h3>Escrow &amp; Safety</h3>
+                        <p>How Flowva's escrow system protects buyers and creators, dispute resolution, and chargeback
+                            policy.</p>
+                        <div class="topic-arrow">View answers <svg width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                            </svg></div>
+                    </a>
+
+                    <a href="#buyers" class="topic-card" onclick="setTab('buyers')">
+                        <div class="topic-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                                <line x1="3" y1="6" x2="21" y2="6" />
+                                <path d="M16 10a4 4 0 0 1-8 0" />
+                            </svg>
+                        </div>
+                        <h3>Buying Templates</h3>
+                        <p>How to purchase, download, use licenses, and request refunds or raise disputes.</p>
+                        <div class="topic-arrow">View answers <svg width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                            </svg></div>
+                    </a>
+
+                    <a href="#community" class="topic-card" onclick="setTab('community')">
+                        <div class="topic-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </div>
+                        <h3>Community &amp; Guidelines</h3>
+                        <p>Community chat rules, how to report violations, appeals, and creator conduct standards.</p>
+                        <div class="topic-arrow">View answers <svg width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                            </svg></div>
+                    </a>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQs -->
+        <section class="faqs-section" id="faqs">
+            <div class="container">
+                <div class="section-title-block">
+                    <h2>Frequently Asked Questions</h2>
+                    <p>Quick answers to the questions our team hears most often.</p>
+                </div>
+
+                <div class="faq-tabs">
+                    <button class="faq-tab active" onclick="setTab('all')" data-tab="all">All</button>
+                    <button class="faq-tab" onclick="setTab('payments')" data-tab="payments">Payments</button>
+                    <button class="faq-tab" onclick="setTab('uploads')" data-tab="uploads">Uploads</button>
+                    <button class="faq-tab" onclick="setTab('accounts')" data-tab="accounts">Accounts</button>
+                    <button class="faq-tab" onclick="setTab('escrow')" data-tab="escrow">Escrow</button>
+                    <button class="faq-tab" onclick="setTab('buyers')" data-tab="buyers">Buyers</button>
+                    <button class="faq-tab" onclick="setTab('community')" data-tab="community">Community</button>
+                </div>
+
+                <div class="faq-list" id="faqList">
+
+                    <!-- Payments -->
+                    <div class="faq-item" data-category="payments">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            What percentage do creators earn per sale?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                Creators receive <strong>80% of every sale</strong>. Flowva retains 20% as a platform
+                                commission. The first 50 creators to join the platform earn an elevated rate of
+                                <strong>90%</strong>. All payouts are made in USD only.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="payments">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            When and how do I get paid?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                Payouts are processed on a <strong>weekly or monthly</strong> schedule depending on your
+                                preference — configurable in your Dashboard under Settings &rarr; Payout. Once released
+                                from escrow, funds typically settle to your Skrill or Grey wallet within
+                                <strong>approximately 2 minutes</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="payments">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            What wallets does Flowva support for payouts?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                Flowva supports <strong>Skrill</strong> and <strong>Grey</strong> only. For Skrill, you
+                                connect using your registered Skrill email address. For Grey, you connect your Grey
+                                account details. Both are set up in your Dashboard under Settings &rarr; Payout. No
+                                other wallets or payment methods are supported at this time.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="payments">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            Which countries are supported for payouts?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                Flowva supports sellers from a range of African, European, American, Asia-Pacific, and
+                                Middle Eastern countries via Skrill. African countries include Ghana, Nigeria, Kenya,
+                                South Africa, Egypt, Ethiopia, and more. Outside Africa, supported regions include the
+                                UK, USA, Germany, France, India, UAE, and others. If your country is not listed during
+                                signup, it is currently unsupported. All payouts are in <strong>USD only</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="payments">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            Can buyers pay with Mastercard or bank transfer?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                Yes. Buyers can purchase templates using <strong>Skrill, Grey, Mastercard, or Bank
+                                    Account</strong>. All payments are routed through Flowva's escrow system before
+                                funds are released to the creator. There are no crypto payment options on Flowva.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Uploads -->
+                    <div class="faq-item" data-category="uploads">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            What file types can I upload as a creator?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                Flowva accepts over 60 file formats across six categories: <strong>Graphic
+                                    Design</strong> (PSD, AI, EPS, SVG, FIG, SKETCH, CDR, Affinity, Procreate, and
+                                more), <strong>Mobile Design</strong> (PLP, IBIS, PicsArt PXD, CapCut links),
+                                <strong>Motion Graphics</strong> (AEP, MOGRT, PRPROJ, DRP, FCPXML, and more),
+                                <strong>Animation</strong> (BLEND, C4D, MA, FLA, SPINE, and more), <strong>Mobile
+                                    Animation</strong> (ALIGHT, KMPROJECT, VNPROJ), and <strong>3D Assets</strong> (OBJ,
+                                FBX, GLB, GLTF, STL). Universal export formats like PNG, JPG, PDF, MP4, and MOV are also
+                                supported.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="uploads">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            What are the file size limits?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                Size limits vary by file category on the free tier: Desktop design files (PSD, AI,
+                                Figma, etc.) up to <strong>500MB</strong>; Mobile design files up to
+                                <strong>250MB</strong>; Motion graphics files up to <strong>1GB</strong>; Animation
+                                files up to <strong>1.5GB</strong>; Mobile animation files up to <strong>500MB</strong>;
+                                3D assets up to <strong>1GB</strong>; Universal exports up to <strong>200MB</strong>.
+                                Pro and Enterprise plans allow significantly higher limits and total storage quotas.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="uploads">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            Can mobile phone creators upload templates?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                Absolutely. Flowva fully supports mobile creators. If your software — such as Alight
+                                Motion, Canva, CapCut, Kinemaster, IbisPaint, or Pixellab — can generate a template
+                                file, you can upload it on Flowva. Mobile creators are equal members of the marketplace.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="uploads">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            How is my template file stored and displayed?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                The actual template file (PSD, AEP, etc.) is stored securely in the cloud and only
+                                accessible to buyers after purchase. On the marketplace, buyers see a <strong>PNG
+                                    preview image</strong> you upload when listing your template. You will also provide
+                                a download link that activates upon purchase.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="uploads">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            What are the creator plan tiers?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                There are three tiers. The <strong>Free tier</strong> is automatic for all new creators
+                                — no credit card needed, limits appear only when uploading. The <strong>Pro
+                                    plan</strong> costs $19/month or $190/year, and includes up to 50GB total storage,
+                                custom storefront branding, and advanced analytics. The <strong>Enterprise plan</strong>
+                                costs $99/month or $990/year and includes 500GB+ storage, API bulk uploads, white-label
+                                storefronts, a dedicated account manager, and premium CDN delivery.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accounts -->
+                    <div class="faq-item" data-category="accounts">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            How do I set up my payout wallet?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                Log in to your Flowva account and navigate to <strong>Dashboard &rarr; Settings &rarr;
+                                    Payout</strong>. From there you can securely add your Skrill email address or Grey
+                                account details. You can update these at any time. Payout details are never visible to
+                                buyers.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="accounts">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            Can I have more than one Flowva account?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                No. Each person may hold only one Flowva account. Creating multiple accounts to
+                                circumvent bans, inflate stats, or access multiple free-tier benefits is a violation of
+                                our Community Guidelines and will result in account termination.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="accounts">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            What happens after I sign up?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                After successful signup you will receive a pop-up notification prompting you to verify
+                                your email. Check your inbox for a message from Flowva with a verification link and
+                                onboarding instructions. You will not be able to upload templates or receive payouts
+                                until your email is verified.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Escrow -->
+                    <div class="faq-item" data-category="escrow">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            How does Flowva's escrow system work?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                When a buyer makes a payment, the funds are held in Flowva's escrow system — a secure
+                                holding layer — rather than going directly to the creator. Once the transaction is
+                                confirmed and any dispute window closes, escrow releases the creator's share
+                                automatically. Escrow is a <strong>security layer</strong>, not a payment processor. It
+                                protects both parties from fraud and ensures creators are paid fairly.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="escrow">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            What should I do if I have a dispute?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                All disputes must be raised through Flowva's support system — not through your bank or
+                                payment provider. Contact us at <a href="mailto:flowva3@gmail.com">flowva3@gmail.com</a>
+                                or use the contact form on this page. Filing a chargeback directly without first
+                                contacting Flowva support is a violation of our policy and may result in permanent
+                                account termination.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="escrow">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            Can I request an off-platform payment?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                No. Requesting or accepting payment outside of Flowva's escrow system is strictly
+                                prohibited and voids all dispute protections for both the buyer and the creator. All
+                                transactions — including freelance work and project jobs — must go through Flowva's
+                                platform.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buyers -->
+                    <div class="faq-item" data-category="buyers">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            Can I get a refund on a purchased template?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                Because templates are digital downloads, refunds are handled on a case-by-case basis. If
+                                the template was not delivered as described, or if there was a technical issue, contact
+                                <a href="mailto:flowva3@gmail.com">flowva3@gmail.com</a> with your order details. Do not
+                                initiate a chargeback without first contacting Flowva support.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="buyers">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            Can I share or resell a template I purchased?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                No. Purchased templates are licensed for your personal or commercial use only, as
+                                defined in your license agreement. Sharing, redistributing, or reselling purchased files
+                                to others is a violation of your license and Flowva's Terms of Service.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="buyers">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            How do I post a project or hire a freelancer?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                You can post a project brief or hire a freelancer directly through your Flowva account.
+                                Navigate to the <strong>Post a Project</strong> or <strong>Hire a Freelancer</strong>
+                                sections and fill in your brief details. Creators will submit bids and you can review
+                                them before committing. All payments for hired work also go through Flowva's escrow
+                                system.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Community -->
+                    <div class="faq-item" data-category="community">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            How do I join the Flowva creator community?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                The Flowva community group chat is available to all registered creators. Once your
+                                account is set up and verified, look for the community join button on the homepage or in
+                                your dashboard. The community is a space for creators to connect, share knowledge, seek
+                                feedback, and collaborate.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="community">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            How do I appeal an account suspension?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                Appeals must be submitted within <strong>14 days</strong> of the enforcement
+                                notification. Email <a href="mailto:flowva3@gmail.com">flowva3@gmail.com</a> with the
+                                subject line <strong>"Account Appeal — [Your Username]"</strong> and include a clear
+                                explanation along with any supporting evidence. Flowva reviews all appeals within 5–7
+                                business days. Appeal decisions are final.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="community">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            How do I report a guideline violation?
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                To report a creator, buyer, or listing that you believe violates Flowva's <a
+                                    href="community-guidelines.html">Community Guidelines</a>, email <a
+                                    href="mailto:flowva3@gmail.com">flowva3@gmail.com</a> with a description of the
+                                issue and any relevant evidence (screenshots, links, usernames). Our team investigates
+                                all reports.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- No results message -->
+                <p id="noResults"
+                    style="text-align:center;color:var(--text-muted);font-size:0.9rem;margin-top:32px;display:none;">
+                    No matching questions found. Try different keywords or <a href="contact.html"
+                        style="color:var(--accent-hover);">contact our support team</a>.
+                </p>
+
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- Ticket CTA -->
+        <section class="ticket-section">
+            <div class="container" style="padding-top:72px;">
+                <div class="ticket-card">
+                    <div>
+                        <h2>Still Need Help?</h2>
+                        <p>If you could not find what you were looking for, our support team is ready to assist. Send us
+                            a message and we will respond within 1–3 business days.</p>
+                        <div class="cta-actions">
+                            <a href="contact.html" class="btn btn--primary">Contact Support</a>
+                            <a href="community-guidelines.html" class="btn btn--ghost">Community Guidelines</a>
+                        </div>
+                    </div>
+                    <div class="ticket-stats">
+                        <div class="ticket-stat">
+                            <span class="stat-num">1–3</span>
+                            <span>business day response</span>
+                        </div>
+                        <div class="ticket-stat">
+                            <span class="stat-num">60+</span>
+                            <span>countries supported</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="background:var(--bg-surface);border-top:1px solid var(--border);padding:48px 0 32px;">
+        <div class="container">
+            <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:space-between;margin-bottom:40px;">
+                <div style="max-width:280px;">
+                    <div class="nav-logo" style="margin-bottom:12px;">Flowva</div>
+                    <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.7;">A trusted digital marketplace
+                        connecting creators and buyers worldwide.</p>
+                </div>
+                <div style="display:flex;gap:60px;flex-wrap:wrap;">
+                    <div>
+                        <p
+                            style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">
+                            Legal</p>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a href="community-guidelines.html"
+                                style="font-size:0.875rem;color:var(--text-secondary);">Community Guidelines</a>
+                            <a href="privacy.html" style="font-size:0.875rem;color:var(--text-secondary);">Privacy
+                                Policy</a>
+                            <a href="terms.html" style="font-size:0.875rem;color:var(--text-secondary);">Terms of
+                                Service</a>
+                        </div>
+                    </div>
+                    <div>
+                        <p
+                            style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">
+                            Help</p>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a href="support.html" style="font-size:0.875rem;color:var(--accent-hover);">Support
+                                Center</a>
+                            <a href="contact.html" style="font-size:0.875rem;color:var(--text-secondary);">Contact
+                                Us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                style="border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:center;">
+                <p style="font-size:0.8rem;color:var(--text-muted);">&copy; 2026 Flowva. All rights reserved.</p>
+                <p style="font-size:0.8rem;color:var(--text-muted);">flowva3@gmail.com</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle FAQ accordion
+        function toggleFaq(btn) {
+            const item = btn.closest('.faq-item');
+            const answer = item.querySelector('.faq-answer');
+            const isOpen = item.classList.contains('open');
+
+            // Close all
+            document.querySelectorAll('.faq-item.open').forEach(el => {
+                el.classList.remove('open');
+                el.querySelector('.faq-answer').style.maxHeight = '0';
+            });
+
+            if (!isOpen) {
+                item.classList.add('open');
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+            }
+        }
+
+        // Tab filter
+        function setTab(cat) {
+            // Update tab styles
+            document.querySelectorAll('.faq-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === cat);
+            });
+
+            const items = document.querySelectorAll('.faq-item');
+            let visible = 0;
+            items.forEach(item => {
+                const show = cat === 'all' || item.dataset.category === cat;
+                item.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+
+            // Scroll to FAQs
+            if (cat !== 'all') {
+                document.getElementById('faqs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Jump to section and open tab
+        function jumpTo(cat) {
+            setTab(cat);
+        }
+
+        // Search filter
+        function filterFaqs(query) {
+            const q = query.toLowerCase().trim();
+            const items = document.querySelectorAll('.faq-item');
+
+            // Reset tabs to all
+            document.querySelectorAll('.faq-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === 'all');
+            });
+
+            let visible = 0;
+            items.forEach(item => {
+                const text = item.querySelector('.faq-question').textContent.toLowerCase() +
+                    item.querySelector('.faq-answer-inner').textContent.toLowerCase();
+                const show = !q || text.includes(q);
+                item.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            document.getElementById('noResults').style.display = (q && visible === 0) ? 'block' : 'none';
+        }
+    </script>
+    <script type="module" src="../js/core/navbar.js"></script>
+</body>
+
+</html>

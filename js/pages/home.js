@@ -28,27 +28,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ─── Category definitions ────────────────────────────────────────────────
   // These are UI labels — the 'value' matches what your backend uses for ?cat=
   const CATEGORIES = [
-    { label: 'All',            value: ''},
-    { label: 'Flyers',         value: 'flyer',     },
-    { label: 'Logos',          value: 'logo'},
-    { label: 'Animations',     value: 'animation'},
-    { label: 'Social Media',   value: 'social'},
-    { label: 'Branding Kits',  value: 'branding'},
-    { label: 'Motion Graphics',value: 'motion'},
-    { label: 'YouTube',        value: 'youtube'},
-    { label: 'Resume',         value: 'resume'},
+    { label: 'All',               value: '' },
+    { label: 'Logo',              value: 'logo' },
+    { label: 'Flyer',             value: 'flyer' },
+    { label: 'Banner',            value: 'banner' },
+    { label: 'Brochure',          value: 'brochure' },
+    { label: 'Mockup',            value: 'mockup' },
+    { label: 'Font',              value: 'font' },
+    { label: '2D Animation',      value: '2d-animation' },
+    { label: '2D Explainer Video',value: '2d-explainer' },
+    { label: '3D Animated Video', value: '3d-animated' },
+    { label: 'Motion Graphics',   value: 'motion' },
+    { label: 'Social Media',      value: 'social' },
+    { label: 'Branding',          value: 'branding' },
   ];
 
   // ─── Software tab definitions for tutorials ──────────────────────────────
   const SOFTWARE_TABS = [
-    { label: 'All',          value: '' },
-    { label: 'Photoshop',    value: 'photoshop' },
-    { label: 'Canva',        value: 'canva' },
-    { label: 'Figma',        value: 'figma' },
-    { label: 'Illustrator',  value: 'illustrator' },
-    { label: 'After Effects',value: 'after-effects' },
-    { label: 'Benime',       value: 'benime' },
-    { label: 'Plotagon',     value: 'plotagon' },
+    { label: 'All',           value: '' },
+    { label: 'Canva',         value: 'canva' },
+    { label: 'Photoshop',     value: 'photoshop' },
+    { label: 'Figma',         value: 'figma' },
+    { label: 'Illustrator',   value: 'illustrator' },
+    { label: 'After Effects', value: 'after-effects' },
+    { label: 'Benime',        value: 'benime' },
   ];
 
   // ─── Gradient fallbacks for templates without preview images ─────────────
@@ -144,6 +147,8 @@ function renderTemplates(grid, templates) {
     const isFav = favorites.has(t._id || t.id);
     const previewUrl = t.previewUrl || '';
     const price = Number(t.price ?? 0).toFixed(2);
+    const GHS_RATE = 15.5; // update this when you wire to a live exchange rate API
+    const priceGhs = (Number(t.price ?? 0) * GHS_RATE).toFixed(2);
     const creatorName = t.creator?.name ?? t.creator?.username ?? t.creatorName ?? t.creatorId ?? 'Creator';
     const creatorId = t.creator?._id ?? t.creator?.id ?? '';
     const templateId = t._id ?? t.id;
@@ -197,7 +202,7 @@ const thumbHTML = previewUrl
         <div class="template-body">
           <div class="template-meta">
             <h3 class="template-title">${_esc(t.title)}</h3>
-            <span class="template-price">$${price}</span>
+            <span class="template-price">$${price} <span style="font-size:0.72rem;font-weight:500;color:var(--text-muted);display:block;margin-top:1px;">GH₵${priceGhs}</span></span>
           </div>
           <p class="template-creator">
             by <a href="creator.html?id=${_esc(String(creatorId))}">${_esc(creatorName)}</a>
@@ -516,6 +521,7 @@ function _initVideoAutoplay() {
     return `
       <div class="tutorial-card reveal"
         data-videourl="${_esc(t.videoUrl ?? '')}"
+        data-youtubeurl="${_esc(t.youtubeUrl ?? '')}"
         data-title="${_esc(t.title)}"
         style="cursor:pointer"
         aria-label="Watch tutorial: ${_esc(t.title)}">
@@ -544,27 +550,37 @@ function _initVideoAutoplay() {
 
   // ── ADD START — wire video play modal ──
   grid.querySelectorAll('.tutorial-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const url   = card.dataset.videourl;
-      const title = card.dataset.title;
-      if (!url) return;
+     card.addEventListener('click', () => {
+        const youtubeUrl = card.dataset.youtubeurl;
+        const videoUrl   = card.dataset.videourl;
+        const title      = card.dataset.title;
 
-      const existing = document.getElementById('tut-play-modal');
-      if (existing) existing.remove();
+        const existing = document.getElementById('tut-play-modal');
+        if (existing) existing.remove();
 
-      const modal = document.createElement('div');
-      modal.id = 'tut-play-modal';
-      modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
-      modal.innerHTML = `
-        <div style="background:var(--bg-raised);border-radius:var(--radius-lg);max-width:780px;width:100%;position:relative;overflow:hidden">
-          <button id="tut-modal-close" style="position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text-primary);font-size:1.4rem;cursor:pointer;z-index:1">✕</button>
-          <div style="padding:16px 20px;font-weight:700;border-bottom:1px solid var(--border)">${_esc(title)}</div>
-          <video controls autoplay playsinline style="width:100%;max-height:480px;display:block;background:#000">
-            <source src="${_esc(url)}" type="video/mp4">
-          </video>
-        </div>`;
+        const modal = document.createElement('div');
+        modal.id = 'tut-play-modal';
+        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
 
-      modal.querySelector('#tut-modal-close').addEventListener('click', () => modal.remove());
+        // Get YouTube embed ID
+        function getYtId(url) {
+          try {
+            const u = new URL(url);
+            if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+            return u.searchParams.get('v');
+          } catch { return null; }
+        }
+        const ytId = youtubeUrl ? getYtId(youtubeUrl) : null;
+        const mediaHTML = ytId
+          ? `<iframe width="100%" height="420" src="https://www.youtube.com/embed/${ytId}?autoplay=1" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen style="display:block;background:#000;"></iframe>`
+          : `<video controls autoplay playsinline style="width:100%;max-height:480px;display:block;background:#000"><source src="${_esc(videoUrl)}" type="video/mp4"></video>`;
+
+        modal.innerHTML = `
+          <div style="background:var(--bg-raised);border-radius:var(--radius-lg);max-width:780px;width:100%;position:relative;overflow:hidden">
+            <button id="tut-modal-close" style="position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text-primary);font-size:1.4rem;cursor:pointer;z-index:1">✕</button>
+            <div style="padding:16px 20px;font-weight:700;border-bottom:1px solid var(--border)">${_esc(title)}</div>
+            ${mediaHTML}
+          </div>`;      modal.querySelector('#tut-modal-close').addEventListener('click', () => modal.remove());
       modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
       document.body.appendChild(modal);
     });
@@ -746,6 +762,15 @@ if (isVideo) {
   // HERO BUTTONS
   // ─────────────────────────────────────────────────────────────────────────
 
+  document.getElementById('btn-hire')?.addEventListener('click', () => {
+    if (AppState.isLoggedIn()) {
+      window.location.href = 'post-a-job.html';
+    } else {
+      Toast.show('Please login or sign up to hire a freelancer', 'info');
+      setTimeout(() => { window.location.href = 'signup.html'; }, 800);
+    }
+  });
+
   document.getElementById('btn-browse')?.addEventListener('click', () => {
     window.location.href = 'marketplace.html';
   });
@@ -754,8 +779,12 @@ if (isVideo) {
     if (AppState.isLoggedIn()) {
       window.location.href = 'dashboard.html';
     } else {
-      window.location.href = 'signup.html';
+      window.location.href = 'signup.html?role=creator';
     }
+  });
+  
+  document.getElementById('btn-community')?.addEventListener('click', () => {
+    window.location.href = '/footer/community-guidelines.html';
   });
 
   document.getElementById('btn-view-all')?.addEventListener('click', () => {

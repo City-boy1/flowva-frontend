@@ -20,122 +20,220 @@
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <style>
-        .pm-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: var(--space-5);
+        /* ═══════════════════════════════════════════════
+           PAGE HEADER
+        ═══════════════════════════════════════════════ */
+        .pm-hero {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            padding: var(--space-12) 0 0;
+            position: relative;
+            overflow: hidden;
         }
 
-        .pm-card {
-            background: var(--bg-raised);
+        .pm-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 80% at 80% 50%,
+                    rgba(124, 58, 237, 0.07) 0%,
+                    transparent 70%);
+            pointer-events: none;
+        }
+
+        .pm-hero-inner {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: var(--space-5);
+            margin-bottom: var(--space-8);
+        }
+
+        .pm-hero-text h1 {
+            font-family: var(--font-display);
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+
+        .pm-hero-text p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .pm-hero-text p strong {
+            color: var(--text-primary);
+        }
+
+        /* ═══════════════════════════════════════════════
+           SEGMENTED TOGGLE — the signature element
+        ═══════════════════════════════════════════════ */
+        .pm-type-toggle {
+            display: inline-flex;
+            background: var(--bg-overlay);
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-6);
+            border-radius: var(--radius-full);
+            padding: 5px;
+            gap: 4px;
+            position: relative;
+        }
+
+        .pm-type-btn {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: var(--radius-full);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: color 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .pm-type-btn .pm-type-icon {
+            font-size: 1rem;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .pm-type-btn .pm-type-label {
             display: flex;
             flex-direction: column;
-            gap: var(--space-3);
-            transition: var(--transition-slow);
-        }
-
-        .pm-card:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .pm-card-header {
-            display: flex;
-            justify-content: space-between;
             align-items: flex-start;
-            gap: var(--space-3);
+            line-height: 1;
+            gap: 3px;
         }
 
-        .pm-card-title {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            font-weight: 700;
-            line-height: 1.3;
+        .pm-type-btn .pm-type-sub {
+            font-size: 0.67rem;
+            font-weight: 400;
+            opacity: 0.7;
+            letter-spacing: 0.01em;
         }
 
-        .pm-card-meta {
+        /* Sliding pill background */
+        .pm-type-toggle-track {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            height: calc(100% - 10px);
+            border-radius: var(--radius-full);
+            transition: transform 0.35s cubic-bezier(0.34, 1.12, 0.64, 1),
+                width 0.35s cubic-bezier(0.34, 1.12, 0.64, 1),
+                background 0.3s ease;
+            pointer-events: none;
+        }
+
+        /* Active state colours per type */
+        body[data-pm-type="freelance"] .pm-type-toggle-track {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
+        }
+
+        body[data-pm-type="contract"] .pm-type-toggle-track {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            box-shadow: 0 4px 16px rgba(217, 119, 6, 0.35);
+        }
+
+        .pm-type-btn.active {
+            color: #fff;
+        }
+
+        .pm-type-btn.active .pm-type-icon {
+            transform: scale(1.18);
+        }
+
+        /* ═══════════════════════════════════════════════
+           CONTEXT BANNER — changes per mode
+        ═══════════════════════════════════════════════ */
+        .pm-context-banner {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            grid-template-rows: auto auto;
+            gap: var(--space-2) var(--space-4);
+            padding: var(--space-4) var(--space-6);
+            border-top: 1px solid var(--border);
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+
+        .pm-context-pills {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .pm-context-desc {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .pm-context-post-btn {
+            grid-column: 2;
+            grid-row: 1 / 3;
+            margin-left: 0;
             display: flex;
-            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        body[data-pm-type="freelance"] .pm-context-banner {
+            background: rgba(124, 58, 237, 0.06);
+            border-top-color: rgba(124, 58, 237, 0.18);
+        }
+
+        body[data-pm-type="contract"] .pm-context-banner {
+            background: rgba(217, 119, 6, 0.06);
+            border-top-color: rgba(217, 119, 6, 0.18);
+        }
+
+        .pm-context-pills {
+            display: flex;
             gap: var(--space-2);
+            flex-wrap: wrap;
+        }
+
+        .pm-context-pill {
+            font-size: 0.73rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            border: 1px solid transparent;
+        }
+
+        body[data-pm-type="freelance"] .pm-context-pill {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--accent-hover);
+            border-color: rgba(124, 58, 237, 0.2);
+        }
+
+        body[data-pm-type="contract"] .pm-context-pill {
+            background: rgba(217, 119, 6, 0.1);
+            color: #b45309;
+            border-color: rgba(217, 119, 6, 0.2);
+        }
+
+        [data-theme="dark"] body[data-pm-type="contract"] .pm-context-pill {
+            color: #fbbf24;
+        }
+
+        .pm-context-desc {
             font-size: 0.8rem;
             color: var(--text-muted);
         }
 
-        .pm-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
+        .pm-context-post-btn {
+            margin-left: auto;
         }
 
-        .pm-card-desc {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            display: -webkit-box;
-            line-clamp: 3;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .pm-card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: var(--space-3);
-            border-top: 1px solid var(--border);
-            margin-top: auto;
-        }
-
-        .pm-client-info {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            font-size: 0.78rem;
-            color: var(--text-muted);
-        }
-
-        .pm-client-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--accent-soft);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--accent-hover);
-            flex-shrink: 0;
-        }
-
-        .pm-skills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .pm-skill-tag {
-            font-size: 0.72rem;
-            padding: 3px 10px;
-            border-radius: var(--radius-full);
-            background: var(--accent-soft);
-            color: var(--accent-hover);
-            border: 1px solid rgba(124, 58, 237, 0.2);
-        }
-
-        /* Bid modal */
-        .bid-modal-body {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-4);
-        }
-
-        /* Filter bar */
+        /* ═══════════════════════════════════════════════
+           FILTER BAR
+        ═══════════════════════════════════════════════ */
         .filter-bar {
             display: flex;
             flex-wrap: wrap;
@@ -192,42 +290,482 @@
             background-position: calc(100% - 14px) center;
         }
 
+        /* ═══════════════════════════════════════════════
+           CARD GRID
+        ═══════════════════════════════════════════════ */
+        .pm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: var(--space-5);
+        }
+
+        .pm-card {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pm-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .pm-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .pm-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Freelance card accent */
+        .pm-card--freelance::before {
+            background: linear-gradient(90deg, #7c3aed, #a78bfa);
+        }
+
+        .pm-card--freelance:hover {
+            border-color: rgba(124, 58, 237, 0.35);
+        }
+
+        /* Contract card accent */
+        .pm-card--contract::before {
+            background: linear-gradient(90deg, #d97706, #fbbf24);
+        }
+
+        .pm-card--contract:hover {
+            border-color: rgba(217, 119, 6, 0.35);
+        }
+
+        /* ── Card type badge ── */
+        .pm-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        .pm-type-badge--freelance {
+            background: rgba(124, 58, 237, 0.12);
+            color: var(--accent-hover);
+            border: 1px solid rgba(124, 58, 237, 0.22);
+        }
+
+        .pm-type-badge--contract {
+            background: rgba(217, 119, 6, 0.12);
+            color: #b45309;
+            border: 1px solid rgba(217, 119, 6, 0.22);
+        }
+
+        [data-theme="dark"] .pm-type-badge--contract {
+            color: #fbbf24;
+        }
+
+        .pm-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--space-3);
+        }
+
+        .pm-card-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        /* ── Budget chip ── */
+        .pm-budget-chip {
+            flex-shrink: 0;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            white-space: nowrap;
+        }
+
+        .pm-budget-chip--freelance {
+            background: var(--bg-overlay);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .pm-budget-chip--contract {
+            background: rgba(217, 119, 6, 0.1);
+            color: #b45309;
+            border: 1px solid rgba(217, 119, 6, 0.2);
+        }
+
+        [data-theme="dark"] .pm-budget-chip--contract {
+            color: #fbbf24;
+        }
+
+        .pm-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .pm-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pm-card-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .pm-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .pm-skill-tag {
+            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            background: var(--accent-soft);
+            color: var(--accent-hover);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+
+        /* ── Urgency / duration indicator ── */
+        .pm-urgency {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: var(--radius-full);
+        }
+
+        .pm-urgency--hot {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .pm-urgency--normal {
+            background: var(--bg-overlay);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .pm-urgency-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pm-pulse 1.8s ease infinite;
+        }
+
+        @keyframes pm-pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.75);
+            }
+        }
+
+        .pm-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: var(--space-3);
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+        }
+
+        .pm-client-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            min-width: 0;
+        }
+
+        .pm-client-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent-hover);
+            flex-shrink: 0;
+        }
+
+        /* ── CTA button colours per type ── */
+        .pm-bid-btn {
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: var(--radius-full);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .pm-bid-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.92;
+        }
+
+        .pm-bid-btn--freelance {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
+        }
+
+        .pm-bid-btn--contract {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(217, 119, 6, 0.3);
+        }
+
+        /* ── Bids count ── */
+        .pm-bids-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .pm-bids-count strong {
+            color: var(--text-primary);
+        }
+
+        /* ═══════════════════════════════════════════════
+           EMPTY STATE
+        ═══════════════════════════════════════════════ */
+        .pm-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: var(--space-12) var(--space-6);
+            color: var(--text-muted);
+        }
+
+        .pm-empty-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-4);
+            opacity: 0.5;
+        }
+
+        .pm-empty h3 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        /* ═══════════════════════════════════════════════
+           BID MODAL
+        ═══════════════════════════════════════════════ */
+        .bid-modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .bid-type-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-md);
+            font-size: 0.82rem;
+        }
+
+        .bid-type-indicator--freelance {
+            background: rgba(124, 58, 237, 0.08);
+            border: 1px solid rgba(124, 58, 237, 0.18);
+            color: var(--accent-hover);
+        }
+
+        .bid-type-indicator--contract {
+            background: rgba(217, 119, 6, 0.08);
+            border: 1px solid rgba(217, 119, 6, 0.2);
+            color: #b45309;
+        }
+
+        [data-theme="dark"] .bid-type-indicator--contract {
+            color: #fbbf24;
+        }
+
+        /* ═══════════════════════════════════════════════
+           APPLY MODAL (contract)
+        ═══════════════════════════════════════════════ */
+        .apply-modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        /* ═══════════════════════════════════════════════
+           DETAIL MODAL
+        ═══════════════════════════════════════════════ */
+        .detail-section {
+            background: var(--bg-overlay);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+        }
+
+        .detail-section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: var(--space-2);
+        }
+
+        /* ═══════════════════════════════════════════════
+           RESPONSIVE
+        ═══════════════════════════════════════════════ */
         @media (max-width: 600px) {
             .pm-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .pm-type-btn {
+                padding: 9px 16px;
+            }
+
+            .pm-type-btn .pm-type-sub {
+                display: none;
+            }
+
+            .pm-context-post-btn {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .pm-context-post-btn .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
 </head>
 
-<body>
+<body data-pm-type="freelance">
     <div id="shared-navbar"></div>
     <div id="toast-container"></div>
 
     <main class="page-content">
-        <div
-            style="background:var(--bg-surface);border-bottom:1px solid var(--border);padding:var(--space-12) 0 var(--space-8)">
+
+        <!-- ═══════════ PAGE HERO / HEADER ═══════════ -->
+        <div class="pm-hero">
             <div class="container">
-                <div
-                    style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-4)">
-                    <div>
-                        <h1 class="section-title" style="margin-bottom:8px">Project Marketplace</h1>
-                        <p style="color:var(--text-muted)">
-                            <span id="result-count" style="color:var(--text-primary);font-weight:600">0 projects</span>
-                            open for bidding · Post a project or place a bid to get started
+                <div class="pm-hero-inner">
+                    <div class="pm-hero-text">
+                        <h1>Project Marketplace</h1>
+                        <p>
+                            <strong id="result-count">0 projects</strong>
+                            open · Browse, bid, or post your own
                         </p>
                     </div>
-                    <button class="btn btn--primary" id="btn-post-project">+ Post a Project</button>
+
+                    <!-- SEGMENTED TOGGLE -->
+                    <div class="pm-type-toggle" id="pm-type-toggle" role="group" aria-label="Job type">
+                        <div class="pm-type-toggle-track" id="pm-toggle-track"></div>
+
+                        <button class="pm-type-btn active" data-type="freelance" id="btn-type-freelance">
+                            <span class="pm-type-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                                </svg></span>
+                            <span class="pm-type-label">
+                                Freelance
+                                <span class="pm-type-sub">One-off project</span>
+                            </span>
+                        </button>
+
+                        <button class="pm-type-btn" data-type="contract" id="btn-type-contract">
+                            <span class="pm-type-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                                </svg></span>
+                            <span class="pm-type-label">
+                                Contract / Long-term
+                                <span class="pm-type-sub">Ongoing hire</span>
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <section class="section" style="padding-top:var(--space-8)">
+        <!-- CONTEXT BANNER — changes per mode -->
+        <div class="pm-context-banner">
+            <div class="pm-context-pills" id="pm-context-pills">
+                <!-- injected by JS -->
+            </div>
+            <p class="pm-context-desc" id="pm-context-desc"></p>
+            <div class="pm-context-post-btn">
+                <a href="post-a-job.html" class="btn btn--primary" id="pm-post-btn">+ Post a Project</a>
+            </div>
+        </div>
+
+        <!-- ═══════════ MAIN CONTENT ═══════════ -->
+        <section class="section" style="padding-top: var(--space-8)">
             <div class="container">
+
+                <!-- Filter bar -->
                 <div class="filter-bar">
                     <div class="filter-search">
-                        <span class="filter-search-icon">🔍</span>
-                        <input type="text" id="pm-search" placeholder="Search projects…">
+                        <span class="filter-search-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg></span>
+                        <input type="text" id="pm-search" placeholder="Search projects…" autocomplete="off">
                     </div>
                     <select class="filter-select" id="pm-category">
                         <option value="">All Categories</option>
@@ -250,102 +788,36 @@
 
                 <!-- Skeletons -->
                 <div class="pm-grid" id="pm-skeleton" aria-hidden="true">
-                    <div class="skeleton" style="height:240px;border-radius:var(--radius-lg)"></div>
-                    <div class="skeleton" style="height:240px;border-radius:var(--radius-lg)"></div>
-                    <div class="skeleton" style="height:240px;border-radius:var(--radius-lg)"></div>
+                    <div class="skeleton" style="height:260px;border-radius:var(--radius-lg)"></div>
+                    <div class="skeleton" style="height:260px;border-radius:var(--radius-lg)"></div>
+                    <div class="skeleton" style="height:260px;border-radius:var(--radius-lg)"></div>
                 </div>
 
                 <div class="pm-grid" id="pm-grid"></div>
 
                 <div style="text-align:center;margin-top:var(--space-10)">
-                    <button class="btn btn--ghost btn--lg hidden" id="pm-load-more">Load More Projects</button>
+                    <button class="btn btn--ghost btn--lg hidden" id="pm-load-more">Load More</button>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- POST PROJECT MODAL (buyers) -->
-    <div class="modal-overlay" id="post-project-modal" role="dialog" aria-modal="true">
-        <div class="modal" style="max-width:640px">
-            <div class="modal-header">
-                <h2>Post a Project</h2>
-                <button class="modal-close" aria-label="Close">✕</button>
-            </div>
-            <div class="modal-body">
-                <form id="post-project-form" novalidate style="display:flex;flex-direction:column;gap:var(--space-4)">
-                    <div class="form-group">
-                        <label class="form-label">Project Title *</label>
-                        <input class="form-input" type="text" id="proj-title"
-                            placeholder="e.g. Animated logo for my brand" maxlength="200" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Description *</label>
-                        <textarea class="form-input" id="proj-desc" rows="4" maxlength="5000"
-                            placeholder="Describe what you need in detail — style, references, deliverables…"
-                            style="resize:vertical" required></textarea>
-                    </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
-                        <div class="form-group">
-                            <label class="form-label">Category</label>
-                            <select class="form-input" id="proj-category">
-                                <option value="">Select category</option>
-                                <option value="animation">Animation</option>
-                                <option value="logo">Logo Design</option>
-                                <option value="social">Social Media</option>
-                                <option value="motion">Motion Graphics</option>
-                                <option value="branding">Branding</option>
-                                <option value="video">Video Editing</option>
-                                <option value="web">Web Design</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Budget (USD) *</label>
-                            <input class="form-input" type="number" id="proj-budget" placeholder="e.g. 150" min="5"
-                                step="1" required>
-                        </div>
-                    </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
-                        <div class="form-group">
-                            <label class="form-label">Deadline *</label>
-                            <input class="form-input" type="date" id="proj-deadline" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Required Software</label>
-                            <input class="form-input" type="text" id="proj-software"
-                                placeholder="e.g. After Effects, Figma">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Skills Needed</label>
-                        <input class="form-input" type="text" id="proj-skills"
-                            placeholder="Comma-separated: e.g. motion design, 2D animation">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Attachments (optional)</label>
-                        <input class="form-input" type="file" id="proj-attachments" multiple accept="image/*,.pdf,.zip"
-                            style="padding:10px 16px">
-                        <span style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;display:block">Images, PDF
-                            or ZIP — max 10MB each</span>
-                    </div>
-                    <div id="post-project-error" style="display:none;color:var(--danger);font-size:0.85rem"></div>
-                    <div class="modal-footer" style="padding:0;margin-top:var(--space-2)">
-                        <button type="button" class="btn btn--ghost modal-close">Cancel</button>
-                        <button type="submit" class="btn btn--primary" id="post-project-submit">Submit Project</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- BID MODAL (creators) -->
-    <div class="modal-overlay" id="bid-modal" role="dialog" aria-modal="true">
+    <!-- ═══════════ BID MODAL (freelance) ═══════════ -->
+    <div class="modal-overlay" id="bid-modal" role="dialog" aria-modal="true" aria-label="Submit a bid">
         <div class="modal" style="max-width:580px">
             <div class="modal-header">
                 <h2>Submit a Bid</h2>
                 <button class="modal-close" aria-label="Close">✕</button>
             </div>
             <div class="modal-body bid-modal-body">
+                <!-- Type indicator -->
+                <div class="bid-type-indicator bid-type-indicator--freelance" id="bid-type-indicator">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                    </svg>
+                    Freelance Project — one-time delivery
+                </div>
                 <p style="font-size:0.85rem;color:var(--text-muted)" id="bid-project-title-display"></p>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
                     <div class="form-group">
@@ -376,7 +848,57 @@
         </div>
     </div>
 
-    <!-- PROJECT DETAIL MODAL -->
+    <!-- ═══════════ APPLY MODAL (contract / long-term) ═══════════ -->
+    <div class="modal-overlay" id="apply-modal" role="dialog" aria-modal="true" aria-label="Apply for role">
+        <div class="modal" style="max-width:600px">
+            <div class="modal-header">
+                <h2>Apply for this Role</h2>
+                <button class="modal-close" aria-label="Close">✕</button>
+            </div>
+            <div class="modal-body apply-modal-body">
+                <!-- Type indicator -->
+                <div class="bid-type-indicator bid-type-indicator--contract">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                    </svg>
+                    Contract / Long-term — ongoing engagement
+                </div>
+                <p style="font-size:0.85rem;color:var(--text-muted)" id="apply-project-title-display"></p>
+
+                <div class="form-group">
+                    <label class="form-label">Cover Letter *</label>
+                    <textarea class="form-input" id="apply-cover" rows="5" maxlength="3000"
+                        placeholder="Introduce yourself, explain your interest, and describe your relevant experience…"
+                        style="resize:vertical"></textarea>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
+                    <div class="form-group">
+                        <label class="form-label">Expected Monthly Rate (USD)</label>
+                        <input class="form-input" type="number" id="apply-rate" placeholder="e.g. 800" min="1" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Available to Start</label>
+                        <input class="form-input" type="date" id="apply-start">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Portfolio / LinkedIn / Website</label>
+                    <input class="form-input" type="text" id="apply-portfolio" placeholder="https://…">
+                </div>
+                <div id="apply-error" style="display:none;color:var(--danger);font-size:0.85rem"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--ghost modal-close">Cancel</button>
+                <button class="btn btn--primary" id="apply-submit-btn"
+                    style="background:linear-gradient(135deg,#d97706,#b45309);box-shadow:0 4px 14px rgba(217,119,6,0.3)">
+                    Submit Application
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════ PROJECT DETAIL MODAL ═══════════ -->
     <div class="modal-overlay" id="detail-modal" role="dialog" aria-modal="true">
         <div class="modal" style="max-width:680px">
             <div class="modal-header">

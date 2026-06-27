@@ -128,7 +128,7 @@ function _setBannerBg(avatarUrl, creatorId) {
     const tagsEl = document.getElementById('creator-tags');
 
     if (nameEl) nameEl.textContent = creator.name;
-    if (roleEl) roleEl.textContent = 'Motion Graphics Creator';
+    if (roleEl) roleEl.textContent = creator.role ?? 'Creative Professional on FLOWVA';
     if (bioEl)  bioEl.textContent  = creator.bio || 'No bio yet.';
 
     if (tagsEl) {
@@ -316,16 +316,7 @@ if (aboutPanel) {
     </div>`;
 }
 
-document.querySelectorAll('.creator-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.creator-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.creator-tab-panel').forEach(p => p.classList.add('hidden'));
-    tab.classList.add('active');
-    document.getElementById(`tab-${tab.dataset.tab}`)?.classList.remove('hidden');
-    if (tab.dataset.tab === 'reviews') loadRatings();
-  });
-});
-  }
+  } // ← closes loadCreatorProfile
 
   // ── Rate Modal ────────────────────────────────────────────────────────────
   async function openRateModal(creator) {
@@ -357,7 +348,7 @@ document.querySelectorAll('.creator-tab').forEach(tab => {
           ${[1,2,3,4,5].map(n => `<span data-score="${n}" style="opacity:0.3;cursor:pointer;transition:opacity 0.1s">★</span>`).join('')}
         </div>
         <textarea id="rate-review" placeholder="Leave a review (optional)" rows="3"
-          style="width:100%;background:var(--bg-overlay);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3);color:var(--text-primary);font-family:var(--font-body);font-size:0.9rem;resize:vertical;box-sizing:border-box;outline:none"></textarea>
+          style="width:100%;background:var(--bg-overlay);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3);color:var(--text-primary);font-family:'Poppins',var(--font-body),sans-serif;font-size:0.9rem;resize:vertical;box-sizing:border-box;outline:none"></textarea>
         <p id="rate-error" style="color:var(--danger);font-size:0.82rem;margin-top:8px;display:none"></p>
         <div style="display:flex;justify-content:flex-end;gap:var(--space-3);margin-top:var(--space-4)">
           <button class="btn btn--ghost btn--sm" id="rate-cancel">Cancel</button>
@@ -642,7 +633,7 @@ document.querySelectorAll('.creator-tab').forEach(tab => {
         </div>
         <textarea id="msg-modal-input" placeholder="Hi! I'd like to discuss a project with you…"
           maxlength="1000" rows="4"
-          style="width:100%;background:var(--bg-overlay);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3);color:var(--text-primary);font-family:var(--font-body);font-size:0.9rem;resize:vertical;outline:none;box-sizing:border-box"></textarea>
+          style="width:100%;background:var(--bg-overlay);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3);color:var(--text-primary);font-family:'Poppins',var(--font-body),sans-serif;font-size:0.9rem;resize:vertical;outline:none;box-sizing:border-box"></textarea>
         <div style="display:flex;justify-content:flex-end;gap:var(--space-3);margin-top:var(--space-4)">
           <button class="btn btn--ghost btn--sm" id="msg-modal-cancel">Cancel</button>
           <button class="btn btn--primary btn--sm" id="msg-modal-send">Send Message</button>
@@ -721,7 +712,7 @@ document.querySelectorAll('.creator-tab').forEach(tab => {
               ${Array.from({length: 14}).map(() => '<div class="film-hole"></div>').join('')}
             </div>
             <h1 style="font-family:var(--font-display);font-size:2rem;margin:0 0 8px">Browse Creators</h1>
-            <p style="color:var(--text-muted);margin:0 0 var(--space-4)">Discover talented motion graphics creators on FLOWVA</p>
+            <p style="color:var(--text-muted);margin:0 0 var(--space-4)">Discover talented creators — graphic designers, motion artists, and animators — on FLOWVA</p>
             <div class="dir-search-wrap" style="display:flex;gap:var(--space-3);flex-wrap:wrap;width:100%;max-width:520px">
               <input type="text" id="creator-search" placeholder="Search by name, bio, country…"
                 class="form-input" style="flex:1;min-width:200px">
@@ -764,7 +755,7 @@ document.querySelectorAll('.creator-tab').forEach(tab => {
           <div class="empty-state" style="grid-column:1/-1;padding:60px 20px;text-align:center">
             <div style="font-size:3rem;margin-bottom:12px">◉</div>
             <h3>No creators found</h3>
-            <p style="color:var(--text-muted);margin-top:8px">${search ? 'Try a different search term' : 'Be the first to join as a creator!'}</p>
+            <p style="color:var(--text-muted);margin-top:8px">${search ? 'Try a different name, bio, or country' : 'No creators yet — be the first to join FLOWVA!'}</p>
           </div>`;
         return;
       }
@@ -801,7 +792,7 @@ document.querySelectorAll('.creator-tab').forEach(tab => {
             </div>
 
             <p style="font-size:0.84rem;color:var(--text-secondary);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:0">
-              ${_esc(c.bio || 'Motion graphics creator on FLOWVA.')}
+              ${_esc(c.bio || 'Creative professional on FLOWVA.')}
             </p>
 
             <div class="creator-dir-stats">

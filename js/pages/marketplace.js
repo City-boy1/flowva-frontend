@@ -177,14 +177,19 @@ async function getCreatorName(id) {
 }
 
   const CATEGORIES=[
-    {value:'all',label:'All'},{value:'animation',label:'Animation'},
-    {value:'logo',label:'Logo'},{value:'social',label:'Social Media'},
-    {value:'motion',label:'Motion Graphics'},{value:'intro',label:'Intro'},
-    {value:'flyer',label:'Flyer'},{value:'branding',label:'Branding'},
-    {value:'youtube',label:'YouTube Kit'},{value:'slides',label:'Slides'},
-    {value:'gaming',label:'Gaming'},{value:'effects',label:'Effects'},
-    {value:'event',label:'Event'},{value:'resume',label:'Resume'},
-    {value:'broadcast',label:'Broadcast'},
+    {value:'all',label:'All'},
+    {value:'logo',label:'Logo'},
+    {value:'flyer',label:'Flyer'},
+    {value:'banner',label:'Banner'},
+    {value:'brochure',label:'Brochure'},
+    {value:'mockup',label:'Mockup'},
+    {value:'font',label:'Font'},
+    {value:'2d-animation',label:'2D Animation'},
+    {value:'2d-explainer',label:'2D Explainer Video'},
+    {value:'3d-animated',label:'3D Animated Video'},
+    {value:'motion',label:'Motion Graphics'},
+    {value:'social',label:'Social Media'},
+    {value:'branding',label:'Branding'},
   ];
 
 
@@ -223,6 +228,12 @@ async function getCreatorName(id) {
     }
     allTemplates=res.data.templates;
     buildPills();applyFilters();
+
+    const catParam = urlParams.get('cat');
+    if (catParam) {
+      activeCategory = catParam;
+      buildPills();
+    }
 
     const buyParam=urlParams.get('buy');
     if(buyParam){
@@ -761,13 +772,13 @@ if(_fk) localStorage.setItem(_fk, JSON.stringify(favorites));
       </div>
       <div class="fv-buy-modal-body">
         <div class="fv-buy-modal-item-title">${_esc(title)}</div>
-        <div class="fv-buy-modal-row"><span>Creator receives</span><span style="color:var(--success);">$${(p*0.7).toFixed(2)}</span></div>
-        <div class="fv-buy-modal-row"><span>Platform fee</span><span>$${(p*0.3).toFixed(2)}</span></div>
+        <div class="fv-buy-modal-row"><span>Creator receives</span><span style="color:var(--success);">$${(p*0.8).toFixed(2)}</span></div>
+        <div class="fv-buy-modal-row"><span>Platform fee</span><span>$${(p*0.2).toFixed(2)}</span></div>
         <div class="fv-buy-modal-row fv-buy-modal-row--total"><span>Total</span><span class="fv-buy-total-amount">$${p.toFixed(2)}</span></div>
       </div>
       <div class="fv-buy-modal-foot">
-        <button id="helio-pay-btn" class="fv-buy-pay-btn">💳 Pay with Card</button>
-        <p class="fv-buy-secure-note">Secured by Helio · Visa & Mastercard accepted</p>
+        <button id="helio-pay-btn" class="fv-buy-pay-btn">💳 Pay Securely</button>
+        <p class="fv-buy-secure-note">Secured by Flowva Escrow · Skrill, Grey, Mastercard & Bank Account accepted</p>
         <p id="buy-modal-error" class="fv-buy-modal-error"></p>
       </div>
     </div>`;
@@ -802,7 +813,7 @@ if(_fk) localStorage.setItem(_fk, JSON.stringify(favorites));
     if(res.data?.authorizationUrl){
       modal.remove();
       document.body.style.overflow='';
-      showToast('Redirecting to secure payment…','info');
+      showToast('Redirecting to secure checkout…','info');
       setTimeout(()=>window.location.href=res.data.authorizationUrl,500);
     }
   });
@@ -813,7 +824,15 @@ if(_fk) localStorage.setItem(_fk, JSON.stringify(favorites));
   // ══════════════════════════════════════════════════════════════════════
   let _tutLoaded=false,allTutorials=[],tutFiltered=[],tutVisibleCount=12,activeSoftware='';
 
-  const SW_TABS=[{label:'All',value:''},{label:'Photoshop',value:'photoshop'},{label:'Canva',value:'canva'},{label:'Figma',value:'figma'},{label:'Illustrator',value:'illustrator'},{label:'After Effects',value:'after-effects'},{label:'Benime',value:'benime'},{label:'Plotagon',value:'plotagon'}];
+  const SW_TABS=[
+    {label:'All',value:''},
+    {label:'Canva',value:'canva'},
+    {label:'Photoshop',value:'photoshop'},
+    {label:'Figma',value:'figma'},
+    {label:'Illustrator',value:'illustrator'},
+    {label:'After Effects',value:'after-effects'},
+    {label:'Benime',value:'benime'},
+  ];
 
   function buildSoftwareBar(){
     const bar=document.getElementById('tut-software-bar');
@@ -892,7 +911,7 @@ if(tsWrap && tsInput){
       const cid=creatorIds[i];
       const dur=t.duration?`${Math.floor(t.duration/60)}m`:'';
       return `
-        <div class="tutorial-card" data-videourl="${_esc(t.videoUrl??'')}" data-title="${_esc(t.title)}" style="cursor:pointer;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color 0.3s ease,transform 0.3s ease,box-shadow 0.3s ease;opacity:0;transform:translateY(32px) scale(0.96);">
+         <div class="tutorial-card" data-videourl="${_esc(t.videoUrl??'')}" data-youtubeurl="${_esc(t.youtubeUrl??'')}" data-title="${_esc(t.title)}" style="cursor:pointer;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color 0.3s ease,transform 0.3s ease,box-shadow 0.3s ease;opacity:0;transform:translateY(32px) scale(0.96);">
           <div style="position:relative;aspect-ratio:16/9;overflow:hidden;background:${GRADS[i%GRADS.length]};">
             ${t.thumbnailUrl?`<img src="${_esc(t.thumbnailUrl)}" alt="${_esc(t.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.6s ease;">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.3;">▣</div>`}
             <div style="position:absolute;inset:0;background:rgba(0,0,0,0.28);display:flex;align-items:center;justify-content:center;transition:background 0.25s ease;">
@@ -941,9 +960,9 @@ if(tsWrap && tsInput){
         if(play){play.style.transform='';play.style.background='rgba(124,58,237,0.88)';}
         if(overlay)overlay.style.background='rgba(0,0,0,0.28)';
       });
-      card.addEventListener('click', e=>{
+       card.addEventListener('click', e=>{
         if(e.target.tagName==='A') return;
-        openVideoModal(card.dataset.videourl,card.dataset.title);
+        openVideoModal(card.dataset.videourl, card.dataset.title, card.dataset.youtubeurl);
       });
     });
   }
@@ -952,8 +971,21 @@ if(tsWrap && tsInput){
   document.getElementById('tut-search')?.addEventListener('input',applyTutFilters);
 
   // ── Video Modal ────────────────────────────────────────────────────────
-  function openVideoModal(url,title){
+   function openVideoModal(url, title, youtubeUrl) {
   document.getElementById('tut-play-modal')?.remove();
+
+  function getYtId(u) {
+    try {
+      const p = new URL(u);
+      if (p.hostname.includes('youtu.be')) return p.pathname.slice(1);
+      return p.searchParams.get('v');
+    } catch { return null; }
+  }
+  const ytId = youtubeUrl ? getYtId(youtubeUrl) : null;
+  const mediaHTML = ytId
+    ? `<iframe width="100%" height="440" src="https://www.youtube.com/embed/${ytId}?autoplay=1" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen style="display:block;background:#000;"></iframe>`
+    : `<video controls autoplay playsinline style="width:100%;max-height:520px;display:block;background:#000;"><source src="${_esc(url)}" type="video/mp4"></video>`;
+
   const modal=document.createElement('div');
   modal.id='tut-play-modal';
   modal.className='modal-overlay';
@@ -963,9 +995,7 @@ if(tsWrap && tsInput){
         <span class="tut-video-modal-title">${_esc(title)}</span>
         <button id="tut-modal-close" class="tut-video-modal-close">✕</button>
       </div>
-      <video controls autoplay playsinline style="width:100%;max-height:520px;display:block;background:#000;">
-        <source src="${_esc(url)}" type="video/mp4">
-      </video>
+      ${mediaHTML}
     </div>`;
   document.body.appendChild(modal);
   document.body.style.overflow='hidden';

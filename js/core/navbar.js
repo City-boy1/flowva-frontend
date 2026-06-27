@@ -112,12 +112,12 @@ function _buildNavbarHTML() {
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
   const links = [
-    { href: 'index.html', label: 'Home' },
-    { href: 'marketplace.html', label: 'Marketplace' },
-    { href: 'creator.html', label: 'Creators' },
-    { href: 'dashboard.html', label: 'Dashboard', authOnly: true },
-    { href: 'messages.html', label: 'Messages', authOnly: true },
-    { href: 'admin.html', label: 'Admin', authOnly: true, adminOnly: true },
+    { href: '/index.html', label: 'Home' },
+    { href: '/marketplace.html', label: 'Marketplace' },
+    { href: '/creator.html', label: 'Creators' },
+    { href: '/dashboard.html', label: 'Dashboard', authOnly: true },
+    { href: '/messages.html', label: 'Messages', authOnly: true },
+    { href: '/admin.html', label: 'Admin', authOnly: true, adminOnly: true },
   ];
 
  const navLinkHTML = links
@@ -146,14 +146,14 @@ function _buildNavbarHTML() {
           <span class="nav-dropdown-role">${_escape(user?.role ?? '')}</span>
         </div>
         <div class="nav-dropdown-divider"></div>
-        <a href="dashboard.html" class="nav-dropdown-item" role="menuitem">
+        <a href="/dashboard.html" class="nav-dropdown-item" role="menuitem">
           <span><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Dashboard
         </a>
         ${user?.role === 'ADMIN' ? `
-<a href="admin.html" class="nav-dropdown-item" role="menuitem">
+<a href="/admin.html" class="nav-dropdown-item" role="menuitem">
   <span><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Admin Panel
 </a>` : ''}
-        <a href="dashboard.html#settings" class="nav-dropdown-item" role="menuitem"
+        <a href="/dashboard.html#settings" class="nav-dropdown-item" role="menuitem"
           onclick="sessionStorage.setItem('fv_nav_target','settings')">
           <span><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> Settings
         </a>
@@ -164,14 +164,14 @@ function _buildNavbarHTML() {
       </div>
     </div>
   ` : `
-    <a href="login.html" class="btn btn--ghost btn--sm">Login</a>
-    <a href="signup.html" class="btn btn--primary btn--sm">Sign Up</a>
+    <a href="/login.html" class="btn btn--ghost btn--sm">Login</a>
+    <a href="/signup.html" class="btn btn--primary btn--sm">Sign Up</a>
   `;
 
   return `
     <nav class="navbar" id="main-navbar" role="navigation" aria-label="Main navigation">
       <div class="container nav-content">
-        <img src="./assets/images/logo.png" class="nav-logo-img" alt="FLOWVA" id="nav-logo-img">
+        <a href="/index.html" class="nav-logo-link"><img src="/assets/images/logo.png" class="nav-logo-img" alt="FLOWVA" id="nav-logo-img"></a>
 
         <div class="nav-links" id="nav-links" role="menubar">
           ${navLinkHTML}

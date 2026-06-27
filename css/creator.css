@@ -10,7 +10,15 @@
   height: 280px;
   position: relative;
   overflow: hidden;
-  background: #0d1225;
+  background: linear-gradient(135deg, #e0c3fc, #8ec5fc, #d4fc79, #f9a8d4, #a5f3fc);
+  background-size: 400% 400%;
+  animation: banner-gradient-shift 12s ease infinite;
+}
+
+@keyframes banner-gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* The blurred avatar or gradient lives here — set via JS */
@@ -25,14 +33,14 @@
   transition: opacity 0.6s ease;
 } 
 
-/* Dark vignette over the blur so text/avatar stays readable */
+/* Vignette — lighter on directory (colorful bg), darker on profiles (blurred avatar bg) */
 .creator-banner::before {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 50% 100%, rgba(3,4,10,0.7) 0%, transparent 70%),
-    linear-gradient(to bottom, rgba(3,4,10,0.15) 0%, rgba(3,4,10,0.6) 100%);
+    radial-gradient(ellipse at 50% 100%, rgba(3,4,10,0.4) 0%, transparent 70%),
+    linear-gradient(to bottom, rgba(3,4,10,0.05) 0%, rgba(3,4,10,0.35) 100%);
   z-index: 1;
 }
 
@@ -784,4 +792,36 @@
   .creator-avatar { width: 90px; height: 90px; }
   .creator-info h1 { font-size: 1.4rem; }
   .creator-stat { min-width: 50%; }
+}
+/* ─── Directory header enhancements ─── */
+.directory-header h1 {
+  text-shadow: 0 2px 20px rgba(124,58,237,0.25), 0 1px 4px rgba(0,0,0,0.12);
+}
+
+#creator-search-btn {
+  animation: btn-float 3s ease-in-out infinite;
+}
+
+@keyframes btn-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-3px); }
+}
+
+/* ─── Poppins font enforcement ─── */
+body,
+.creator-dir-card,
+.directory-header,
+.creator-info,
+.creator-stats-bar,
+.creator-bio,
+.creator-tabs,
+.creator-content,
+.template-title,
+.template-price,
+.template-rating,
+.about-title,
+.about-bio,
+.about-field-label,
+.about-field-value {
+  font-family: 'Poppins', var(--font-body), sans-serif;
 }

@@ -32,6 +32,7 @@
   .hero-content p {
     font-size: 0.88rem;
     margin-bottom: var(--space-5);
+    padding-inline: var(--space-6);
   }
 
   .hero-eyebrow {
@@ -525,8 +526,14 @@
 /* ─── TUTORIAL CARD ─── */
 .tutorials-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-6);
+}
+
+@media (max-width: 668px) {
+  .tutorials-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tutorial-card {
@@ -1045,7 +1052,6 @@
 @media (max-width: 600px) {
   .hero-actions { flex-direction: column; align-items: center; }
   .template-grid { grid-template-columns: 1fr; }
-  .tutorials-grid { grid-template-columns: 1fr; }
   .creators-grid { grid-template-columns: 1fr 1fr; }
   .project-banner { padding: var(--space-8); }
   .cta-inner { padding: var(--space-10) var(--space-6); }
@@ -2168,4 +2174,42 @@
     rgba(3,4,10,0.0) 50%,
     rgba(3,4,10,0.7) 100%
   );
+}
+
+/* ─── FOOTER PAYMENT ICONS ─── */
+.footer-payment-note {
+  margin-top: var(--space-5);
+}
+
+.footer-payment-note p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.footer-payment-icons {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.payment-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
+  transition: var(--transition-base);
+}
+
+.payment-icon:hover {
+  border-color: var(--border-hover);
+  color: var(--accent-hover);
 }

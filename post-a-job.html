@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Post a job on Flowva — connect with talented creators for your next project.">
+    <script>
+        (function () {
+            var t = localStorage.getItem('flowva-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Flowva" />
+    <link rel="manifest" href="/assets/images/site.webmanifest" />
+    <title>Post a Job — FLOWVA</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        /* ── Layout ── */
+        .paj-hero {
+            padding: calc(var(--navbar-h) + 56px) 0 48px;
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0, 123, 255, 0.14) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 85% 60%, rgba(124, 58, 237, 0.1) 0%, transparent 60%),
+                var(--bg-base);
+            text-align: center;
+        }
+
+        .paj-hero .page-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-soft);
+            border: 1px solid rgba(0, 123, 255, 0.25);
+            border-radius: var(--radius-full);
+            padding: 6px 18px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-hover);
+            margin-bottom: 22px;
+        }
+
+        .paj-hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(1.9rem, 5vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 14px;
+        }
+
+        .paj-hero p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* ── Breadcrumb ── */
+        .paj-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .paj-breadcrumb a {
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        .paj-breadcrumb a:hover {
+            color: var(--accent-hover);
+        }
+
+        .paj-breadcrumb-sep {
+            opacity: 0.4;
+        }
+
+        /* ── Two-column layout ── */
+        .paj-body {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 32px;
+            align-items: start;
+            padding: 48px 0 100px;
+        }
+
+        @media (max-width: 860px) {
+            .paj-body {
+                grid-template-columns: 1fr;
+            }
+
+            .paj-sidebar {
+                order: -1;
+            }
+        }
+
+        /* ── Form card ── */
+        .paj-form-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+        }
+
+        .paj-section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent-hover);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .paj-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .paj-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .paj-form-card {
+                padding: 24px;
+            }
+        }
+
+        .paj-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .paj-form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .paj-form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .paj-label {
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .paj-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .paj-input,
+        .paj-select,
+        .paj-textarea {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .paj-input::placeholder,
+        .paj-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .paj-input:focus,
+        .paj-select:focus,
+        .paj-textarea:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .paj-input.error,
+        .paj-select.error,
+        .paj-textarea.error {
+            border-color: var(--danger);
+        }
+
+        .paj-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 14px) center;
+            padding-right: 36px;
+            cursor: pointer;
+        }
+
+        .paj-textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .paj-form-error {
+            font-size: 0.78rem;
+            color: var(--danger);
+            display: none;
+        }
+
+        /* Skills tag input */
+        .paj-tags-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--bg-raised);
+            cursor: text;
+            min-height: 48px;
+            align-items: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .paj-tags-wrap:focus-within {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .paj-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--accent-soft);
+            color: var(--accent-hover);
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            border-radius: var(--radius-full);
+            padding: 3px 10px;
+            font-size: 0.78rem;
+            font-weight: 500;
+        }
+
+        .paj-tag-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--accent-hover);
+            line-height: 1;
+            padding: 0;
+            font-size: 0.9rem;
+            opacity: 0.6;
+            transition: opacity 0.15s;
+        }
+
+        .paj-tag-remove:hover {
+            opacity: 1;
+        }
+
+        .paj-tags-input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .paj-tags-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* File drop zone */
+        .paj-dropzone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .paj-dropzone:hover,
+        .paj-dropzone.dragover {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .paj-dropzone-icon {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        .paj-dropzone p {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .paj-dropzone strong {
+            color: var(--accent-hover);
+            cursor: pointer;
+        }
+
+        #paj-file-input {
+            display: none;
+        }
+
+        .paj-file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .paj-file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: var(--bg-overlay);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 14px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .paj-file-item button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .paj-file-item button:hover {
+            color: var(--danger);
+        }
+
+        /* Budget input with prefix */
+        .paj-input-prefix-wrap {
+            position: relative;
+        }
+
+        .paj-input-prefix {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .paj-input-prefix+.paj-input {
+            padding-left: 30px;
+        }
+
+        /* Divider between form sections */
+        .paj-form-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 28px 0;
+        }
+
+        /* Submit row */
+        .paj-submit-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        #paj-global-error {
+            display: none;
+            font-size: 0.84rem;
+            color: var(--danger);
+            margin-top: 12px;
+        }
+
+        /* ── Sidebar ── */
+        .paj-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: calc(var(--navbar-h) + 24px);
+        }
+
+        .paj-info-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .paj-info-card h3 {
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .paj-tip-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .paj-tip {
+            display: flex;
+            gap: 10px;
+            font-size: 0.83rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .paj-tip-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--accent-hover);
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+
+        .paj-escrow-card {
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.08), rgba(124, 58, 237, 0.06));
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .paj-escrow-card h3 {
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .paj-escrow-card p {
+            font-size: 0.83rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin: 0;
+        }
+
+        .paj-alt-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .paj-alt-card p {
+            font-size: 0.83rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+
+        /* ── Success screen ── */
+        #paj-success {
+            display: none;
+            text-align: center;
+            padding: 80px 24px;
+        }
+
+        .paj-success-icon {
+            width: 72px;
+            height: 72px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            color: #10b981;
+        }
+
+        #paj-success h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        #paj-success p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 460px;
+            margin: 0 auto 28px;
+            line-height: 1.7;
+        }
+
+        [data-theme="light"] .paj-form-card,
+        [data-theme="light"] .paj-info-card,
+        [data-theme="light"] .paj-alt-card {
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <main class="page-content">
+
+        <!-- Hero -->
+        <section class="paj-hero">
+            <div class="container--narrow">
+                <div class="page-eyebrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <rect x="2" y="7" width="20" height="14" rx="2" />
+                        <path d="M16 7V5a2 2 0 0 0-4 0v2" />
+                        <path d="M12 12v4" />
+                        <path d="M10 14h4" />
+                    </svg>
+                    For Clients
+                </div>
+                <h1>Post a Job</h1>
+                <p>Describe what you need, set your budget, and receive bids from verified Flowva creators. All payments
+                    are secured through escrow.</p>
+            </div>
+        </section>
+
+        <!-- Body -->
+        <section class="section" style="padding-top:0">
+            <div class="container">
+
+                <!-- Breadcrumb -->
+                <nav class="paj-breadcrumb" aria-label="Breadcrumb">
+                    <a href="index.html">Home</a>
+                    <span class="paj-breadcrumb-sep">›</span>
+                    <a href="project-marketplace.html">Project Marketplace</a>
+                    <span class="paj-breadcrumb-sep">›</span>
+                    <span>Post a Job</span>
+                </nav>
+
+                <!-- Success state (shown after submit) -->
+                <div id="paj-success">
+                    <div class="paj-success-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    </div>
+                    <h2>Job Submitted for Review!</h2>
+                    <p>Your job listing is under review by our team. Once approved, it will go live on the Project
+                        Marketplace and creators will be able to submit bids. You'll be notified by email when it's
+                        approved and when bids arrive.</p>
+                    Also update the button
+                    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+                        <a href="dashboard.html" class="btn btn--primary btn--lg">View in Dashboard</a>
+                        <a href="dashboard.html" class="btn btn--ghost btn--lg">Go to Dashboard</a>
+                    </div>
+                </div>
+
+                <!-- Form + Sidebar -->
+                <div class="paj-body" id="paj-form-wrap">
+
+                    <!-- FORM -->
+                    <div>
+                        <form class="paj-form-card" id="paj-form" novalidate>
+
+                            <!-- Section: Job Details -->
+                            <div class="paj-section-label">Job Details</div>
+
+                            <div class="paj-form-group">
+                                <label class="paj-label" for="paj-title">Job Title <span
+                                        style="color:var(--danger)">*</span></label>
+                                <input class="paj-input" type="text" id="paj-title" maxlength="150"
+                                    placeholder="e.g. Animated logo reveal for my brand">
+                                <span class="paj-form-error" id="err-title">Please enter a job title.</span>
+                            </div>
+
+                            <div class="paj-form-group">
+                                <label class="paj-label" for="paj-category">Category <span
+                                        style="color:var(--danger)">*</span></label>
+                                <select class="paj-select" id="paj-category">
+                                    <option value="">Select a category</option>
+                                    <option value="logo">Logo Design</option>
+                                    <option value="flyer">Flyer / Print Design</option>
+                                    <option value="banner">Banner / Ad Design</option>
+                                    <option value="brochure">Brochure / Catalogue</option>
+                                    <option value="mockup">Mockup</option>
+                                    <option value="2d-animation">2D Animation</option>
+                                    <option value="3d-animation">3D Animated Video</option>
+                                    <option value="motion">Motion Graphics</option>
+                                    <option value="social">Social Media Pack</option>
+                                    <option value="branding">Branding / Identity</option>
+                                    <option value="video">Video Editing</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <span class="paj-form-error" id="err-category">Please select a category.</span>
+                            </div>
+
+                            <div class="paj-form-group">
+                                <label class="paj-label" for="paj-desc">Job Description <span
+                                        style="color:var(--danger)">*</span></label>
+                                <textarea class="paj-textarea" id="paj-desc" rows="6" maxlength="5000"
+                                    placeholder="Describe exactly what you need — style references, deliverables, any brand guidelines, and what success looks like for you."></textarea>
+                                <div
+                                    style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+                                    <span class="paj-form-error" id="err-desc">Please describe the job (at least 30
+                                        characters).</span>
+                                    <span class="paj-hint" id="desc-count" style="margin-left:auto">0 / 5000</span>
+                                </div>
+                            </div>
+
+                            <div class="paj-form-divider"></div>
+
+                            <!-- Section: Budget & Timeline -->
+                            <div class="paj-section-label">Budget &amp; Timeline</div>
+
+                            <div class="paj-form-grid">
+                                <div class="paj-form-group">
+                                    <label class="paj-label" for="paj-budget">Budget (USD) <span
+                                            style="color:var(--danger)">*</span></label>
+                                    <div class="paj-input-prefix-wrap">
+                                        <span class="paj-input-prefix">$</span>
+                                        <input class="paj-input" type="number" id="paj-budget" min="5" step="1"
+                                            placeholder="e.g. 150">
+                                    </div>
+                                    <span class="paj-form-error" id="err-budget">Enter a budget of at least $5.</span>
+                                </div>
+
+                                <div class="paj-form-group">
+                                    <label class="paj-label" for="paj-deadline">Deadline <span
+                                            style="color:var(--danger)">*</span></label>
+                                    <input class="paj-input" type="date" id="paj-deadline">
+                                    <span class="paj-form-error" id="err-deadline">Please select a deadline.</span>
+                                </div>
+                            </div>
+
+                            <div class="paj-form-divider"></div>
+
+                            <!-- Section: Requirements -->
+                            <div class="paj-section-label">Requirements</div>
+
+                            <div class="paj-form-group">
+                                <label class="paj-label" for="paj-software">Required Software / Tools</label>
+                                <input class="paj-input" type="text" id="paj-software"
+                                    placeholder="e.g. After Effects, Figma, Canva">
+                                <span class="paj-hint">Leave blank if you have no preference.</span>
+                            </div>
+
+                            <div class="paj-form-group">
+                                <label class="paj-label">Skills Needed</label>
+                                <div class="paj-tags-wrap" id="paj-tags-wrap"
+                                    onclick="document.getElementById('paj-skills-input').focus()">
+                                    <input class="paj-tags-input" type="text" id="paj-skills-input"
+                                        placeholder="Type a skill and press Enter…">
+                                </div>
+                                <input type="hidden" id="paj-skills-hidden">
+                                <span class="paj-hint">e.g. Motion design, 2D animation, Logo design</span>
+                            </div>
+
+                            <div class="paj-form-group">
+                                <label class="paj-label" for="paj-experience">Experience Level</label>
+                                <select class="paj-select" id="paj-experience">
+                                    <option value="">Any level</option>
+                                    <option value="entry">Entry — New to Flowva, competitive pricing</option>
+                                    <option value="intermediate">Intermediate — Solid portfolio, proven work</option>
+                                    <option value="expert">Expert — Top-rated creators only</option>
+                                </select>
+                            </div>
+
+                            <div class="paj-form-divider"></div>
+
+                            <!-- Section: Attachments -->
+                            <div class="paj-section-label">Attachments <span
+                                    style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.72rem;color:var(--text-muted)">(optional)</span>
+                            </div>
+
+                            <div class="paj-form-group">
+                                <div class="paj-dropzone" id="paj-dropzone" role="button" tabindex="0"
+                                    aria-label="Upload reference files">
+                                    <input type="file" id="paj-file-input" multiple
+                                        accept="image/*,.pdf,.zip,.doc,.docx">
+                                    <div class="paj-dropzone-icon">📎</div>
+                                    <p>Drag &amp; drop files here, or <strong
+                                            onclick="document.getElementById('paj-file-input').click()">browse</strong>
+                                    </p>
+                                    <p style="margin-top:4px;font-size:0.75rem">Images, PDF, ZIP, or DOC · Max 10MB each
+                                    </p>
+                                </div>
+                                <div class="paj-file-list" id="paj-file-list"></div>
+                            </div>
+
+                            <!-- Submit -->
+                            <div id="paj-global-error">Something went wrong. Please try again.</div>
+                            <div class="paj-submit-row">
+                                <button type="submit" class="btn btn--primary btn--lg" id="paj-submit-btn">
+                                    Post Job &amp; Accept Bids
+                                </button>
+                                <a href="project-marketplace.html" class="btn btn--ghost">Cancel</a>
+                            </div>
+
+                            <p style="font-size:0.75rem;color:var(--text-muted);margin-top:14px;line-height:1.6">
+                                By posting, you agree to Flowva's
+                                <a href="footer/terms.html" style="color:var(--accent-hover)">Terms of Service</a>.
+                                Payment is only collected once you accept a bid — all transactions go through Flowva's
+                                escrow system.
+                            </p>
+
+                        </form>
+                    </div>
+
+                    <!-- SIDEBAR -->
+                    <aside class="paj-sidebar">
+
+                        <div class="paj-escrow-card">
+                            <h3>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                </svg>
+                                Escrow Protected
+                            </h3>
+                            <p>You don't pay until you accept a bid. Funds are held securely in escrow and only released
+                                to the creator once you approve the final delivery.</p>
+                        </div>
+
+                        <div class="paj-info-card">
+                            <h3>Tips for a great job post</h3>
+                            <div class="paj-tip-list">
+                                <div class="paj-tip">
+                                    <div class="paj-tip-icon">1</div>
+                                    <span>Be specific about deliverables — file formats, dimensions, and how many
+                                        revisions you expect.</span>
+                                </div>
+                                <div class="paj-tip">
+                                    <div class="paj-tip-icon">2</div>
+                                    <span>Share reference images or brand guidelines as attachments to help creators
+                                        match your vision.</span>
+                                </div>
+                                <div class="paj-tip">
+                                    <div class="paj-tip-icon">3</div>
+                                    <span>Set a realistic budget. Browse the marketplace to see what similar work sells
+                                        for.</span>
+                                </div>
+                                <div class="paj-tip">
+                                    <div class="paj-tip-icon">4</div>
+                                    <span>A clear deadline helps creators plan. Build in buffer time for
+                                        revisions.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="paj-alt-card">
+                            <p>Already know who you want to work with?</p>
+                            <a href="creator.html" class="btn btn--ghost" style="width:100%;justify-content:center">
+                                Browse Creators →
+                            </a>
+                        </div>
+
+                        <div class="paj-alt-card">
+                            <div
+                                style="width:42px;height:42px;border-radius:10px;background:rgba(124,58,237,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed"
+                                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" />
+                                    <path d="M16 7V5a2 2 0 0 0-4 0v2" />
+                                </svg>
+                            </div>
+                            <p>Need someone long-term? Post a full-time or contract role instead.</p>
+                            <a href="post-a-role.html" class="btn btn--ghost"
+                                style="width:100%;justify-content:center;border-color:rgba(124,58,237,0.3);color:#7c3aed">
+                                Post a Role →
+                            </a>
+                        </div>
+
+                        <div class="paj-alt-card">
+                            <p>Need a ready-made template instead?</p>
+                            <a href="marketplace.html" class="btn btn--ghost" style="width:100%;justify-content:center">
+                                Browse Templates →
+                            </a>
+                        </div>
+
+                    </aside>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="background:var(--bg-surface);border-top:1px solid var(--border);padding:48px 0 32px;">
+        <div class="container">
+            <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:space-between;margin-bottom:40px;">
+                <div style="max-width:280px;">
+                    <div class="nav-logo" style="margin-bottom:12px;">FLOWVA</div>
+                    <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.7;">A trusted digital marketplace
+                        connecting creators and buyers worldwide.</p>
+                </div>
+                <div style="display:flex;gap:60px;flex-wrap:wrap;">
+                    <div>
+                        <p
+                            style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">
+                            Work</p>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a href="project-marketplace.html"
+                                style="font-size:0.875rem;color:var(--text-secondary);">Project Marketplace</a>
+                            <a href="post-a-job.html" style="font-size:0.875rem;color:var(--accent-hover);">Post a
+                                Job</a>
+                            <a href="creator.html" style="font-size:0.875rem;color:var(--text-secondary);">Browse
+                                Creators</a>
+                        </div>
+                    </div>
+                    <div>
+                        <p
+                            style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">
+                            Help</p>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a href="footer/support.html"
+                                style="font-size:0.875rem;color:var(--text-secondary);">Support Center</a>
+                            <a href="footer/faqs.html" style="font-size:0.875rem;color:var(--text-secondary);">FAQs</a>
+                            <a href="footer/terms.html" style="font-size:0.875rem;color:var(--text-secondary);">Terms of
+                                Service</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                style="border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:center;">
+                <p style="font-size:0.8rem;color:var(--text-muted);">© 2026 FLOWVA. All rights reserved.</p>
+                <p style="font-size:0.8rem;color:var(--text-muted);">flowva3@gmail.com</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="js/core/navbar.js"></script>
+    <script type="module">
+        import AppState from './js/core/state.js';
+        import api from './js/core/api.js';
+
+        // ── Auth guard: must be logged in to post ──
+        if (!AppState.isLoggedIn()) {
+            window.location.replace('login.html?redirect=post-a-job.html');
+        }
+
+        // ── Set min date to tomorrow ──
+        const deadlineInput = document.getElementById('paj-deadline');
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        deadlineInput.min = tomorrow.toISOString().split('T')[0];
+
+        // ── Character counter for description ──
+        const descEl = document.getElementById('paj-desc');
+        const descCount = document.getElementById('desc-count');
+        descEl.addEventListener('input', () => {
+            descCount.textContent = `${descEl.value.length} / 5000`;
+        });
+
+        // ── Skills tag input ──
+        const tagsWrap = document.getElementById('paj-tags-wrap');
+        const tagsInput = document.getElementById('paj-skills-input');
+        const tagsHidden = document.getElementById('paj-skills-hidden');
+        const tags = [];
+
+        function renderTags() {
+            document.querySelectorAll('.paj-tag').forEach(t => t.remove());
+            tags.forEach((tag, i) => {
+                const el = document.createElement('span');
+                el.className = 'paj-tag';
+                el.innerHTML = `${tag}<button class="paj-tag-remove" type="button" data-i="${i}" aria-label="Remove ${tag}">×</button>`;
+                tagsWrap.insertBefore(el, tagsInput);
+            });
+            tagsHidden.value = tags.join(',');
+        }
+
+        tagsInput.addEventListener('keydown', (e) => {
+            if ((e.key === 'Enter' || e.key === ',') && tagsInput.value.trim()) {
+                e.preventDefault();
+                const val = tagsInput.value.trim().replace(/,$/, '');
+                if (val && !tags.includes(val) && tags.length < 10) {
+                    tags.push(val);
+                    renderTags();
+                }
+                tagsInput.value = '';
+            }
+            if (e.key === 'Backspace' && !tagsInput.value && tags.length) {
+                tags.pop();
+                renderTags();
+            }
+        });
+
+        tagsWrap.addEventListener('click', (e) => {
+            if (e.target.classList.contains('paj-tag-remove')) {
+                const i = parseInt(e.target.dataset.i);
+                tags.splice(i, 1);
+                renderTags();
+            }
+        });
+
+        // ── File upload ──
+        const dropzone = document.getElementById('paj-dropzone');
+        const fileInput = document.getElementById('paj-file-input');
+        const fileList = document.getElementById('paj-file-list');
+        let selectedFiles = [];
+
+        function renderFiles() {
+            fileList.innerHTML = '';
+            selectedFiles.forEach((f, i) => {
+                const item = document.createElement('div');
+                item.className = 'paj-file-item';
+                item.innerHTML = `<span>📄 ${f.name} <span style="color:var(--text-muted)">(${(f.size / 1024 / 1024).toFixed(2)} MB)</span></span>
+                    <button type="button" data-i="${i}" aria-label="Remove file">✕</button>`;
+                fileList.appendChild(item);
+            });
+            fileList.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-i]');
+                if (btn) {
+                    selectedFiles.splice(parseInt(btn.dataset.i), 1);
+                    renderFiles();
+                }
+            });
+        }
+
+        dropzone.addEventListener('click', (e) => {
+            // Don't trigger if clicking the remove button inside file list
+            if (e.target.closest('.paj-file-item')) return;
+            fileInput.click();
+        });
+
+        dropzone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') fileInput.click();
+        });
+
+        ['dragenter', 'dragover'].forEach(ev => {
+            dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        });
+        ['dragleave', 'drop'].forEach(ev => {
+            dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); });
+        });
+        dropzone.addEventListener('drop', (e) => {
+            addFiles([...e.dataTransfer.files]);
+        });
+        fileInput.addEventListener('change', () => {
+            addFiles([...fileInput.files]);
+            fileInput.value = '';
+        });
+
+        function addFiles(files) {
+            files.forEach(f => {
+                if (f.size > 10 * 1024 * 1024) {
+                    showToast(`${f.name} exceeds 10MB limit.`, 'error');
+                    return;
+                }
+                if (!selectedFiles.find(x => x.name === f.name)) {
+                    selectedFiles.push(f);
+                }
+            });
+            renderFiles();
+        }
+
+        // ── Validation helpers ──
+        function showError(id, show) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = show ? 'block' : 'none';
+        }
+
+        function markInput(id, error) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('error', error);
+        }
+
+        function validateForm() {
+            let valid = true;
+
+            const title = document.getElementById('paj-title').value.trim();
+            const titleErr = !title;
+            showError('err-title', titleErr); markInput('paj-title', titleErr);
+            if (titleErr) valid = false;
+
+            const cat = document.getElementById('paj-category').value;
+            const catErr = !cat;
+            showError('err-category', catErr); markInput('paj-category', catErr);
+            if (catErr) valid = false;
+
+            const desc = descEl.value.trim();
+            const descErr = desc.length < 30;
+            showError('err-desc', descErr); markInput('paj-desc', descErr);
+            if (descErr) valid = false;
+
+            const budget = parseFloat(document.getElementById('paj-budget').value);
+            const budgetErr = isNaN(budget) || budget < 5;
+            showError('err-budget', budgetErr); markInput('paj-budget', budgetErr);
+            if (budgetErr) valid = false;
+
+            const deadline = deadlineInput.value;
+            const deadlineErr = !deadline;
+            showError('err-deadline', deadlineErr); markInput('paj-deadline', deadlineErr);
+            if (deadlineErr) valid = false;
+
+            return valid;
+        }
+
+        // ── Toast helper ──
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast toast--${type}`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        // ── Form submit ──
+        const form = document.getElementById('paj-form');
+        const submitBtn = document.getElementById('paj-submit-btn');
+        const globalError = document.getElementById('paj-global-error');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            globalError.style.display = 'none';
+
+            if (!validateForm()) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Posting…';
+
+            const payload = {
+                title: document.getElementById('paj-title').value.trim(),
+                category: document.getElementById('paj-category').value,
+                description: descEl.value.trim(),
+                budget: parseFloat(document.getElementById('paj-budget').value),
+                deadline: deadlineInput.value,
+                skills: tagsHidden.value,
+                software: document.getElementById('paj-software').value.trim() || undefined,
+                experience: document.getElementById('paj-experience').value || undefined,
+            };
+
+            try {
+                await api.restoreSession();
+
+                // Upload attachments first if any were added
+                let attachmentUrls = [];
+                if (selectedFiles.length > 0) {
+                    submitBtn.textContent = `Uploading files (0/${selectedFiles.length})…`;
+                    for (let i = 0; i < selectedFiles.length; i++) {
+                        const fd = new FormData();
+                        fd.append('file', selectedFiles[i]);
+                        const upRes = await api.projects.uploadAttachment(fd);
+                        if (upRes.ok && upRes.data?.url) {
+                            attachmentUrls.push(upRes.data.url);
+                        }
+                        submitBtn.textContent = `Uploading files (${i + 1}/${selectedFiles.length})…`;
+                    }
+                }
+
+                submitBtn.textContent = 'Posting…';
+                const res = await api.projects.create({
+                    title: payload.title,
+                    description: payload.description,
+                    category: payload.category,
+                    skills: payload.skills ? payload.skills.split(',').map(s => s.trim()).filter(Boolean) : [],
+                    budget: payload.budget,
+                    currency: 'USD',
+                    deadline: payload.deadline,
+                    software: payload.software,
+                    experience: payload.experience,
+                    attachments: attachmentUrls,
+                });
+
+                if (!res.ok) throw new Error(res.error ?? 'Server error');
+
+                document.getElementById('paj-form-wrap').style.display = 'none';
+                document.getElementById('paj-success').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (err) {
+                globalError.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Post Job & Accept Bids';
+            }
+        });
+    </script>
+</body>
+
+</html>

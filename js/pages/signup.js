@@ -144,16 +144,6 @@ function validateForm(d) {
     valid = false;
   }
 
-  if (d.role === 'CREATOR') {
-    if (!d.solanaAddress) {
-      markErr('f-wallet', 'err-wallet', 'Paste your Solana USDC wallet address to receive payouts');
-      valid = false;
-    } else if (!isValidSolana(d.solanaAddress)) {
-      markErr('f-wallet', 'err-wallet', "This doesn't look like a valid Solana address — double-check it");
-      valid = false;
-    }
-  }
-
   return valid;
 }
 
@@ -200,7 +190,7 @@ function showSuccess(email, role) {
       ${role === 'CREATOR' ? `
       <div class="success-state__wallet-note">
         🎉 <strong>Your wallet is connected.</strong><br>
-        Every sale sends <strong>70%</strong> to your wallet within seconds via Helio.
+        Flowva's escrow will release <strong>80%</strong> of each sale to your Skrill or Grey wallet, paid weekly or monthly. Add your payout details in Dashboard → Settings → Payout.
         Convert to local currency anytime through your exchange.
       </div>` : ''}
       <a href="/login.html" class="btn-login">
@@ -246,10 +236,6 @@ form?.addEventListener('submit', async e => {
       role:     data.role,
       country:  data.country,
     };
-
-    if (data.role === 'CREATOR') {
-      payload.solanaAddress = data.solanaAddress;
-    }
 
     const res = await api.auth.signup(payload);
 

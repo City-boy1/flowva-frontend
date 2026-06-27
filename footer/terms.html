@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>(function () { var t = localStorage.getItem('flowva-theme') || 'light'; document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="icon" type="image/png" href="../assets/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+    <link rel="shortcut icon" href="../assets/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/images/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Flowva" />
+    <link rel="manifest" href="../assets/images/site.webmanifest" />
+    <title>Terms of Service — Flowva</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <style>
+        .legal-hero {
+            padding: calc(var(--navbar-h) + 64px) 0 64px;
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0, 123, 255, 0.15) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 60%, rgba(255, 46, 147, 0.08) 0%, transparent 60%),
+                var(--bg-base);
+            text-align: center;
+        }
+
+        .legal-hero .page-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-soft);
+            border: 1px solid rgba(0, 123, 255, 0.25);
+            border-radius: var(--radius-full);
+            padding: 6px 18px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-hover);
+            margin-bottom: 24px;
+        }
+
+        .legal-hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .legal-hero p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 580px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .legal-meta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .legal-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .legal-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 40px;
+            align-items: start;
+            padding: 64px 0 100px;
+        }
+
+        @media (max-width: 900px) {
+            .legal-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .legal-toc {
+                display: none;
+            }
+        }
+
+        .legal-toc {
+            position: sticky;
+            top: calc(var(--navbar-h) + 24px);
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .toc-title {
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .toc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .toc-link {
+            display: block;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.845rem;
+            color: var(--text-secondary);
+            transition: var(--transition-base);
+            border-left: 2px solid transparent;
+        }
+
+        .toc-link:hover,
+        .toc-link.active {
+            color: var(--accent-hover);
+            background: var(--accent-soft);
+            border-left-color: var(--accent);
+        }
+
+        .legal-content {
+            min-width: 0;
+        }
+
+        .legal-section {
+            margin-bottom: 56px;
+            scroll-margin-top: calc(var(--navbar-h) + 32px);
+        }
+
+        .legal-section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            background: var(--accent-soft);
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--accent-hover);
+        }
+
+        .legal-section h2 {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .legal-section p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+        }
+
+        .legal-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .legal-section h3 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 24px 0 10px;
+        }
+
+        .policy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .policy-list li {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.93rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .policy-list li svg {
+            flex-shrink: 0;
+            margin-top: 3px;
+            color: var(--accent-hover);
+        }
+
+        .terms-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            margin-top: 16px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .terms-table th {
+            background: var(--bg-overlay);
+            padding: 14px 16px;
+            text-align: left;
+            font-family: var(--font-display);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .terms-table td {
+            padding: 14px 16px;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: top;
+            line-height: 1.6;
+        }
+
+        .terms-table tr:hover td {
+            background: var(--accent-soft);
+        }
+
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .plan-card {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            transition: var(--transition-slow);
+        }
+
+        .plan-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .plan-card.featured {
+            border-color: rgba(0, 123, 255, 0.4);
+            background: linear-gradient(135deg, var(--bg-raised), rgba(0, 123, 255, 0.05));
+        }
+
+        .plan-name {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .plan-price {
+            font-size: 1.4rem;
+            font-weight: 800;
+            font-family: var(--font-display);
+            color: var(--accent-hover);
+            margin: 8px 0;
+        }
+
+        .plan-price span {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .plan-feature {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 4px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .plan-feature svg {
+            flex-shrink: 0;
+            color: var(--accent-hover);
+            margin-top: 2px;
+        }
+
+        .highlight-box {
+            background: var(--accent-soft);
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            margin: 20px 0;
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            margin: 20px 0;
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 48px 0;
+        }
+
+        [data-theme="light"] .plan-card {
+            background: var(--bg-surface);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <main class="page-content">
+
+        <section class="legal-hero">
+            <div class="container--narrow">
+                <div class="page-eyebrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    Legal
+                </div>
+                <h1>Terms of Service</h1>
+                <p>These terms govern your use of the Flowva platform. By creating an account or making a purchase, you
+                    agree to the following terms in full.</p>
+                <div class="legal-meta">
+                    <span class="legal-meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        Effective: June 1, 2026
+                    </span>
+                    <span class="legal-meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        ~12 min read
+                    </span>
+                    <span class="legal-meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        flowva3@gmail.com
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" style="padding-top:0">
+            <div class="container">
+                <div class="legal-layout">
+
+                    <aside class="legal-toc">
+                        <p class="toc-title">On This Page</p>
+                        <nav class="toc-list">
+                            <a class="toc-link active" href="#acceptance">Acceptance</a>
+                            <a class="toc-link" href="#eligibility">Eligibility</a>
+                            <a class="toc-link" href="#accounts">Accounts</a>
+                            <a class="toc-link" href="#platform-use">Platform Use</a>
+                            <a class="toc-link" href="#creator-terms">Creator Terms</a>
+                            <a class="toc-link" href="#buyer-terms">Buyer Terms</a>
+                            <a class="toc-link" href="#payments">Payments &amp; Escrow</a>
+                            <a class="toc-link" href="#payouts">Payouts &amp; Commission</a>
+                            <a class="toc-link" href="#seller-plans">Seller Plans</a>
+                            <a class="toc-link" href="#ip-ownership">IP Ownership</a>
+                            <a class="toc-link" href="#prohibited-uses">Prohibited Uses</a>
+                            <a class="toc-link" href="#termination">Termination</a>
+                            <a class="toc-link" href="#liability">Limitation of Liability</a>
+                            <a class="toc-link" href="#disputes">Dispute Resolution</a>
+                            <a class="toc-link" href="#changes">Changes to Terms</a>
+                        </nav>
+                    </aside>
+
+                    <div class="legal-content">
+
+                        <div class="legal-section" id="acceptance">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                        <polyline points="14 2 14 8 20 8" />
+                                        <line x1="16" y1="13" x2="8" y2="13" />
+                                        <line x1="16" y1="17" x2="8" y2="17" />
+                                        <polyline points="10 9 9 9 8 9" />
+                                    </svg>
+                                </div>
+                                <h2>Acceptance of Terms</h2>
+                            </div>
+                            <p>These Terms of Service ("Terms") constitute a legally binding agreement between you
+                                ("User") and Flowva ("Company", "we", "us"). By registering an account, purchasing a
+                                template, uploading content, or otherwise using the Flowva platform, you agree to be
+                                bound by these Terms, our Privacy Policy, and our Community Guidelines.</p>
+                            <p>If you do not agree to these Terms in full, you must not use the Flowva platform.</p>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="eligibility">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                </div>
+                                <h2>Eligibility</h2>
+                            </div>
+                            <p>To use Flowva, you must:</p>
+                            <ul class="policy-list">
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>Be at least 18 years of age.</li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>Be located in one of the supported countries listed on the platform (Flowva
+                                    supports specific countries compatible with Skrill and Grey payment services).</li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>Have the legal capacity to enter into a binding contract in your jurisdiction.
+                                </li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>Not be currently suspended or permanently banned from the Flowva platform.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="accounts">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
+                                </div>
+                                <h2>Accounts</h2>
+                            </div>
+                            <p>You are responsible for maintaining the confidentiality of your login credentials. Any
+                                activity that occurs under your account is your responsibility. You must notify us
+                                immediately at <strong>flowva3@gmail.com</strong> if you suspect unauthorized access to
+                                your account.</p>
+                            <ul class="policy-list">
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>You may not create more than one account per person. Multiple accounts will be
+                                    merged or terminated.</li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>You must provide accurate and complete registration information, including
+                                    your real name and country.</li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>After signup, a verification email will be sent to your registered email
+                                    address. The account must be verified before selling or purchasing is enabled.</li>
+                            </ul>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="platform-use">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                                        <line x1="8" y1="21" x2="16" y2="21" />
+                                        <line x1="12" y1="17" x2="12" y2="21" />
+                                    </svg>
+                                </div>
+                                <h2>Platform Use</h2>
+                            </div>
+                            <p>Flowva grants you a limited, non-exclusive, non-transferable license to access and use
+                                the platform for its intended purposes: browsing, purchasing, uploading, and selling
+                                creative templates; posting and responding to job listings; hiring or working as a
+                                freelancer; and participating in the community.</p>
+                            <p>This license does not include the right to scrape, mirror, reproduce, or commercially
+                                exploit any portion of the platform without express written permission from Flowva.</p>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="creator-terms">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M12 20h9" />
+                                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                    </svg>
+                                </div>
+                                <h2>Creator Terms</h2>
+                            </div>
+                            <h3>Content Ownership &amp; Licensing</h3>
+                            <p>You retain full ownership of the templates you upload. By listing a template on Flowva,
+                                you grant Flowva a non-exclusive, royalty-free license to display, host, and promote
+                                your template on the platform for the purpose of facilitating sales.</p>
+
+                            <h3>Accepted File Formats</h3>
+                            <p>Flowva accepts a comprehensive range of creative file formats across six categories:
+                                graphic design files (desktop and mobile), motion graphics, 2D and 3D animation, mobile
+                                animation and video editing, 3D assets, and universal export formats. Full accepted file
+                                type documentation is available in your Dashboard under Upload Template.</p>
+
+                            <h3>File Size Limits</h3>
+                            <table class="terms-table">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Default Limit</th>
+                                        <th>Pro Plan</th>
+                                        <th>Enterprise Plan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Desktop Design Files</td>
+                                        <td>500 MB</td>
+                                        <td>1 GB</td>
+                                        <td>3 GB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mobile Design Files</td>
+                                        <td>250 MB</td>
+                                        <td>500 MB</td>
+                                        <td>1 GB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Motion Graphics</td>
+                                        <td>1 GB</td>
+                                        <td>2 GB</td>
+                                        <td>5 GB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Animation Files</td>
+                                        <td>1.5 GB</td>
+                                        <td>2 GB</td>
+                                        <td>5 GB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mobile Animation</td>
+                                        <td>500 MB</td>
+                                        <td>1 GB</td>
+                                        <td>2 GB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3D Assets</td>
+                                        <td>1 GB</td>
+                                        <td>1 GB</td>
+                                        <td>3 GB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Universal Export Files</td>
+                                        <td>200 MB</td>
+                                        <td>500 MB</td>
+                                        <td>1 GB</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h3>Template Storage</h3>
+                            <p>Template files are stored securely in cloud infrastructure. Only the PNG preview image is
+                                publicly displayed on the Flowva marketplace. The actual template file is delivered to
+                                buyers only after successful escrow payment.</p>
+
+                            <h3>Tutorials</h3>
+                            <p>Creators may publish tutorials hosted on YouTube that can be watched directly from the
+                                Flowva platform. Tutorial content must be original, relevant to template editing, and
+                                appropriate for both mobile and desktop users. Supported tools include Canva, Photoshop,
+                                Figma, Illustrator, After Effects, Benime, and many others.</p>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="buyer-terms">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                                        <line x1="3" y1="6" x2="21" y2="6" />
+                                        <path d="M16 10a4 4 0 0 1-8 0" />
+                                    </svg>
+                                </div>
+                                <h2>Buyer Terms</h2>
+                            </div>
+                            <p>When you purchase a template on Flowva, you are granted a non-exclusive, non-transferable
+                                personal or commercial use license depending on the license tier purchased. The
+                                following applies to all buyers:</p>
+                            <ul class="policy-list">
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>You may not resell, redistribute, sublicense, or share downloaded template
+                                    files with third parties.</li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>You may not claim ownership or authorship of a purchased template.</li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>All purchases are final once the template has been downloaded, unless the file
+                                    delivered does not match the listing description.</li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>Prices on Flowva are displayed in USD. Local currency (GHS and others) is
+                                    shown as a guide and is subject to exchange rate fluctuations.</li>
+                            </ul>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="payments">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                                        <line x1="1" y1="10" x2="23" y2="10" />
+                                    </svg>
+                                </div>
+                                <h2>Payments &amp; Escrow</h2>
+                            </div>
+                            <p>All transactions on Flowva are processed through our escrow system, which holds funds
+                                securely until the delivery conditions are met. Flowva's escrow is a security layer — it
+                                does not process payments directly.</p>
+                            <p>Accepted payment methods include Skrill, Grey wallet, Mastercard, and Bank Account
+                                transfers. Buyers may pay in USD (primary) or local currency equivalent where
+                                applicable.</p>
+                            <div class="highlight-box">
+                                <strong>Escrow protection:</strong> Funds are held in escrow until the buyer confirms
+                                receipt of the template or the delivery window expires. Creators receive their net
+                                payout based on their selected payout frequency (weekly or monthly).
+                            </div>
+                            <p>Payouts are in USD only. All international transfers are subject to exchange rate
+                                conversions and fees applied by Skrill or Grey.</p>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="payouts">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <line x1="12" y1="1" x2="12" y2="23" />
+                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                                    </svg>
+                                </div>
+                                <h2>Payouts &amp; Commission</h2>
+                            </div>
+                            <p>Flowva operates on a revenue-sharing model. For every sale:</p>
+                            <table class="terms-table">
+                                <thead>
+                                    <tr>
+                                        <th>Recipient</th>
+                                        <th>Standard</th>
+                                        <th>First 50 Creators (Bonus)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Creator</strong></td>
+                                        <td>80%</td>
+                                        <td>90%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Flowva Commission</strong></td>
+                                        <td>20%</td>
+                                        <td>10%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p style="margin-top:16px;">The first 50 creators to join the Flowva platform will earn a
+                                90% revenue share as an early-adopter benefit. Thereafter, the standard 80/20 split
+                                applies. Payout schedule (weekly or monthly) is configured in Dashboard &rarr; Settings
+                                &rarr; Payout, where creators also enter their Skrill email address or Grey account
+                                details.</p>
+                            <div class="warning-box">
+                                <strong>Note:</strong> Flowva reserves the right to withhold payouts pending
+                                investigation of reported fraud, guideline violations, or disputed transactions.
+                                Withheld funds will be released or forfeited based on the outcome of the investigation.
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="seller-plans">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                        <path d="M2 17l10 5 10-5" />
+                                        <path d="M2 12l10 5 10-5" />
+                                    </svg>
+                                </div>
+                                <h2>Seller Plans</h2>
+                            </div>
+                            <p>Flowva offers tiered seller plans that unlock higher upload limits and additional
+                                features:</p>
+                            <div class="plan-grid">
+                                <div class="plan-card">
+                                    <p class="plan-name">Default</p>
+                                    <div class="plan-price">Free <span>/ always</span></div>
+                                    <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;">
+                                        Automatically applied to all new sellers.</p>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>500 MB max per design file</div>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>5 GB total storage quota</div>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>Standard listing visibility</div>
+                                </div>
+                                <div class="plan-card featured">
+                                    <p class="plan-name">Pro</p>
+                                    <div class="plan-price">$19 <span>/ month</span></div>
+                                    <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;">$190/year
+                                        (~20% savings)</p>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>2 GB max (motion/animation files)</div>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>50 GB total quota</div>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>Custom storefront branding</div>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>Advanced analytics dashboard</div>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>Priority CDN delivery</div>
+                                </div>
+                                <div class="plan-card">
+                                    <p class="plan-name">Enterprise</p>
+                                    <div class="plan-price">$99 <span>/ month</span></div>
+                                    <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;">$990/year
+                                    </p>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>5 GB max (motion/animation files)</div>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>500 GB+ total quota</div>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>API bulk uploads</div>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>White-label storefronts</div>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>Dedicated account manager</div>
+                                    <div class="plan-feature"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>Revenue share discounts</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="ip-ownership">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="12" y1="8" x2="12" y2="12" />
+                                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                                    </svg>
+                                </div>
+                                <h2>Intellectual Property Ownership</h2>
+                            </div>
+                            <p>Creators retain full intellectual property ownership of their uploaded templates. Flowva
+                                does not claim ownership of your creative work.</p>
+                            <p>The Flowva name, logo, website design, and all platform code and architecture are the
+                                intellectual property of Flowva and may not be reproduced without written permission.
+                            </p>
+                            <p>Content that infringes on the IP rights of third parties will be removed, and the
+                                responsible account may be suspended or terminated. Repeat infringers will be
+                                permanently banned.</p>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="prohibited-uses">
+                            <div class="legal-section-header">
+                                <div class="section-icon"
+                                    style="background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); color: var(--danger);">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                                    </svg>
+                                </div>
+                                <h2>Prohibited Uses</h2>
+                            </div>
+                            <p>The following uses of the Flowva platform are strictly prohibited:</p>
+                            <ul class="policy-list">
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg><span style="color:var(--danger)">Uploading malicious, infected, or otherwise
+                                        harmful files.</span></li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg><span style="color:var(--danger)">Using the platform to conduct transactions
+                                        outside of the escrow system.</span></li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg><span style="color:var(--danger)">Attempting to reverse engineer, scrape, or
+                                        extract data from the platform.</span></li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg><span style="color:var(--danger)">Creating accounts to circumvent bans or earn
+                                        multiple free-tier benefits.</span></li>
+                                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg><span style="color:var(--danger)">Using automated bots or scripts to interact
+                                        with the platform in ways not intended by its design.</span></li>
+                            </ul>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="termination">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6" />
+                                        <path
+                                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                                    </svg>
+                                </div>
+                                <h2>Termination</h2>
+                            </div>
+                            <p>You may close your account at any time by contacting <strong>flowva3@gmail.com</strong>.
+                                Upon account closure, your active listings will be removed and any pending payouts that
+                                have cleared the escrow period will be released to your wallet.</p>
+                            <p>Flowva may suspend or terminate your account at any time if you violate these Terms,
+                                Community Guidelines, or Privacy Policy. Accounts terminated for serious violations
+                                (fraud, IP theft, hate speech, malicious uploads) will have their pending escrow funds
+                                forfeited.</p>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="liability">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                    </svg>
+                                </div>
+                                <h2>Limitation of Liability</h2>
+                            </div>
+                            <p>Flowva provides the platform on an "as-is" basis. While we take every reasonable measure
+                                to ensure reliability and security, we do not warrant that the platform will be
+                                uninterrupted, error-free, or free from viruses.</p>
+                            <p>To the maximum extent permitted by applicable law, Flowva shall not be liable for any
+                                indirect, incidental, consequential, or punitive damages arising from your use of the
+                                platform, including but not limited to loss of profits, data loss, or unauthorized
+                                access to your account.</p>
+                            <p>Our total liability to you for any claim arising from your use of Flowva shall not exceed
+                                the total amount of fees you have paid to Flowva in the 12 months preceding the claim.
+                            </p>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="disputes">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                    </svg>
+                                </div>
+                                <h2>Dispute Resolution</h2>
+                            </div>
+                            <p>If a dispute arises between a buyer and a creator regarding a transaction, both parties
+                                should first attempt to resolve the issue through Flowva's messaging system. If no
+                                resolution is reached within 5 business days, either party may escalate the dispute to
+                                Flowva's support team at <strong>flowva3@gmail.com</strong>.</p>
+                            <p>Flowva will investigate the dispute and render a decision within 10 business days.
+                                Flowva's decision is final and binding with respect to the release or refund of escrow
+                                funds.</p>
+                            <p>These Terms shall be governed by the laws applicable to digital commerce in the
+                                jurisdiction of Flowva's principal operations. Any legal action not resolved through
+                                internal dispute resolution shall be subject to binding arbitration.</p>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="legal-section" id="changes">
+                            <div class="legal-section-header">
+                                <div class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="1 4 1 10 7 10" />
+                                        <path d="M3.51 15a9 9 0 1 0 .49-3.47" />
+                                    </svg>
+                                </div>
+                                <h2>Changes to These Terms</h2>
+                            </div>
+                            <p>Flowva reserves the right to update these Terms at any time. When material changes are
+                                made, we will notify all registered users via email at least 14 days before the changes
+                                take effect. Continued use of the platform after the effective date constitutes
+                                acceptance of the updated Terms.</p>
+                            <p>For questions about these Terms, contact us at <strong>flowva3@gmail.com</strong>.</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer style="background:var(--bg-surface);border-top:1px solid var(--border);padding:48px 0 32px;">
+        <div class="container">
+            <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:space-between;margin-bottom:40px;">
+                <div style="max-width:280px;">
+                    <div class="nav-logo" style="margin-bottom:12px;">Flowva</div>
+                    <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.7;">A trusted digital marketplace
+                        connecting creators and buyers worldwide.</p>
+                </div>
+                <div style="display:flex;gap:60px;flex-wrap:wrap;">
+                    <div>
+                        <p
+                            style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">
+                            Legal</p>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a href="community-guidelines.html"
+                                style="font-size:0.875rem;color:var(--text-secondary);">Community Guidelines</a>
+                            <a href="privacy.html" style="font-size:0.875rem;color:var(--text-secondary);">Privacy
+                                Policy</a>
+                            <a href="terms.html" style="font-size:0.875rem;color:var(--accent-hover);">Terms of
+                                Service</a>
+                        </div>
+                    </div>
+                    <div>
+                        <p
+                            style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">
+                            Help</p>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a href="support.html" style="font-size:0.875rem;color:var(--text-secondary);">Support
+                                Center</a>
+                            <a href="contact.html" style="font-size:0.875rem;color:var(--text-secondary);">Contact
+                                Us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                style="border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:center;">
+                <p style="font-size:0.8rem;color:var(--text-muted);">&copy; 2026 Flowva. All rights reserved.</p>
+                <p style="font-size:0.8rem;color:var(--text-muted);">flowva3@gmail.com</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="../js/core/navbar.js"></script>
+    <script>
+        const sections = document.querySelectorAll('.legal-section');
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    tocLinks.forEach(l => l.classList.remove('active'));
+                    const active = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+                    if (active) active.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-20% 0% -60% 0%' });
+        sections.forEach(s => observer.observe(s));
+    </script>
+</body>
+
+</html>
