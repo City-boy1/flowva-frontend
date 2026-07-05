@@ -12,6 +12,7 @@
     <title>Community — FLOWVA</title>
     <script>(function () { var t = localStorage.getItem('flowva-theme') || 'light'; document.documentElement.setAttribute('data-theme', t); })();</script>
     <link rel="stylesheet" href="/css/global.css">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
     <style>
         /* ── DISCORD CONFIG (fill these in later) ── */
         /* REPLACE ALL VALUES MARKED WITH YOUR_... */
@@ -1417,15 +1418,19 @@
     </div>
 
     <div id="reaction-picker"
-        style="display:none;position:fixed;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px;gap:6px;z-index:1000;box-shadow:0 12px 30px rgba(0,0,0,0.25);">
-        <button onclick="pickReaction('👍')">👍</button>
-        <button onclick="pickReaction('❤️')">❤️</button>
-        <button onclick="pickReaction('😂')">😂</button>
-        <button onclick="pickReaction('😮')">😮</button>
-        <button onclick="pickReaction('😢')">😢</button>
-        <button onclick="pickReaction('🔥')">🔥</button>
-        <button onclick="pickReaction('🎉')">🎉</button>
-        <button onclick="pickReaction('👀')">👀</button>
+        style="display:none;position:fixed;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px;gap:8px;z-index:1000;box-shadow:0 12px 30px rgba(0,0,0,0.25);flex-direction:column;">
+        <div style="display:flex;gap:6px;">
+            <button onclick="pickReaction('👍')">👍</button>
+            <button onclick="pickReaction('❤️')">❤️</button>
+            <button onclick="pickReaction('😂')">😂</button>
+            <button onclick="pickReaction('😮')">😮</button>
+            <button onclick="pickReaction('😢')">😢</button>
+            <button onclick="pickReaction('🔥')">🔥</button>
+            <button onclick="pickReaction('🎉')">🎉</button>
+            <button onclick="pickReaction('👀')">👀</button>
+            <button onclick="toggleFullEmojiPicker()" title="More emoji">➕</button>
+        </div>
+        <emoji-picker id="full-emoji-picker" style="display:none;width:320px;max-width:80vw;"></emoji-picker>
     </div>
 
     <div id="pins-modal"
@@ -1646,7 +1651,10 @@
             } else {
                 const data = await res.json();
                 list.innerHTML = data.pins.length
-                    ? data.pins.map(p => `<div class="pinned-item" style="width:100%;max-width:none;margin-bottom:8px;color:var(--text-primary);" onclick="closePinsModal();scrollToMessage('${p.id}')">📌 <strong>${p.authorName}</strong>: ${p.content.slice(0, 60)}</div>`).join('')
+                    ? data.pins.map(p => `<div class="pinned-item" style="width:100%;max-width:none;margin-bottom:8px;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+        <span style="flex:1;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" onclick="closePinsModal();scrollToMessage('${p.id}')">📌 <strong>${p.authorName}</strong>: ${p.content.slice(0, 60)}</span>
+        <button onclick="unpinMessage('${activeTab}','${p.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:0.9rem;flex-shrink:0;" title="Unpin">✕</button>
+      </div>`).join('')
                     : '<p style="color:var(--text-muted);font-size:0.85rem;">No pinned messages yet in this channel.</p>';
             }
             document.getElementById('pins-modal').style.display = 'flex';
@@ -1848,9 +1856,10 @@
                 const clientsTabBtn = document.querySelector('.chat-tab[data-tab="clients"]');
                 if (creatorsTabBtn) creatorsTabBtn.style.display = (role === 'CREATOR') ? '' : 'none';
                 if (clientsTabBtn) clientsTabBtn.style.display = (role === 'BUYER') ? '' : 'none';
-                if (activeTab === 'announcements' && role !== 'ADMIN' && input) {
-                    input.disabled = true;
-                    input.placeholder = 'Only admins can post here';
+                if (activeTab === 'announcements' && role !== 'ADMIN') {
+                    if (input) { input.disabled = true; input.placeholder = 'Only admins can post here'; }
+                    if (sendBtn) sendBtn.disabled = true;
+                    if (attachBtn) attachBtn.disabled = true;
                 }
             } catch (e) { }
         }
@@ -2073,7 +2082,15 @@
             loadPins(tab);
         }
 
-
+        async function unpinMessage(tab, messageId) {
+            const res = await fetch(`${API_BASE}/api/discord/message/${tab}/${messageId}/pin`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
+            showQuickToast(res.ok ? 'Message unpinned' : 'Failed to unpin message');
+            loadPins(tab);
+            if (document.getElementById('pins-modal').style.display === 'flex') openPinsModal();
+        }
 
         function showQuickToast(text) {
             const t = document.createElement('div');
@@ -2088,13 +2105,55 @@
         function openReactionPicker(tab, messageId, btnEl) {
             pendingReaction = { tab, messageId };
             const picker = document.getElementById('reaction-picker');
-            const rect = btnEl.getBoundingClientRect();
-            const top = Math.min(rect.bottom + 6, window.innerHeight - 60);
-            const left = Math.min(Math.max(8, rect.left - 100), window.innerWidth - 260);
-            picker.style.top = `${top}px`;
-            picker.style.left = `${left}px`;
+            picker.style.left = '-9999px';
+            picker.style.top = '-9999px';
             picker.style.display = 'flex';
+
+            const rect = btnEl.getBoundingClientRect();
+            const pw = picker.offsetWidth;
+            const ph = picker.offsetHeight;
+
+            let left = rect.left + rect.width / 2 - pw / 2;
+            left = Math.min(Math.max(8, left), window.innerWidth - pw - 8);
+
+            let top = rect.bottom + 6;
+            if (top + ph > window.innerHeight - 8) {
+                top = rect.top - ph - 6;
+            }
+
+            picker.style.left = `${left}px`;
+            picker.style.top = `${top}px`;
         }
+
+        function toggleFullEmojiPicker() {
+            const picker = document.getElementById('full-emoji-picker');
+            const container = document.getElementById('reaction-picker');
+            const opening = picker.style.display === 'none';
+            picker.style.display = opening ? 'block' : 'none';
+
+            if (opening) {
+                requestAnimationFrame(() => {
+                    const rect = container.getBoundingClientRect();
+
+                    const overflowRight = rect.left + rect.width - window.innerWidth;
+                    if (overflowRight > 0) {
+                        container.style.left = `${Math.max(8, rect.left - overflowRight - 8)}px`;
+                    }
+
+                    const newRect = container.getBoundingClientRect();
+                    const overflowBottom = newRect.top + newRect.height - window.innerHeight;
+                    if (overflowBottom > 0) {
+                        container.style.top = `${Math.max(8, newRect.top - overflowBottom - 8)}px`;
+                    }
+                });
+            }
+        }
+
+        document.getElementById('full-emoji-picker')?.addEventListener('emoji-click', (e) => {
+            const emoji = e.detail?.unicode;
+            if (emoji) pickReaction(emoji);
+            document.getElementById('full-emoji-picker').style.display = 'none';
+        });
 
         async function pickReaction(emoji) {
             if (!pendingReaction) return;
