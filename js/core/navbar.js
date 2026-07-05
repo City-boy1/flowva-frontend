@@ -117,8 +117,8 @@ function _buildNavbarHTML() {
     { href: '/dashboard.html', label: 'Dashboard', authOnly: true },
     { href: '/creator.html', label: 'Creators' },
     { href: '/project-marketplace.html', label: 'Projects', guestOnly: true },
-    { href: 'footer/post-a-job.html', label: 'Hire', guestOnly: true },
-    { href: 'footer/community.html', label: 'Community', guestOnly: true },
+    { href: '/footer/community.html', label: 'Community', guestOnly: true },
+    { href: '/footer/about.html', label: 'About', guestOnly: true },
     { href: '/messages.html', label: 'Messages', authOnly: true },
     { href: '/admin.html', label: 'Admin', authOnly: true, adminOnly: true },
   ];
