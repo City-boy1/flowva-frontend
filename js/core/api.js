@@ -451,6 +451,11 @@ const api = {
 
   // ── Health ────────────────────────────────────────────────────────────────
   health: () => request('GET', '/health'),
+
+  // ── Discord Community ─────────────────────────────────────────────────────
+  discord: {
+    message: (message, tab) => request('POST', '/discord/message', { message, tab }),
+  },
 };
 
 export default api;

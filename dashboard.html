@@ -149,15 +149,6 @@
                     </a>
                 </div>
                 <div class="dash-nav-section">
-                    <div class="dash-nav-section-label">Help</div>
-                    <button class="dash-nav-item" data-target="faqs">
-                        FAQs
-                    </button>
-                    <a href="footer/support.html" class="dash-nav-item">
-                        Support
-                    </a>
-                </div>
-                <div class="dash-nav-section">
                     <div class="dash-nav-section-label">Account</div>
                     <button class="dash-nav-item" data-target="settings">
                         Settings
@@ -666,21 +657,51 @@
                 <div class="upload-area">
                     <div
                         style="background:var(--bg-overlay);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-5);margin-bottom:var(--space-5)">
-                        <div style="font-size:1.5rem;margin-bottom:8px">▶</div>
-                        <h3 style="font-size:0.95rem;margin-bottom:6px">Paste your YouTube video link</h3>
-                        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:var(--space-4)">Upload your
-                            tutorial to YouTube first, then paste the link here. It will be embedded directly on Flowva
-                            for viewers to watch.</p>
-                        <div class="form-group">
-                            <label class="form-label" for="tut-youtube-url">YouTube URL *</label>
-                            <input class="form-input" type="url" id="tut-youtube-url"
-                                placeholder="https://www.youtube.com/watch?v=...">
-                            <span style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;display:block">Make
-                                sure the video is set to Public or Unlisted on YouTube</span>
+                        <div style="margin-bottom:8px;color:var(--accent-hover)">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="23 7 16 12 23 17 23 7" />
+                                <rect x="1" y="5" width="15" height="14" rx="2" />
+                            </svg>
                         </div>
-                        <div id="tut-yt-preview" style="margin-top:var(--space-4);display:none">
-                            <iframe id="tut-yt-iframe" width="100%" height="220" frameborder="0" allowfullscreen
-                                style="border-radius:var(--radius-md)"></iframe>
+                        <h3 style="font-size:0.95rem;margin-bottom:6px">Upload your tutorial video</h3>
+                        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:var(--space-4)">
+                            Upload your video directly. It will be sent to the Flowva YouTube channel, reviewed by
+                            admin, and published if approved.
+                        </p>
+                        <div class="drop-zone" id="tut-video-zone" style="padding:var(--space-8)">
+                            <input type="file" id="tut-video-input"
+                                accept="video/mp4,video/quicktime,video/webm,video/x-msvideo">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                                style="opacity:0.4;margin-bottom:12px">
+                                <polygon points="23 7 16 12 23 17 23 7" />
+                                <rect x="1" y="5" width="15" height="14" rx="2" />
+                            </svg>
+                            <p style="font-size:0.85rem">Drag & drop your video here</p>
+                            <span style="font-size:0.78rem;color:var(--text-muted)">MP4, MOV, WEBM · Max 500MB</span>
+                            <button class="btn btn--ghost btn--sm" type="button"
+                                onclick="document.getElementById('tut-video-input').click()" style="margin-top:12px">
+                                Browse Files
+                            </button>
+                        </div>
+                        <div id="tut-video-info"
+                            style="display:none;margin-top:10px;font-size:0.83rem;color:var(--accent-hover);align-items:center;gap:8px">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="23 7 16 12 23 17 23 7" />
+                                <rect x="1" y="5" width="15" height="14" rx="2" />
+                            </svg>
+                            <span id="tut-video-name"></span>
+                            <span id="tut-video-size" style="color:var(--text-muted)"></span>
+                        </div>
+                        <div id="tut-upload-progress" style="display:none;margin-top:12px">
+                            <div style="background:var(--bg-base);border-radius:999px;height:6px;overflow:hidden">
+                                <div id="tut-progress-bar"
+                                    style="height:100%;background:var(--accent);width:0%;transition:width 0.3s"></div>
+                            </div>
+                            <p id="tut-progress-text" style="font-size:0.78rem;color:var(--text-muted);margin-top:6px">
+                                Uploading to YouTube…</p>
                         </div>
                     </div>
                     <div class="upload-preview" id="tutorial-preview"></div>
@@ -1109,6 +1130,55 @@
                     <h1>Community Guidelines</h1>
                     <p>Rules for creators and buyers on Flowva</p>
                 </div>
+
+                <!-- Community Chat entry card -->
+                <a href="footer/community.html"
+                    style="text-decoration:none;display:block;max-width:680px;margin-bottom:var(--space-6)">
+                    <div style="background:linear-gradient(135deg,#3a3f8f 0%,#5865F2 55%,#FF2E93 130%);
+                        border-radius:var(--radius-xl,20px);padding:32px;position:relative;overflow:hidden;
+                        transition:transform 0.25s ease, box-shadow 0.25s ease;"
+                        onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 20px 50px rgba(88,101,242,0.35)'"
+                        onmouseout="this.style.transform='';this.style.boxShadow=''">
+
+                        <svg width="140" height="140" viewBox="0 0 24 24" fill="white"
+                            style="opacity:0.08;position:absolute;right:-10px;top:50%;transform:translateY(-50%);">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+
+                        <div
+                            style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.18);
+                            border-radius:999px;padding:4px 14px;font-size:0.72rem;font-weight:700;color:#fff;
+                            letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px;position:relative;z-index:1">
+                            <span
+                                style="width:7px;height:7px;border-radius:50%;background:#57F287;box-shadow:0 0 6px rgba(87,242,135,0.7)"></span>
+                            Live Now
+                        </div>
+
+                        <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:800;color:#fff;
+                            letter-spacing:-0.02em;margin-bottom:8px;position:relative;z-index:1">
+                            Flowva Community Chat
+                        </h2>
+                        <p style="color:rgba(255,255,255,0.82);font-size:0.9rem;line-height:1.7;max-width:440px;
+                            margin-bottom:22px;position:relative;z-index:1">
+                            Talk with other creators and clients in real time, get feedback, find collaborators,
+                            and catch every platform announcement — all inside Flowva.
+                        </p>
+
+                        <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#3a3f8f;
+                            border-radius:var(--radius-md,10px);padding:12px 24px;font-weight:700;font-size:0.9rem;
+                            position:relative;z-index:1">
+                            Open Community Chat
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
                 <div style="display:flex;flex-direction:column;gap:var(--space-5);max-width:680px">
                     <div
                         style="background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-5)">

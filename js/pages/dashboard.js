@@ -1860,77 +1860,139 @@ function initUploadPanel() {
 }
 
 async function initTutorialUploadPanel() {
-  const tutForm   = document.getElementById('tutorial-form');
-const previewEl = document.getElementById('tutorial-preview');
-  const ytInput = document.getElementById('tut-youtube-url');
-  const ytPreview = document.getElementById('tut-yt-preview');
-  const ytIframe  = document.getElementById('tut-yt-iframe');
+  const tutForm = document.getElementById('tutorial-form');
 
-  function getYouTubeId(url) {
-    try {
-      const u = new URL(url);
-      const validHosts = ['www.youtube.com', 'youtube.com', 'youtu.be'];
-      if (!validHosts.includes(u.hostname)) return null;
-      if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
-      return u.searchParams.get('v') || null;
-    } catch { return null; }
+  // Wire video file input
+  const videoInput = document.getElementById('tut-video-input');
+  const videoZone  = document.getElementById('tut-video-zone');
+  const videoInfo  = document.getElementById('tut-video-info');
+  const videoName  = document.getElementById('tut-video-name');
+  const videoSize  = document.getElementById('tut-video-size');
+
+  let selectedVideo = null;
+
+  function setVideo(file) {
+    if (!file) return;
+    const allowed = ['video/mp4','video/quicktime','video/webm','video/x-msvideo'];
+    if (!allowed.includes(file.type)) { Toast.show('Please upload MP4, MOV, or WEBM', 'error'); return; }
+    if (file.size > 500 * 1024 * 1024) { Toast.show('Video must be under 500MB', 'error'); return; }
+    selectedVideo = file;
+    videoName.textContent = file.name;
+    videoSize.textContent = `${(file.size / 1024 / 1024).toFixed(1)}MB`;
+    videoInfo.style.display = 'flex';
   }
 
-  ytInput?.addEventListener('input', () => {
-    const id = getYouTubeId(ytInput.value.trim());
-    if (id) {
-      ytIframe.src = `https://www.youtube.com/embed/${id}`;
-      ytPreview.style.display = 'block';
-    } else {
-      ytPreview.style.display = 'none';
-      ytIframe.src = '';
-    }
+  videoInput?.addEventListener('change', () => {
+    if (videoInput.files?.[0]) setVideo(videoInput.files[0]);
   });
-  function renderTutPreview(f) {
-    if (!previewEl) return;
-    previewEl.innerHTML = `<div class="preview-file"><span>▶</span><span style="font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_esc(f.name)}</span><span style="font-size:0.75rem;color:var(--text-muted)">${(f.size/1024/1024).toFixed(1)}MB</span></div>`;
+
+  videoZone?.addEventListener('dragover', e => { e.preventDefault(); videoZone.classList.add('dragover'); });
+  videoZone?.addEventListener('dragleave', () => videoZone.classList.remove('dragover'));
+  videoZone?.addEventListener('drop', e => {
+    e.preventDefault();
+    videoZone.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) setVideo(e.dataTransfer.files[0]);
+  });
+
+  // Populate linked templates dropdown
+  const tutTemplateSelect = document.getElementById('tut-template');
+  if (tutTemplateSelect && isCreator()) {
+    const userId = AppState.getUser()?._id ?? AppState.getUser()?.id;
+    const res = await api.templates.list({ creatorId: userId, limit: 50 });
+    const approved = (res.data?.templates ?? []).filter(t => t.status === 'APPROVED');
+    approved.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t._id ?? t.id;
+      opt.textContent = t.title;
+      tutTemplateSelect.appendChild(opt);
+    });
   }
 
   tutForm?.addEventListener('submit', async e => {
     e.preventDefault();
+
     const title    = document.getElementById('tut-title')?.value.trim();
     const software = document.getElementById('tut-software')?.value;
     const desc     = document.getElementById('tut-desc')?.value.trim();
     const errorEl  = document.getElementById('tutorial-error');
+
     if (!title || !software || !desc) {
-      if (errorEl) { errorEl.textContent = 'Please fill all required fields.'; errorEl.style.display = 'block'; } return;
+      if (errorEl) { errorEl.textContent = 'Please fill all required fields.'; errorEl.style.display = 'block'; }
+      return;
     }
-    const youtubeUrl = document.getElementById('tut-youtube-url')?.value.trim();
-    const youtubeId  = getYouTubeId(youtubeUrl || '');
-    if (!youtubeId) {
-      if (errorEl) { errorEl.textContent = 'Please paste a valid YouTube URL.'; errorEl.style.display = 'block'; } return;
+    if (!selectedVideo) {
+      if (errorEl) { errorEl.textContent = 'Please select a video file to upload.'; errorEl.style.display = 'block'; }
+      return;
     }
     if (errorEl) errorEl.style.display = 'none';
- const linkedTemplate = document.getElementById('tut-template')?.value;
 
+    const linkedTemplate = document.getElementById('tut-template')?.value;
     const btn = document.getElementById('tutorial-submit-btn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+    const progressWrap = document.getElementById('tut-upload-progress');
+    const progressBar  = document.getElementById('tut-progress-bar');
+    const progressText = document.getElementById('tut-progress-text');
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Uploading…'; }
+    if (progressWrap) progressWrap.style.display = 'block';
 
     await api.restoreSession().catch(() => {});
 
-    const res = await api.post('/tutorials', {
-      title,
-      category: software,
-      description: desc,
-      youtubeUrl,
-      ...(linkedTemplate ? { templateId: linkedTemplate } : {}),
+    const formData = new FormData();
+    formData.append('video',       selectedVideo);
+    formData.append('title',       title);
+    formData.append('category',    software);
+    formData.append('description', desc);
+    formData.append('isFree',      'true');
+    if (linkedTemplate) formData.append('templateId', linkedTemplate);
+
+    // Use XHR for upload progress
+    const token = AppState.getToken();
+    const BASE  = window.FLOWVA_API_URL || 'https://flowva-backend-ztai.onrender.com/api';
+
+    const res = await new Promise((resolve) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `${BASE}/tutorials`);
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      xhr.withCredentials = true;
+
+      xhr.upload.addEventListener('progress', e => {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          if (progressBar)  progressBar.style.width = `${pct}%`;
+          if (progressText) progressText.textContent = pct < 100
+            ? `Uploading… ${pct}%`
+            : 'Processing on YouTube — this may take a moment…';
+        }
+      });
+
+      xhr.onload = () => {
+        try {
+          const data = JSON.parse(xhr.responseText);
+          resolve({ ok: xhr.status < 400, data, error: data.message || null });
+        } catch {
+          resolve({ ok: false, error: 'Response parse error' });
+        }
+      };
+      xhr.onerror = () => resolve({ ok: false, error: 'Network error' });
+      xhr.send(formData);
     });
+
     if (btn) { btn.disabled = false; btn.textContent = 'Submit Tutorial for Review'; }
-    if (!res.ok) { Toast.show(res.error ?? 'Upload failed', 'error'); return; }
-    Toast.show('Tutorial submitted for review!', 'success');
+    if (progressWrap) progressWrap.style.display = 'none';
+    if (progressBar)  progressBar.style.width = '0%';
+
+    if (!res.ok) {
+      Toast.show(res.error ?? 'Upload failed', 'error');
+      return;
+    }
+
+    Toast.show('Tutorial submitted for review! Admin will approve it before it goes live.', 'success');
     tutForm.reset();
-    if (ytInput) ytInput.value = '';
-    if (ytPreview) { ytPreview.style.display = 'none'; ytIframe.src = ''; }
-    if (previewEl) previewEl.innerHTML = '';
+    selectedVideo = null;
+    if (videoInfo)  videoInfo.style.display  = 'none';
     loadMyTutorials();
   });
 }
-
 let _uploadInited    = false;
 let _tutUploadInited = false;
 let _settingsInited  = false;

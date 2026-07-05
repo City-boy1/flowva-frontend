@@ -114,8 +114,11 @@ function _buildNavbarHTML() {
   const links = [
     { href: '/index.html', label: 'Home' },
     { href: '/marketplace.html', label: 'Marketplace' },
-    { href: '/creator.html', label: 'Creators' },
     { href: '/dashboard.html', label: 'Dashboard', authOnly: true },
+    { href: '/creator.html', label: 'Creators' },
+    { href: '/project-marketplace.html', label: 'Projects', guestOnly: true },
+    { href: 'footer/post-a-job.html', label: 'Hire', guestOnly: true },
+    { href: 'footer/community.html', label: 'Community', guestOnly: true },
     { href: '/messages.html', label: 'Messages', authOnly: true },
     { href: '/admin.html', label: 'Admin', authOnly: true, adminOnly: true },
   ];
@@ -123,7 +126,7 @@ function _buildNavbarHTML() {
  const navLinkHTML = links
     .filter(l => (!l.authOnly || isLoggedIn) && (!l.adminOnly || user?.role === 'ADMIN'))
     .map(l => `
-      <a href="${l.href}" class="nav-link ${currentPage === l.href ? 'active' : ''} ${l.adminOnly ? 'nav-link--admin' : ''}" data-navlink>
+      <a href="${l.href}" class="nav-link ${currentPage === l.href ? 'active' : ''} ${l.adminOnly ? 'nav-link--admin' : ''} ${l.guestOnly && isLoggedIn ? 'nav-link--desktop-hidden' : ''}" data-navlink>
         ${l.label}
       </a>`)
     .join('');
@@ -354,6 +357,8 @@ if (AppState.isLoggedIn()) {
     const style = document.createElement('style');
     style.id = 'nav-dropdown-styles';
     style.textContent = `
+    .nav-link--desktop-hidden { display: none; }
+@media (max-width: 768px) { .nav-link--desktop-hidden { display: flex; } }
       .nav-user-menu { position: relative; }
 
       .nav-avatar-btn {
@@ -519,7 +524,7 @@ if (AppState.isLoggedIn()) {
     AppState.clearAuth();
     sessionStorage.clear();
     Toast.show('Logged out successfully', 'info');
-    setTimeout(() => { window.location.href = 'index.html'; }, 600);
+    setTimeout(() => { window.location.href = '/index.html'; }, 600);
   });
 
   // ── Theme toggle ──

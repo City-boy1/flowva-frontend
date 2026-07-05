@@ -513,10 +513,22 @@ function _initVideoAutoplay() {
     const duration   = t.duration ?? '';
     const creatorName = creatorNames[i];
 
-    const thumbHTML = thumbUrl
-      ? `<img src="${_esc(thumbUrl)}" alt="${_esc(t.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
-      : `<div class="tutorial-thumb-placeholder" style="background:${_gradient(i + 3)}">
-         </div>`;
+    function getYtId(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+    return u.searchParams.get('v');
+  } catch { return null; }
+}
+const ytId = t.youtubeUrl ? getYtId(t.youtubeUrl) : null;
+const thumbHTML = ytId
+  ? `<div class="tutorial-yt-thumb" style="position:relative;width:100%;height:100%;">
+       <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="${_esc(t.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+       <iframe class="tutorial-yt-autoplay" data-src="https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&modestbranding=1" style="position:absolute;inset:0;width:100%;height:100%;border:none;display:none;" allowfullscreen allow="autoplay"></iframe>
+     </div>`
+  : thumbUrl
+    ? `<img src="${_esc(thumbUrl)}" alt="${_esc(t.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
+    : `<div class="tutorial-thumb-placeholder" style="background:${_gradient(i + 3)}"></div>`;
 
     return `
       <div class="tutorial-card reveal"
@@ -547,6 +559,23 @@ function _initVideoAutoplay() {
   }).join('');
 
   _triggerReveal(grid);
+
+  // Auto-swap thumbnail for iframe when scrolled into view
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    const iframe = entry.target.querySelector('.tutorial-yt-autoplay');
+    if (!iframe) return;
+    if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+      if (!iframe.src) iframe.src = iframe.dataset.src;
+      iframe.style.display = 'block';
+    } else {
+      iframe.style.display = 'none';
+      iframe.src = '';
+    }
+  });
+  }, { threshold: 0.6 });
+
+  grid.querySelectorAll('.tutorial-card').forEach(card => observer.observe(card));
 
   // ── ADD START — wire video play modal ──
   grid.querySelectorAll('.tutorial-card').forEach(card => {
@@ -784,7 +813,7 @@ if (isVideo) {
   });
   
   document.getElementById('btn-community')?.addEventListener('click', () => {
-    window.location.href = '/footer/community-guidelines.html';
+    window.location.href = '/footer/community.html';
   });
 
   document.getElementById('btn-view-all')?.addEventListener('click', () => {

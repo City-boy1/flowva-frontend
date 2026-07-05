@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/assets/images/site.webmanifest" />
+    <title>Community — FLOWVA</title>
+    <script>(function () { var t = localStorage.getItem('flowva-theme') || 'light'; document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="stylesheet" href="/css/global.css">
+    <style>
+        /* ── DISCORD CONFIG (fill these in later) ── */
+        /* REPLACE ALL VALUES MARKED WITH YOUR_... */
+
+        /* ── Page tokens ── */
+        :root {
+            --discord: #5865F2;
+            --discord-dark: #404EED;
+            --discord-green: #57F287;
+            --community-pink: #FF2E93;
+            --community-blue: #007BFF;
+        }
+
+        /* ── Hero ── */
+        .community-hero {
+            padding: calc(var(--navbar-h, 72px) + 72px) 0 80px;
+            background:
+                radial-gradient(ellipse 70% 50% at 20% 30%, rgba(0, 123, 255, 0.14) 0%, transparent 65%),
+                radial-gradient(ellipse 50% 40% at 85% 60%, rgba(255, 46, 147, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 60% at 60% 10%, rgba(88, 101, 242, 0.1) 0%, transparent 55%),
+                var(--bg-base);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .community-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(0, 123, 255, 0.06) 1px, transparent 1px);
+            background-size: 36px 36px;
+            pointer-events: none;
+        }
+
+        .hero-eyebrow-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-soft);
+            border: 1px solid rgba(0, 123, 255, 0.25);
+            border-radius: 999px;
+            padding: 6px 18px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-hover);
+            margin-bottom: 28px;
+        }
+
+        .community-hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 5.5vw, 3.6rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            background: linear-gradient(135deg, var(--text-primary) 30%, var(--community-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .community-hero p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 560px;
+            margin: 0 auto 40px;
+            line-height: 1.75;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 48px;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+        }
+
+        .hero-stat-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            letter-spacing: 0.04em;
+        }
+
+        /* ── Login notice banner ── */
+        .login-notice {
+            background: linear-gradient(135deg, rgba(88, 101, 242, 0.1), rgba(255, 46, 147, 0.07));
+            border: 1px solid rgba(88, 101, 242, 0.25);
+            border-radius: var(--radius-lg, 16px);
+            padding: 20px 28px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .login-notice p {
+            flex: 1;
+            min-width: 220px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* ── Channels grid ── */
+        .channels-section {
+            padding: 80px 0;
+        }
+
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .channel-card {
+            background: var(--bg-raised, #1a1a2e);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg, 16px);
+            overflow: hidden;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .channel-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+        }
+
+        .channel-card-top {
+            padding: 24px 24px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .channel-card-top::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.08);
+            pointer-events: none;
+        }
+
+        .channel-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            padding: 3px 10px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .channel-card-top h3 {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .channel-card-top p {
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.78);
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .channel-card-icon-bg {
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.12;
+            z-index: 0;
+        }
+
+        .channel-card-body {
+            padding: 20px 24px 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .channel-perks {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .channel-perks li {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            font-size: 0.855rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .channel-perks li svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .channel-join-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--radius-md, 10px);
+            font-weight: 700;
+            font-size: 0.88rem;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            text-decoration: none;
+            font-family: var(--font-body);
+        }
+
+        .channel-join-btn:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        /* ── Live chat embed section ── */
+        .chat-section {
+            padding: 0 0 100px;
+        }
+
+        .chat-wrapper {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl, 20px);
+            overflow: hidden;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.12);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #3a3f8f, #5865F2);
+            padding: 20px 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .chat-header-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--discord-green);
+            box-shadow: 0 0 8px rgba(87, 242, 135, 0.6);
+            flex-shrink: 0;
+        }
+
+        .chat-header-info h3 {
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .chat-header-info p {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.65);
+            margin: 0;
+        }
+
+        .chat-channel-tabs {
+            display: flex;
+            gap: 0;
+            background: var(--bg-overlay);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .chat-channel-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chat-tab {
+            padding: 14px 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            transition: color 0.2s, border-color 0.2s;
+            font-family: var(--font-body);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chat-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .chat-tab.active {
+            color: var(--discord);
+            border-bottom-color: var(--discord);
+        }
+
+        /* The actual Discord iframe embed area */
+        .discord-embed-area {
+            width: 100%;
+            height: min(65vh, 560px);
+            min-height: 380px;
+            display: none;
+            background: var(--bg-base);
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .discord-embed-area.active {
+            display: flex;
+        }
+
+        .discord-embed-area iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* Placeholder shown until Discord is connected */
+        .embed-placeholder {
+            width: 100%;
+            height: 520px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            background: var(--bg-base);
+            color: var(--text-muted);
+            text-align: center;
+            padding: 40px;
+        }
+
+        .embed-placeholder svg {
+            opacity: 0.3;
+        }
+
+        .embed-placeholder h4 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .embed-placeholder p {
+            font-size: 0.83rem;
+            color: var(--text-muted);
+            margin: 0;
+            max-width: 300px;
+            line-height: 1.6;
+        }
+
+        /* Chat input bar (UI only — wired to Discord API via backend) */
+        .chat-input-bar {
+            padding: 16px 20px;
+            background: var(--bg-overlay);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-messages {
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: var(--bg-base);
+        }
+
+        .chat-msg {
+            background: var(--bg-overlay);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md, 10px);
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full, 999px);
+            padding: 10px 18px;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: var(--discord);
+        }
+
+        .chat-input.replying {
+            border-color: var(--discord) !important;
+            box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.15);
+        }
+
+        #reply-banner.open {
+            display: flex;
+            animation: replySlideIn 0.2s ease;
+        }
+
+        @keyframes replySlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .chat-send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--discord);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            transition: background 0.2s, transform 0.15s;
+            flex-shrink: 0;
+        }
+
+        .chat-send-btn:hover {
+            background: var(--discord-dark);
+            transform: scale(1.05);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .chat-msg.own {
+            align-self: flex-end;
+            background: var(--discord);
+            color: #fff;
+            border-color: var(--discord);
+        }
+
+        .chat-msg {
+            position: relative;
+        }
+
+        .msg-actions {
+            display: none;
+            position: absolute;
+            top: -14px;
+            right: 8px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .msg-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .msg-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .msg-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .msg-author {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            cursor: pointer;
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .chat-msg.own .msg-author {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .chat-msg:hover .msg-actions {
+            display: flex;
+        }
+
+        .msg-quote {
+            border-left: 3px solid var(--discord);
+            padding-left: 8px;
+            margin-bottom: 4px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            opacity: 0.85;
+        }
+
+        .chat-msg.own .msg-quote {
+            border-left-color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .msg-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .msg-actions button:hover {
+            background: var(--bg-overlay);
+        }
+
+        .msg-reactions {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .reaction {
+            background: var(--bg-overlay);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-size: 0.78rem;
+        }
+
+        .msg-content {
+            white-space: pre-wrap;
+        }
+
+        .chat-msg {
+            transition: transform 0.15s ease;
+            touch-action: pan-y;
+        }
+
+        #reaction-picker {
+            display: none;
+            flex-wrap: nowrap;
+        }
+
+        #reaction-picker.open {
+            display: flex;
+        }
+
+        #reaction-picker button {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 6px;
+        }
+
+        #reaction-picker button:hover {
+            background: var(--bg-overlay);
+        }
+
+        #reply-banner.open {
+            display: flex;
+        }
+
+        /* ── Rules reminder strip ── */
+        .rules-strip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-overlay);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            margin-top: 16px;
+        }
+
+        .rules-strip p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .rules-strip a {
+            color: var(--accent-hover);
+            font-weight: 600;
+        }
+
+        .sheet-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 14px 24px;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .sheet-btn:hover {
+            background: var(--bg-overlay);
+        }
+
+        /* ── Section header ── */
+        .comm-section-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .comm-section-header h2 {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .comm-section-header p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        /* ── Powered by note ── */
+        .powered-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            background: var(--bg-overlay);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px 12px;
+        }
+
+        .join-gate {
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            background: var(--bg-base);
+            text-align: center;
+            padding: 40px;
+        }
+
+        .join-gate p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .pinned-banner {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 8px 16px;
+            background: var(--bg-overlay);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pinned-item {
+            flex-shrink: 0;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 5px 12px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            white-space: nowrap;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pinned-item:hover {
+            border-color: var(--discord);
+        }
+
+        .msg-highlight {
+            animation: highlightFlash 1.5s ease;
+        }
+
+        @keyframes highlightFlash {
+
+            0%,
+            100% {
+                background: inherit;
+            }
+
+            30% {
+                background: rgba(88, 101, 242, 0.25);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero-stats {
+                gap: 24px;
+            }
+
+            .chat-tab {
+                padding: 12px 14px;
+                font-size: 0.78rem;
+            }
+
+            .channel-card-top {
+                padding: 20px 20px 16px;
+            }
+
+            .channel-card-body {
+                padding: 16px 20px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="shared-navbar"></div>
+    <div id="toast-container"></div>
+
+    <!-- ═══ HERO ═══ -->
+    <section class="community-hero">
+        <div class="container">
+            <div class="hero-eyebrow-pill">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                Community
+            </div>
+            <h1>Where Creators<br>and Clients Connect</h1>
+            <p>Chat in real time, share your work, find collaborators, get help, and stay ahead of every platform update
+                — all without leaving FLOWVA.</p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                <button class="btn btn--primary btn--lg" id="hero-join-btn">Join the Community</button>
+                <a href="/footer/community-guidelines.html" class="btn btn--ghost btn--lg">Read the Guidelines</a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="stat-members">—</div>
+                    <div class="hero-stat-label">Members Online</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">3</div>
+                    <div class="hero-stat-label">Active Channels</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">24/7</div>
+                    <div class="hero-stat-label">Live Community</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ CHANNELS ═══ -->
+    <section class="channels-section">
+        <div class="container">
+            <div class="comm-section-header">
+                <div>
+                    <h2>Pick Your Space</h2>
+                    <p>Three dedicated channels — each built for a different purpose.</p>
+                </div>
+                <span class="powered-note">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--discord)">
+                        <path
+                            d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.033.056A19.9 19.9 0 0 0 6.118 21.1a.077.077 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
+                    </svg>
+                    Powered by Discord
+                </span>
+            </div>
+
+            <div class="channels-grid">
+
+                <!-- General / Everyone -->
+                <div class="channel-card" style="border-color:rgba(88,101,242,0.3);" onclick="switchTab('general')">
+                    <div class="channel-card-top" style="background:linear-gradient(135deg,#3a3f8f,#5865F2);">
+                        <svg class="channel-card-icon-bg" width="90" height="90" viewBox="0 0 24 24" fill="white">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        <div class="channel-badge"># general</div>
+                        <h3>Everyone</h3>
+                        <p>Open to all creators and clients</p>
+                    </div>
+                    <div class="channel-card-body">
+                        <ul class="channel-perks">
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5865F2"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Introduce yourself to the community
+                            </li>
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5865F2"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Ask general questions about FLOWVA
+                            </li>
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5865F2"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Share wins, milestones and feedback
+                            </li>
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5865F2"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Connect with people across all roles
+                            </li>
+                        </ul>
+                        <button class="channel-join-btn" style="background:#5865F2;color:#fff;"
+                            onclick="switchTab('general');event.stopPropagation()">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                            </svg>
+                            Open #general
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Creators -->
+                <div class="channel-card" style="border-color:rgba(255,46,147,0.3);" onclick="switchTab('creators')">
+                    <div class="channel-card-top" style="background:linear-gradient(135deg,#c0006e,#FF2E93);">
+                        <svg class="channel-card-icon-bg" width="90" height="90" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 20h9" />
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                        </svg>
+                        <div class="channel-badge"># creators</div>
+                        <h3>Creators</h3>
+                        <p>For designers, animators & artists</p>
+                    </div>
+                    <div class="channel-card-body">
+                        <ul class="channel-perks">
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF2E93"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Share templates and get real feedback
+                            </li>
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF2E93"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Discuss tools — AE, Figma, CapCut, etc.
+                            </li>
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF2E93"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Find collaborators for bigger projects
+                            </li>
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF2E93"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Get earning tips from top sellers
+                            </li>
+                        </ul>
+                        <button class="channel-join-btn" style="background:#FF2E93;color:#fff;"
+                            onclick="switchTab('creators');event.stopPropagation()">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 20h9" />
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                            </svg>
+                            Open #creators
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Clients -->
+                <div class="channel-card" style="border-color:rgba(0,123,255,0.3);" onclick="switchTab('clients')">
+                    <div class="channel-card-top" style="background:linear-gradient(135deg,#0056cc,#007BFF);">
+                        <svg class="channel-card-icon-bg" width="90" height="90" viewBox="0 0 24 24" fill="white">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                        <div class="channel-badge"># clients</div>
+                        <h3>Clients</h3>
+                        <p>For buyers, brands & businesses</p>
+                    </div>
+                    <div class="channel-card-body">
+                        <ul class="channel-perks">
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007BFF"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Post project needs and find creators fast
+                            </li>
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007BFF"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Discover new templates before they trend
+                            </li>
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007BFF"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Get buying tips and platform guidance
+                            </li>
+                            <li>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007BFF"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Exclusive deals shared here first
+                            </li>
+                        </ul>
+                        <button class="channel-join-btn" style="background:#007BFF;color:#fff;"
+                            onclick="switchTab('clients');event.stopPropagation()">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                                <line x1="3" y1="6" x2="21" y2="6" />
+                                <path d="M16 10a4 4 0 0 1-8 0" />
+                            </svg>
+                            Open #clients
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ LIVE CHAT EMBED ═══ -->
+    <section class="chat-section">
+        <div class="container">
+            <div class="comm-section-header" style="margin-bottom:32px;">
+                <div>
+                    <h2>Live Community Chat</h2>
+                    <p>Real conversations, happening right now.</p>
+                </div>
+            </div>
+
+            <!-- Login notice for guests -->
+            <div class="login-notice" id="guest-notice" style="display:none;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5865F2" stroke-width="2"
+                    flex-shrink="0">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <p id="guest-notice-text">You're viewing as a guest. <a href="/login.html"
+                        style="color:var(--accent-hover);font-weight:600;">Log in</a> or <a href="/signup.html"
+                        style="color:var(--accent-hover);font-weight:600;">create an account</a> to send messages and
+                    join the conversation.</p>
+            </div>
+
+            <div class="chat-wrapper">
+                <!-- Header bar -->
+                <div class="chat-header">
+                    <div class="chat-header-dot"></div>
+                    <div class="chat-header-info">
+                        <h3>FLOWVA Community</h3>
+                        <p id="online-count">Loading members…</p>
+                    </div>
+                    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+                        <span
+                            style="font-size:0.72rem;color:rgba(255,255,255,0.5);background:rgba(255,255,255,0.1);padding:3px 10px;border-radius:999px;">
+                            Powered by Discord
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Channel tabs -->
+                <div class="chat-channel-tabs">
+                    <button class="chat-tab active" data-tab="general" onclick="switchTab('general')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                        # general
+                    </button>
+                    <button class="chat-tab" data-tab="creators" onclick="switchTab('creators')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 20h9" />
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                        </svg>
+                        # creators
+                    </button>
+                    <button class="chat-tab" data-tab="clients" onclick="switchTab('clients')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                        # clients
+                    </button>
+                    <button class="chat-tab" data-tab="announcements" onclick="switchTab('announcements')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3z" />
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                        # announcements
+                    </button>
+                </div>
+                <div class="discord-embed-area active" id="tab-general">
+                    <div class="join-gate" id="joingate-general" style="display:none;">
+                        <p>Join #general to start chatting.</p>
+                        <button class="btn btn--primary" onclick="joinGroup('general')">Join Group</button>
+                    </div>
+                    <div class="pinned-banner" id="pinned-general"></div>
+                    <div class="chat-messages" id="messages-general"></div>
+                </div>
+
+                <div class="discord-embed-area" id="tab-creators">
+                    <div class="join-gate" id="joingate-creators" style="display:none;">
+                        <p>Join #creators to start chatting.</p>
+                        <button class="btn btn--primary" onclick="joinGroup('creators')">Join Group</button>
+                    </div>
+                    <div class="pinned-banner" id="pinned-creators"></div>
+                    <div class="chat-messages" id="messages-creators"></div>
+                </div>
+
+                <div class="discord-embed-area" id="tab-clients">
+                    <div class="join-gate" id="joingate-clients" style="display:none;">
+                        <p>Join #clients to start chatting.</p>
+                        <button class="btn btn--primary" onclick="joinGroup('clients')">Join Group</button>
+                    </div>
+                    <div class="pinned-banner" id="pinned-clients"></div>
+                    <div class="chat-messages" id="messages-clients"></div>
+                </div>
+
+                <div class="discord-embed-area" id="tab-announcements">
+                    <div class="join-gate" id="joingate-announcements" style="display:none;">
+                        <p>Join #announcements to start chatting.</p>
+                        <button class="btn btn--primary" onclick="joinGroup('announcements')">Join Group</button>
+                    </div>
+                    <div class="pinned-banner" id="pinned-announcements"></div>
+                    <div class="chat-messages" id="messages-announcements"></div>
+                </div>
+
+                <div id="reply-banner"
+                    style="display:none;padding:8px 20px;background:var(--bg-overlay);border-top:1px solid var(--border);align-items:center;gap:10px;font-size:0.82rem;color:var(--text-secondary);">
+                    <span style="flex:1;">Replying to: <strong id="reply-banner-text"
+                            onclick="scrollToMessage(replyTarget?.id)"
+                            style="cursor:pointer;text-decoration:underline;"></strong></span>
+                    <button onclick="cancelReply()"
+                        style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;">✕</button>
+                </div>
+
+                <!-- Chat input bar -->
+                <div class="chat-input-bar">
+                    <input class="chat-input" type="text" id="chat-input-field"
+                        placeholder="Message #general… (login required)" disabled maxlength="2000" />
+                    <button class="chat-send-btn" id="chat-send-btn" disabled aria-label="Send message">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Rules reminder -->
+            <div class="rules-strip">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hover)"
+                    stroke-width="2" style="flex-shrink:0">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <p>All conversations are governed by the <a href="/footer/community-guidelines.html">Community
+                        Guidelines</a>. Harassment, spam, or off-platform solicitation will result in removal. Moderated
+                    by the FLOWVA team.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer style="background:var(--bg-surface);border-top:1px solid var(--border);padding:48px 0 32px;">
+        <div class="container">
+            <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:space-between;margin-bottom:40px;">
+                <div style="max-width:280px;">
+                    <img src="../assets/images/logo.png" alt="FLOWVA"
+                        style="height:32px;width:auto;display:block;margin-bottom:12px;">
+                    <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.7;">A trusted digital marketplace
+                        connecting creators and buyers worldwide.</p>
+                </div>
+                <div style="display:flex;gap:60px;flex-wrap:wrap;">
+                    <div>
+                        <p
+                            style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">
+                            Community</p>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a href="footer/community.html"
+                                style="font-size:0.875rem;color:var(--accent-hover);">Community
+                                Hub</a>
+                            <a href="/footer/community-guidelines.html"
+                                style="font-size:0.875rem;color:var(--text-secondary);">Guidelines</a>
+                        </div>
+                    </div>
+                    <div>
+                        <p
+                            style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">
+                            Help</p>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a href="/footer/support.html"
+                                style="font-size:0.875rem;color:var(--text-secondary);">Support</a>
+                            <a href="/footer/contact.html"
+                                style="font-size:0.875rem;color:var(--text-secondary);">Contact</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                style="border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:center;">
+                <p style="font-size:0.8rem;color:var(--text-muted);">© 2026 FLOWVA. All rights reserved.</p>
+                <p style="font-size:0.8rem;color:var(--text-muted);">Community powered by Discord</p>
+            </div>
+        </div>
+    </footer>
+    <div id="profile-modal"
+        style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:center;justify-content:center;"
+        onclick="if(event.target===this) closeProfile()">
+        <div
+            style="background:var(--bg-raised);border-radius:var(--radius-xl,20px);width:320px;max-width:90%;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.4);">
+            <div style="height:70px;background:linear-gradient(135deg,#3a3f8f,#5865F2);"></div>
+            <div style="padding:0 24px 24px;margin-top:-40px;">
+                <img id="profile-avatar"
+                    style="width:80px;height:80px;border-radius:50%;border:4px solid var(--bg-raised);object-fit:cover;display:block;" />
+                <h3 id="profile-name"
+                    style="font-family:var(--font-display);font-size:1.2rem;font-weight:800;margin:14px 0 4px;"></h3>
+                <p id="profile-since" style="color:var(--text-muted);font-size:0.82rem;margin:0 0 20px;"></p>
+                <button class="btn btn--ghost" style="width:100%;" onclick="closeProfile()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reaction-picker"
+        style="display:none;position:fixed;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px;gap:6px;z-index:1000;box-shadow:0 12px 30px rgba(0,0,0,0.25);">
+        <button onclick="pickReaction('👍')">👍</button>
+        <button onclick="pickReaction('❤️')">❤️</button>
+        <button onclick="pickReaction('😂')">😂</button>
+        <button onclick="pickReaction('😮')">😮</button>
+        <button onclick="pickReaction('😢')">😢</button>
+        <button onclick="pickReaction('🔥')">🔥</button>
+        <button onclick="pickReaction('🎉')">🎉</button>
+        <button onclick="pickReaction('👀')">👀</button>
+    </div>
+
+    <div id="delete-confirm-modal"
+        style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1001;align-items:center;justify-content:center;">
+        <div
+            style="background:var(--bg-raised);border-radius:var(--radius-lg);padding:28px;max-width:320px;width:90%;text-align:center;">
+            <h3 style="font-family:var(--font-display);font-size:1.05rem;margin-bottom:8px;">Delete message?</h3>
+            <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:22px;">This can't be undone.</p>
+            <div style="display:flex;gap:10px;">
+                <button class="btn btn--ghost" style="flex:1;" onclick="closeDeleteConfirm()">Cancel</button>
+                <button class="btn btn--danger" style="flex:1;" id="confirm-delete-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="action-sheet"
+        style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1002;align-items:flex-end;justify-content:center;"
+        onclick="if(event.target===this) closeActionSheet()">
+        <div style="background:var(--bg-raised);border-radius:16px 16px 0 0;width:100%;max-width:480px;padding:10px 0;">
+            <button class="sheet-btn" onclick="sheetAction('reply')">↩ Reply</button>
+            <button class="sheet-btn" onclick="sheetAction('react')">😀 Add Reaction</button>
+            <button class="sheet-btn" onclick="sheetAction('copy')">⧉ Copy</button>
+            <button class="sheet-btn" id="sheet-edit-btn" onclick="sheetAction('edit')">✎ Edit</button>
+            <button class="sheet-btn" id="sheet-delete-btn" onclick="sheetAction('delete')">🗑 Delete</button>
+            <button class="sheet-btn" onclick="sheetAction('pin')">📌 Pin</button>
+            <button class="sheet-btn" onclick="closeActionSheet()" style="color:var(--text-muted);">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        /* ══════════════════════════════════════════════════════
+           DISCORD CONFIG — fill these in when your client
+           has set up the server
+        ══════════════════════════════════════════════════════ */
+        const DISCORD_CONFIG = {
+            SERVER_ID: '1520807249142874333',
+            GENERAL_CHANNEL_ID: '1520807249570959492',
+            CREATORS_CHANNEL_ID: '1520812581374398544',
+            CLIENTS_CHANNEL_ID: '1520812665767727265',
+            ANNOUNCE_CHANNEL_ID: '1520812797825515541',
+            CLIENT_ID: '1520826655264870470',   // for OAuth2 later
+            BOT_TOKEN: '',                          // backend only — never put here
+        };
+
+        const API_BASE = 'https://flowva-backend-ztai.onrender.com';
+
+        let replyTarget = null;
+
+        async function loadMessages(tab) {
+            const token = getToken();
+            if (!token) return;
+            const container = document.getElementById('messages-' + tab);
+            if (container && !container.dataset.loaded) {
+                container.innerHTML = `<p style="text-align:center;color:var(--text-muted);padding:40px 0;">Loading messages…</p>`;
+            }
+            const res = await fetch(`${API_BASE}/api/discord/messages/${tab}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!container) return;
+
+            const wasAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 60;
+            container.dataset.loaded = 'true';
+
+            if (data.messages.length === 0) {
+                container.innerHTML = `<p style="text-align:center;color:var(--text-muted);padding:40px 0;">No messages yet — say hi! 👋</p>`;
+                return;
+            }
+
+            const session = JSON.parse(sessionStorage.getItem('fv_session') || '{}');
+            const myName = session?.user?.name || '';
+
+            container.innerHTML = data.messages.map(m => {
+                const isMine = m.authorName === myName;
+                const reactionsHtml = (m.reactions || []).map(r => `<span class="reaction">${r.emoji.name} ${r.count}</span>`).join('');
+                return `
+        <div class="chat-msg${isMine ? ' own' : ''}" data-id="${m.id}">
+            <div class="msg-actions">
+                <button onclick="startReply('${m.id}', this)" title="Reply">↩</button>
+                <button onclick="openReactionPicker('${tab}', '${m.id}', this)" title="Add reaction">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+    </svg>
+</button>
+                <button onclick="copyMessage(this)" title="Copy">⧉</button>
+                ${isMine ? `<button onclick="editMessage('${tab}', '${m.id}', this)" title="Edit">✎</button>` : ''}
+                ${isMine ? `<button onclick="deleteMessage('${tab}', '${m.id}', this)" title="Delete">🗑</button>` : ''}
+                <button onclick="pinMessage('${tab}', '${m.id}')" title="Pin">📌</button>
+            </div>
+            <div class="msg-row">
+                <img src="${m.authorAvatar}" class="msg-avatar" alt="${m.authorName}" onclick="openProfile('${m.id}')" />
+                <div class="msg-body">
+                    <span class="msg-author" onclick="openProfile('${m.id}')">${m.authorName}</span>
+                    <div class="msg-content">${formatMessageContent(m.content)}</div>
+                    <div class="msg-reactions">${reactionsHtml}</div>
+                </div>
+            </div>
+        </div>`;
+            }).join('');
+
+            if (wasAtBottom) container.scrollTop = container.scrollHeight;
+
+            container.querySelectorAll('.chat-msg').forEach((el, i) => {
+                const msg = data.messages[i];
+                attachSwipe(el, tab, msg.id, msg.content);
+                attachLongPress(el, tab, msg.id, msg.content, msg.authorName === myName);
+            });
+        }
+
+        async function loadPins(tab) {
+            const res = await fetch(`${API_BASE}/api/discord/message/${tab}/pins`, {
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            const banner = document.getElementById('pinned-' + tab);
+            if (!banner) return;
+            banner.innerHTML = data.pins.map(p => `<span class="pinned-item" onclick="scrollToMessage('${p.id}')">📌 ${p.authorName}: ${p.content.slice(0, 30)}</span>`).join('');
+        }
+
+        function scrollToMessage(messageId) {
+            const el = document.querySelector(`.chat-msg[data-id="${messageId}"]`);
+            if (!el) { showQuickToast('Message not currently loaded'); return; }
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.classList.add('msg-highlight');
+            setTimeout(() => el.classList.remove('msg-highlight'), 1500);
+        }
+
+        function formatMessageContent(content) {
+            const lines = content.split('\n');
+            if (lines[0]?.startsWith('> ')) {
+                const quoted = lines[0].slice(2);
+                const rest = lines.slice(1).join('\n');
+                return `<div class="msg-quote">↩ ${quoted}</div>${rest}`;
+            }
+            return content;
+        }
+
+        let joinedGroups = [];
+
+        async function loadMemberships() {
+            const token = getToken();
+            if (!token) return;
+            const res = await fetch(`${API_BASE}/api/discord/memberships`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            joinedGroups = data.groups;
+        }
+
+        async function joinGroup(tab) {
+            const token = getToken();
+            const res = await fetch(`${API_BASE}/api/discord/join/${tab}`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+                joinedGroups.push(tab);
+                document.getElementById('joingate-' + tab).style.display = 'none';
+                document.getElementById('messages-' + tab).style.display = 'flex';
+                loadMessages(tab);
+            }
+        }
+
+        /* ── Tab switching ── */
+        let activeTab = 'general';
+        function switchTab(tab) {
+            const session = JSON.parse(sessionStorage.getItem('fv_session') || '{}');
+            const role = session?.user?.role || null;
+
+            if (tab === 'creators' && role !== 'CREATOR') {
+                const notice = document.getElementById('guest-notice');
+                const noticeText = document.getElementById('guest-notice-text');
+                if (notice) notice.style.display = 'flex';
+                if (noticeText) noticeText.innerHTML = '⚠️ Only Creators can view #creators.';
+                return;
+            }
+            if (tab === 'clients' && role !== 'BUYER') {
+                const notice = document.getElementById('guest-notice');
+                const noticeText = document.getElementById('guest-notice-text');
+                if (notice) notice.style.display = 'flex';
+                if (noticeText) noticeText.innerHTML = '⚠️ Only Clients can view #clients.';
+                return;
+            }
+
+            const gate = document.getElementById('joingate-' + tab);
+            const msgBox = document.getElementById('messages-' + tab);
+            if (tab !== 'announcements' && !joinedGroups.includes(tab)) {
+                if (gate) gate.style.display = 'flex';
+                if (msgBox) msgBox.style.display = 'none';
+            } else {
+                if (gate) gate.style.display = 'none';
+                if (msgBox) msgBox.style.display = 'flex';
+            }
+
+            activeTab = tab;
+            document.querySelectorAll('.chat-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+            document.querySelectorAll('.discord-embed-area').forEach(a => a.classList.toggle('active', a.id === 'tab-' + tab));
+
+            const input = document.getElementById('chat-input-field');
+            if (input) input.placeholder = `Message #${tab}…`;
+
+            document.getElementById('guest-notice').style.display = 'none';
+            document.querySelector('.chat-wrapper')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            loadMessages(tab);
+            loadPins(tab);
+        }
+
+        function getToken() {
+            try {
+                const raw = sessionStorage.getItem('fv_session');
+                if (!raw) return null;
+                return JSON.parse(raw).accessToken || null;
+            } catch {
+                return null;
+            }
+        }
+
+        /* ── Guest notice ── */
+        function checkAuth() {
+            try {
+                const token = getToken();
+                const notice = document.getElementById('guest-notice');
+                const input = document.getElementById('chat-input-field');
+                const sendBtn = document.getElementById('chat-send-btn');
+                const noticeText = document.getElementById('guest-notice-text');
+
+                if (!token) {
+                    if (notice) notice.style.display = 'flex';
+                    if (noticeText) noticeText.innerHTML = 'You\'re viewing as a guest. <a href="/login.html">Log in</a> or <a href="/signup.html">create an account</a> to send messages.';
+                    if (input) input.placeholder = 'Log in to send messages…';
+                } else {
+                    if (notice) notice.style.display = 'none';
+                    if (input) { input.disabled = false; input.placeholder = 'Message #general…'; }
+                    if (sendBtn) sendBtn.disabled = false;
+                }
+
+                const session = JSON.parse(sessionStorage.getItem('fv_session') || '{}');
+                const role = session?.user?.role || null;
+                const creatorsTabBtn = document.querySelector('.chat-tab[data-tab="creators"]');
+                const clientsTabBtn = document.querySelector('.chat-tab[data-tab="clients"]');
+                if (creatorsTabBtn) creatorsTabBtn.style.display = (role === 'CREATOR') ? '' : 'none';
+                if (clientsTabBtn) clientsTabBtn.style.display = (role === 'BUYER') ? '' : 'none';
+                if (activeTab === 'announcements' && role !== 'ADMIN' && input) {
+                    input.disabled = true;
+                    input.placeholder = 'Only admins can post here';
+                }
+            } catch (e) { }
+        }
+
+        async function fetchOnlineCount() {
+            const el = document.getElementById('online-count');
+            const statEl = document.getElementById('stat-members');
+            if (DISCORD_CONFIG.SERVER_ID === 'YOUR_SERVER_ID') {
+                if (el) el.textContent = 'Connect Discord to see live count';
+                if (statEl) statEl.textContent = '—';
+                return;
+            }
+            try {
+                const res = await fetch(`https://discord.com/api/guilds/${DISCORD_CONFIG.SERVER_ID}/widget.json`);
+                const data = await res.json();
+                const count = data.presence_count ?? 0;
+                if (el) el.textContent = `${count} member${count !== 1 ? 's' : ''} online now`;
+                if (statEl) statEl.textContent = count.toLocaleString();
+            } catch {
+                if (el) el.textContent = 'Community live';
+            }
+        }
+
+        document.getElementById('chat-send-btn')?.addEventListener('click', sendMessage);
+        document.getElementById('chat-input-field')?.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+        });
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input-field');
+            const msg = input?.value.trim();
+            if (!msg) return;
+
+            if (editTarget) {
+                fetch(`${API_BASE}/api/discord/message/${editTarget.tab}/${editTarget.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+                    body: JSON.stringify({ content: msg }),
+                }).then(() => loadMessages(editTarget.tab));
+                editTarget = null;
+                input.value = '';
+                input.classList.remove('replying');
+                input.placeholder = `Message #${activeTab}…`;
+                return;
+            }
+
+            const url = replyTarget
+                ? `${API_BASE}/api/discord/message/${activeTab}/reply`
+                : `${API_BASE}/api/discord/message`;
+            const body = replyTarget
+                ? { message: msg, replyToContent: replyTarget.content }
+                : { message: msg, tab: activeTab };
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+                body: JSON.stringify(body),
+            }).then(res => {
+                if (!res.ok) console.error('Send failed:', res.status, res.statusText);
+                return loadMessages(activeTab);
+            }).catch(err => console.error('Send error:', err));
+
+            input.value = '';
+            input.placeholder = `Message #${activeTab}…`;
+            replyTarget = null;
+            document.getElementById('reply-banner').classList.remove('open');
+            input.classList.remove('replying');
+        }
+
+        async function openProfile(messageId) {
+            const res = await fetch(`${API_BASE}/api/discord/profile/message/${messageId}`, {
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
+            if (!res.ok) return;
+            const user = await res.json();
+            document.getElementById('profile-avatar').src = user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=5865F2&color=fff`;
+            document.getElementById('profile-name').textContent = user.name;
+            document.getElementById('profile-since').textContent = 'Member since ' + new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+        function closeProfile() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        function startReply(messageId, btn) {
+            const msgDiv = btn.closest('.chat-msg');
+            const content = msgDiv.querySelector('.msg-content').textContent;
+            beginReply(messageId, content);
+        }
+
+        function beginReply(messageId, content) {
+            replyTarget = { id: messageId, content };
+            document.getElementById('reply-banner-text').textContent = content.slice(0, 60);
+            document.getElementById('reply-banner').classList.add('open');
+            document.getElementById('chat-input-field').classList.add('replying');
+            document.getElementById('chat-input-field').focus();
+        }
+
+        function cancelReply() {
+            replyTarget = null;
+            document.getElementById('reply-banner').classList.remove('open');
+            document.getElementById('chat-input-field').classList.remove('replying');
+        }
+
+        function copyMessage(btn) {
+            const content = btn.closest('.chat-msg').querySelector('.msg-content').textContent;
+            navigator.clipboard.writeText(content);
+        }
+
+        function editMessage(tab, messageId, btn) {
+            const contentDiv = btn.closest('.chat-msg').querySelector('.msg-content');
+            beginEdit(tab, messageId, contentDiv.textContent);
+        }
+
+        function beginEdit(tab, messageId, content) {
+            editTarget = { tab, id: messageId };
+            replyTarget = null;
+            document.getElementById('reply-banner').classList.remove('open');
+            const input = document.getElementById('chat-input-field');
+            input.value = content;
+            input.classList.add('replying');
+            input.placeholder = 'Editing message…';
+            input.focus();
+        }
+
+        let pendingDelete = null;
+
+        function deleteMessage(tab, messageId, btn) {
+            pendingDelete = { tab, messageId };
+            document.getElementById('delete-confirm-modal').style.display = 'flex';
+        }
+
+        function closeDeleteConfirm() {
+            document.getElementById('delete-confirm-modal').style.display = 'none';
+            pendingDelete = null;
+        }
+
+        document.getElementById('confirm-delete-btn')?.addEventListener('click', async () => {
+            if (!pendingDelete) return;
+            const { tab, messageId } = pendingDelete;
+            await fetch(`${API_BASE}/api/discord/message/${tab}/${messageId}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
+            closeDeleteConfirm();
+            loadMessages(tab);
+        });
+
+        async function pinMessage(tab, messageId) {
+            const res = await fetch(`${API_BASE}/api/discord/message/${tab}/${messageId}/pin`, {
+                method: 'PUT',
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
+            showQuickToast(res.ok ? 'Message pinned 📌' : 'Failed to pin message');
+            loadPins(tab);
+        }
+
+        function showQuickToast(text) {
+            const t = document.createElement('div');
+            t.textContent = text;
+            t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid var(--border);padding:10px 20px;border-radius:999px;font-size:0.85rem;z-index:2000;box-shadow:0 8px 24px rgba(0,0,0,0.25);';
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2000);
+        }
+
+        let pendingReaction = null;
+
+        function openReactionPicker(tab, messageId, btnEl) {
+            pendingReaction = { tab, messageId };
+            const picker = document.getElementById('reaction-picker');
+            const rect = btnEl.getBoundingClientRect();
+            const top = Math.min(rect.bottom + 6, window.innerHeight - 60);
+            const left = Math.min(Math.max(8, rect.left - 100), window.innerWidth - 260);
+            picker.style.top = `${top}px`;
+            picker.style.left = `${left}px`;
+            picker.style.display = 'flex';
+        }
+
+        function pickReaction(emoji) {
+            if (!pendingReaction) return;
+            const { tab, messageId } = pendingReaction;
+            document.getElementById('reaction-picker').style.display = 'none';
+            const msgEl = document.querySelector(`.chat-msg[data-id="${messageId}"] .msg-reactions`);
+            if (msgEl) {
+                const existing = msgEl.querySelector(`[data-emoji="${CSS.escape(emoji)}"]`);
+                if (existing) {
+                    const countEl = existing.querySelector('.reaction-count');
+                    countEl.textContent = parseInt(countEl.textContent) + 1;
+                } else {
+                    const span = document.createElement('span');
+                    span.className = 'reaction';
+                    span.setAttribute('data-emoji', emoji);
+                    span.innerHTML = `${emoji} <span class="reaction-count">1</span>`;
+                    msgEl.appendChild(span);
+                }
+            }
+
+            showQuickToast(`Reacted ${emoji}`);
+
+            fetch(`${API_BASE}/api/discord/message/${tab}/${messageId}/react`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+                body: JSON.stringify({ emoji }),
+            }).catch(() => showQuickToast('Reaction failed to save'));
+
+            pendingReaction = null;
+        }
+
+        document.addEventListener('click', (e) => {
+            const picker = document.getElementById('reaction-picker');
+            if (picker.style.display === 'flex' && !picker.contains(e.target) && !e.target.closest('.msg-actions button') && !e.target.closest('.sheet-btn')) {
+                picker.style.display = 'none';
+            }
+        });
+
+        function attachSwipe(el, tab, messageId, content) {
+            let startX = 0, currentX = 0, swiping = false;
+            el.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                swiping = true;
+            }, { passive: true });
+            el.addEventListener('touchmove', (e) => {
+                if (!swiping) return;
+                currentX = e.touches[0].clientX - startX;
+                if (currentX > 0 && currentX < 80) el.style.transform = `translateX(${currentX}px)`;
+            }, { passive: true });
+            el.addEventListener('touchend', () => {
+                swiping = false;
+                el.style.transform = '';
+                if (currentX > 50) {
+                    beginReply(messageId, content);
+                }
+                currentX = 0;
+            });
+        }
+
+        let sheetContext = null;
+
+        function attachLongPress(el, tab, messageId, content, isMine) {
+            let timer = null;
+            el.addEventListener('touchstart', () => {
+                timer = setTimeout(() => openActionSheet(tab, messageId, content, isMine), 450);
+            }, { passive: true });
+            el.addEventListener('touchend', () => clearTimeout(timer));
+            el.addEventListener('touchmove', () => clearTimeout(timer));
+        }
+
+        function openActionSheet(tab, messageId, content, isMine) {
+            sheetContext = { tab, messageId, content };
+            document.getElementById('sheet-edit-btn').style.display = isMine ? 'block' : 'none';
+            document.getElementById('sheet-delete-btn').style.display = isMine ? 'block' : 'none';
+            document.getElementById('action-sheet').style.display = 'flex';
+        }
+
+        function closeActionSheet() {
+            document.getElementById('action-sheet').style.display = 'none';
+            sheetContext = null;
+        }
+
+        function sheetAction(action) {
+            if (!sheetContext) return;
+            const { tab, messageId, content } = sheetContext;
+            closeActionSheet();
+            if (action === 'reply') {
+                beginReply(messageId, content);
+            } else if (action === 'react') {
+                pendingReaction = { tab, messageId };
+                const picker = document.getElementById('reaction-picker');
+                picker.style.top = 'auto';
+                picker.style.bottom = '100px';
+                picker.style.left = '50%';
+                picker.style.transform = 'translateX(-50%)';
+                picker.style.display = 'flex';
+            } else if (action === 'copy') {
+                navigator.clipboard.writeText(content);
+                showQuickToast('Copied');
+            }
+            else if (action === 'edit') {
+                beginEdit(tab, messageId, content);
+            } else if (action === 'delete') {
+                pendingDelete = { tab, messageId };
+                document.getElementById('delete-confirm-modal').style.display = 'flex';
+            } else if (action === 'pin') {
+                pinMessage(tab, messageId);
+            }
+        }
+
+        /* ── Hero join button ── */
+        document.getElementById('hero-join-btn')?.addEventListener('click', () => {
+            document.querySelector('.chat-wrapper')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        /* ── Init ── */
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check if returning from Discord OAuth2
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab');
+            await loadMemberships();
+            switchTab(tab || 'general');
+
+            checkAuth();
+            fetchOnlineCount();
+            setInterval(() => loadMessages(activeTab), 5000);
+            setInterval(fetchOnlineCount, 60000);
+        });
+    </script>
+
+    <script type="module" src="/js/core/navbar.js"></script>
+</body>
+
+</html>
