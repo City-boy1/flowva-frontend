@@ -442,7 +442,7 @@
             font-size: 0.95rem;
             color: var(--text-primary);
             line-height: 1.5;
-            max-width: 90%;
+            max-width: 100%;
             word-wrap: break-word;
         }
 
@@ -466,6 +466,10 @@
         .chat-input.replying {
             border-color: var(--discord) !important;
             box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.15);
+        }
+
+        #reply-banner {
+            display: none;
         }
 
         #reply-banner.open {
@@ -603,10 +607,33 @@
         }
 
         .chat-msg.own {
-            align-self: flex-end;
             background: var(--discord);
             color: #fff;
             border-color: var(--discord);
+        }
+
+        .msg-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 90%;
+        }
+
+        .msg-wrapper.own {
+            align-self: flex-end;
+        }
+
+        .msg-reactions-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+            padding-left: 52px;
+        }
+
+        .msg-wrapper.own .msg-reactions-row {
+            justify-content: flex-end;
+            padding-left: 0;
+            padding-right: 4px;
         }
 
         .chat-msg {
@@ -746,10 +773,6 @@
 
         #reaction-picker button:hover {
             background: var(--bg-overlay);
-        }
-
-        #reply-banner.open {
-            display: flex;
         }
 
         /* ── Rules reminder strip ── */
@@ -1194,6 +1217,10 @@
                         <p id="online-count">Loading members…</p>
                     </div>
                     <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+                        <button onclick="openPinsModal()" title="Pinned messages"
+                            style="background:rgba(255,255,255,0.12);border:none;border-radius:999px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;">
+                            📌
+                        </button>
                         <span
                             style="font-size:0.72rem;color:rgba(255,255,255,0.5);background:rgba(255,255,255,0.1);padding:3px 10px;border-radius:999px;">
                             Powered by Discord
@@ -1273,7 +1300,7 @@
                 </div>
 
                 <div id="reply-banner"
-                    style="display:none;padding:8px 20px;background:var(--bg-overlay);border-top:1px solid var(--border);align-items:center;gap:10px;font-size:0.82rem;color:var(--text-secondary);">
+                    style="padding:8px 20px;background:var(--bg-overlay);border-top:1px solid var(--border);align-items:center;gap:10px;font-size:0.82rem;color:var(--text-secondary);">
                     <span style="flex:1;">Replying to: <strong id="reply-banner-text"
                             onclick="scrollToMessage(replyTarget?.id)"
                             style="cursor:pointer;text-decoration:underline;"></strong></span>
@@ -1424,6 +1451,30 @@
         </div>
     </div>
 
+    <div id="media-viewer"
+        style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1003;align-items:center;justify-content:center;flex-direction:column;gap:16px;"
+        onclick="if(event.target===this) closeMediaViewer()">
+        <div id="media-viewer-content"
+            style="max-width:90vw;max-height:70vh;display:flex;align-items:center;justify-content:center;"></div>
+        <div style="display:flex;gap:12px;">
+            <button class="btn btn--ghost" onclick="downloadMedia()">⬇ Download</button>
+            <button class="btn btn--ghost" onclick="copyMediaLink()">🔗 Copy Link</button>
+            <button class="btn btn--ghost" onclick="closeMediaViewer()">✕ Close</button>
+        </div>
+    </div>
+
+    <div id="pins-modal"
+        style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1004;align-items:center;justify-content:center;"
+        onclick="if(event.target===this) closePinsModal()">
+        <div
+            style="background:var(--bg-raised);border-radius:var(--radius-lg,16px);width:360px;max-width:90%;max-height:70vh;overflow-y:auto;padding:16px;">
+            <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:800;margin-bottom:12px;">📌 Pinned
+                Messages</h3>
+            <div id="pins-modal-list"></div>
+            <button class="btn btn--ghost" style="width:100%;margin-top:8px;" onclick="closePinsModal()">Close</button>
+        </div>
+    </div>
+
     <script>
         /* ══════════════════════════════════════════════════════
            DISCORD CONFIG — fill these in when your client
@@ -1476,6 +1527,7 @@
                     `<span class="reaction${r.reactedByMe ? ' mine' : ''}" onclick="pendingReaction={tab:'${tab}',messageId:'${m.id}'};pickReaction('${r.emoji}')">${r.emoji} ${r.count}</span>`
                 ).join('');
                 return `
+        <div class="msg-wrapper${isMine ? ' own' : ''}">
         <div class="chat-msg${isMine ? ' own' : ''}" data-id="${m.id}">
             <div class="msg-actions">
                 <button onclick="startReply('${m.id}', this)" title="Reply">↩</button>
@@ -1495,9 +1547,10 @@
                     <span class="msg-author" onclick="openProfile('${m.id}')">${m.authorName}</span>
                     <div class="msg-content">${formatMessageContent(m.content)}</div>
                     ${renderAttachments(m.attachments)}
-                    <div class="msg-reactions">${reactionsHtml}</div>
                 </div>
             </div>
+        </div>
+        <div class="msg-reactions-row">${reactionsHtml}</div>
         </div>`;
             }).join('');
 
@@ -1510,16 +1563,24 @@
             });
         }
 
-        async function loadPins(tab) {
-            const res = await fetch(`${API_BASE}/api/discord/message/${tab}/pins`, {
+        async function openPinsModal() {
+            const res = await fetch(`${API_BASE}/api/discord/message/${activeTab}/pins`, {
                 headers: { Authorization: `Bearer ${getToken()}` },
             });
-            if (!res.ok) return;
-            const data = await res.json();
-            const banner = document.getElementById('pinned-' + tab);
-            if (!banner) return;
-            banner.classList.toggle('has-pins', data.pins.length > 0);
-            banner.innerHTML = data.pins.map(p => `<span class="pinned-item" onclick="scrollToMessage('${p.id}')">📌 ${p.authorName}: ${p.content.slice(0, 30)}</span>`).join('');
+            const list = document.getElementById('pins-modal-list');
+            if (!res.ok) {
+                list.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">Could not load pins.</p>';
+            } else {
+                const data = await res.json();
+                list.innerHTML = data.pins.length
+                    ? data.pins.map(p => `<div class="pinned-item" style="width:100%;max-width:none;margin-bottom:8px;" onclick="closePinsModal();scrollToMessage('${p.id}')">📌 <strong>${p.authorName}</strong>: ${p.content.slice(0, 60)}</div>`).join('')
+                    : '<p style="color:var(--text-muted);font-size:0.85rem;">No pinned messages yet in this channel.</p>';
+            }
+            document.getElementById('pins-modal').style.display = 'flex';
+        }
+
+        function closePinsModal() {
+            document.getElementById('pins-modal').style.display = 'none';
         }
 
         function scrollToMessage(messageId) {
@@ -1543,14 +1604,47 @@
         function renderAttachments(attachments) {
             if (!attachments || attachments.length === 0) return '';
             return attachments.map(a => {
+                const safeName = (a.filename || 'file').replace(/'/g, "\\'");
                 if ((a.contentType || '').startsWith('image/')) {
-                    return `<div class="msg-attachment"><img src="${a.url}" alt="${a.filename}" onclick="window.open('${a.url}','_blank')" /></div>`;
+                    return `<div class="msg-attachment"><img src="${a.url}" alt="${a.filename}" onclick="openMediaViewer('${a.url}','image','${safeName}')" /></div>`;
                 }
                 if ((a.contentType || '').startsWith('video/')) {
-                    return `<div class="msg-attachment"><video src="${a.url}" controls></video></div>`;
+                    return `<div class="msg-attachment"><video src="${a.url}" muted onclick="openMediaViewer('${a.url}','video','${safeName}')"></video></div>`;
                 }
-                return `<a class="msg-attachment-file" href="${a.url}" target="_blank" rel="noopener">📎 ${a.filename}</a>`;
+                return `<a class="msg-attachment-file" href="javascript:void(0)" onclick="openMediaViewer('${a.url}','file','${safeName}')">📎 ${a.filename}</a>`;
             }).join('');
+        }
+
+        let currentMediaUrl = null;
+
+        function openMediaViewer(url, type, filename) {
+            currentMediaUrl = url;
+            const content = document.getElementById('media-viewer-content');
+            if (type === 'image') {
+                content.innerHTML = `<img src="${url}" style="max-width:100%;max-height:70vh;border-radius:8px;" />`;
+            } else if (type === 'video') {
+                content.innerHTML = `<video src="${url}" controls autoplay style="max-width:100%;max-height:70vh;border-radius:8px;"></video>`;
+            } else {
+                content.innerHTML = `<div style="color:#fff;text-align:center;padding:40px;">📎 ${filename}<br><span style="font-size:0.8rem;opacity:0.7;">No inline preview for this file type</span></div>`;
+            }
+            document.getElementById('media-viewer').style.display = 'flex';
+        }
+
+        function closeMediaViewer() {
+            document.getElementById('media-viewer').style.display = 'none';
+            document.getElementById('media-viewer-content').innerHTML = '';
+            currentMediaUrl = null;
+        }
+
+        function downloadMedia() {
+            if (!currentMediaUrl) return;
+            window.open(currentMediaUrl, '_blank', 'noopener');
+        }
+
+        function copyMediaLink() {
+            if (!currentMediaUrl) return;
+            navigator.clipboard.writeText(currentMediaUrl);
+            showQuickToast('Link copied');
         }
 
         let joinedGroups = [];
@@ -2006,6 +2100,8 @@
 
             checkAuth();
             fetchOnlineCount();
+            setInterval(() => loadMessages(activeTab), 5000);
+            setInterval(fetchOnlineCount, 60000);
             setInterval(sendPresencePing, 20000);
             sendPresencePing(); // fire once immediately on load
         });
