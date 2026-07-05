@@ -515,6 +515,93 @@
             transform: none;
         }
 
+        .attach-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-overlay);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .attach-btn:hover {
+            background: var(--bg-raised);
+            color: var(--discord);
+        }
+
+        .attach-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        #attach-preview {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: var(--bg-overlay);
+            border-top: 1px solid var(--border);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        #attach-preview.open {
+            display: flex;
+        }
+
+        #attach-preview img {
+            height: 36px;
+            width: 36px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        #attach-preview .attach-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #attach-preview button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .msg-attachment img,
+        .msg-attachment video {
+            max-width: 260px;
+            max-height: 220px;
+            border-radius: 10px;
+            margin-top: 6px;
+            display: block;
+            cursor: pointer;
+        }
+
+        .msg-attachment-file {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            background: var(--bg-overlay);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md, 10px);
+            padding: 8px 12px;
+            font-size: 0.82rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            max-width: 260px;
+        }
+
         .chat-msg.own {
             align-self: flex-end;
             background: var(--discord);
@@ -614,6 +701,20 @@
             border-radius: 999px;
             padding: 2px 8px;
             font-size: 0.78rem;
+        }
+
+        .reaction {
+            cursor: pointer;
+            transition: transform 0.1s, border-color 0.15s;
+        }
+
+        .reaction:hover {
+            transform: scale(1.05);
+        }
+
+        .reaction.mine {
+            border-color: var(--discord);
+            background: rgba(88, 101, 242, 0.12);
         }
 
         .msg-content {
@@ -752,6 +853,26 @@
             padding: 8px 16px;
             background: var(--bg-overlay);
             border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            opacity: 0;
+            max-height: 0;
+            transition: opacity 0.25s ease, max-height 0.25s ease, padding 0.25s ease;
+            overflow-y: hidden;
+        }
+
+        .pinned-banner.has-pins {
+            opacity: 1;
+            max-height: 60px;
+        }
+
+        .pinned-banner::before {
+            content: '📌';
+            flex-shrink: 0;
+            align-self: center;
+            font-size: 0.75rem;
+            opacity: 0.6;
         }
 
         .pinned-item {
@@ -1160,8 +1281,25 @@
                         style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;">✕</button>
                 </div>
 
+                <!-- Attachment preview -->
+                <div id="attach-preview">
+                    <img id="attach-preview-img" style="display:none;" />
+                    <span class="attach-name" id="attach-preview-name"></span>
+                    <button onclick="clearAttachment()" aria-label="Remove attachment">✕</button>
+                </div>
+
                 <!-- Chat input bar -->
                 <div class="chat-input-bar">
+                    <input type="file" id="file-input" style="display:none;"
+                        accept="image/png,image/jpeg,image/gif,image/webp,video/mp4,video/quicktime,video/webm,application/pdf,.doc,.docx,.txt" />
+                    <button class="attach-btn" id="attach-btn" disabled aria-label="Attach file"
+                        onclick="document.getElementById('file-input').click()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                        </svg>
+                    </button>
                     <input class="chat-input" type="text" id="chat-input-field"
                         placeholder="Message #general… (login required)" disabled maxlength="2000" />
                     <button class="chat-send-btn" id="chat-send-btn" disabled aria-label="Send message">
@@ -1303,8 +1441,9 @@
 
         const API_BASE = 'https://flowva-backend-ztai.onrender.com';
 
-        let replyTarget = null;
         let editTarget = null;
+        let pendingFile = null;
+        const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
         async function loadMessages(tab) {
             const token = getToken();
@@ -1333,7 +1472,9 @@
 
             container.innerHTML = data.messages.map(m => {
                 const isMine = m.authorName === myName;
-                const reactionsHtml = (m.reactions || []).map(r => `<span class="reaction">${r.emoji.name} ${r.count}</span>`).join('');
+                const reactionsHtml = (m.reactions || []).map(r =>
+                    `<span class="reaction${r.reactedByMe ? ' mine' : ''}" onclick="pendingReaction={tab:'${tab}',messageId:'${m.id}'};pickReaction('${r.emoji}')">${r.emoji} ${r.count}</span>`
+                ).join('');
                 return `
         <div class="chat-msg${isMine ? ' own' : ''}" data-id="${m.id}">
             <div class="msg-actions">
@@ -1353,6 +1494,7 @@
                 <div class="msg-body">
                     <span class="msg-author" onclick="openProfile('${m.id}')">${m.authorName}</span>
                     <div class="msg-content">${formatMessageContent(m.content)}</div>
+                    ${renderAttachments(m.attachments)}
                     <div class="msg-reactions">${reactionsHtml}</div>
                 </div>
             </div>
@@ -1376,6 +1518,7 @@
             const data = await res.json();
             const banner = document.getElementById('pinned-' + tab);
             if (!banner) return;
+            banner.classList.toggle('has-pins', data.pins.length > 0);
             banner.innerHTML = data.pins.map(p => `<span class="pinned-item" onclick="scrollToMessage('${p.id}')">📌 ${p.authorName}: ${p.content.slice(0, 30)}</span>`).join('');
         }
 
@@ -1395,6 +1538,19 @@
                 return `<div class="msg-quote">↩ ${quoted}</div>${rest}`;
             }
             return content;
+        }
+
+        function renderAttachments(attachments) {
+            if (!attachments || attachments.length === 0) return '';
+            return attachments.map(a => {
+                if ((a.contentType || '').startsWith('image/')) {
+                    return `<div class="msg-attachment"><img src="${a.url}" alt="${a.filename}" onclick="window.open('${a.url}','_blank')" /></div>`;
+                }
+                if ((a.contentType || '').startsWith('video/')) {
+                    return `<div class="msg-attachment"><video src="${a.url}" controls></video></div>`;
+                }
+                return `<a class="msg-attachment-file" href="${a.url}" target="_blank" rel="noopener">📎 ${a.filename}</a>`;
+            }).join('');
         }
 
         let joinedGroups = [];
@@ -1487,14 +1643,17 @@
                 const sendBtn = document.getElementById('chat-send-btn');
                 const noticeText = document.getElementById('guest-notice-text');
 
+                const attachBtn = document.getElementById('attach-btn');
                 if (!token) {
                     if (notice) notice.style.display = 'flex';
                     if (noticeText) noticeText.innerHTML = 'You\'re viewing as a guest. <a href="/login.html">Log in</a> or <a href="/signup.html">create an account</a> to send messages.';
                     if (input) input.placeholder = 'Log in to send messages…';
+                    if (attachBtn) attachBtn.disabled = true;
                 } else {
                     if (notice) notice.style.display = 'none';
                     if (input) { input.disabled = false; input.placeholder = 'Message #general…'; }
                     if (sendBtn) sendBtn.disabled = false;
+                    if (attachBtn) attachBtn.disabled = false;
                 }
 
                 const session = JSON.parse(sessionStorage.getItem('fv_session') || '{}');
@@ -1513,23 +1672,48 @@
         async function fetchOnlineCount() {
             const el = document.getElementById('online-count');
             const statEl = document.getElementById('stat-members');
-            if (DISCORD_CONFIG.SERVER_ID === 'YOUR_SERVER_ID') {
-                if (el) el.textContent = 'Connect Discord to see live count';
-                if (statEl) statEl.textContent = '—';
-                return;
-            }
             try {
-                const res = await fetch(`https://discord.com/api/guilds/${DISCORD_CONFIG.SERVER_ID}/widget.json`);
+                const res = await fetch(`${API_BASE}/api/discord/presence/count`);
                 const data = await res.json();
-                const count = data.presence_count ?? 0;
-                if (el) el.textContent = `${count} member${count !== 1 ? 's' : ''} online now`;
+                const count = data.count ?? 0;
+                if (el) el.textContent = `${count} member${count !== 1 ? 's' : ''} active now`;
                 if (statEl) statEl.textContent = count.toLocaleString();
             } catch {
                 if (el) el.textContent = 'Community live';
             }
         }
 
+        function sendPresencePing() {
+            const token = getToken();
+            if (!token) return; // guests aren't tracked — they can't chat anyway
+            fetch(`${API_BASE}/api/discord/presence/ping`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+            }).catch(() => { }); // silent — a missed ping just means they age out a bit early
+        }
+
         document.getElementById('chat-send-btn')?.addEventListener('click', sendMessage);
+
+        document.getElementById('file-input')?.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > MAX_UPLOAD_BYTES) { showQuickToast('File is over 25MB'); e.target.value = ''; return; }
+            pendingFile = file;
+            const preview = document.getElementById('attach-preview');
+            const img = document.getElementById('attach-preview-img');
+            const nameEl = document.getElementById('attach-preview-name');
+            nameEl.textContent = file.name;
+            if (file.type.startsWith('image/')) { img.src = URL.createObjectURL(file); img.style.display = 'block'; }
+            else { img.style.display = 'none'; }
+            preview.classList.add('open');
+        });
+
+        function clearAttachment() {
+            pendingFile = null;
+            document.getElementById('file-input').value = '';
+            document.getElementById('attach-preview').classList.remove('open');
+        }
+
         document.getElementById('chat-input-field')?.addEventListener('keydown', e => {
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
@@ -1537,6 +1721,7 @@
         function sendMessage() {
             const input = document.getElementById('chat-input-field');
             const msg = input?.value.trim();
+            if (pendingFile) { sendAttachment(msg); return; }
             if (!msg) return;
 
             if (editTarget) {
@@ -1573,6 +1758,29 @@
             replyTarget = null;
             document.getElementById('reply-banner').classList.remove('open');
             input.classList.remove('replying');
+        }
+
+        async function sendAttachment(caption) {
+            const file = pendingFile;
+            const input = document.getElementById('chat-input-field');
+            const form = new FormData();
+            form.append('file', file);
+            form.append('message', caption || '');
+
+            clearAttachment();
+            input.value = '';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/discord/message/${activeTab}/upload`, {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${getToken()}` },
+                    body: form,
+                });
+                if (!res.ok) { showQuickToast('Upload failed'); return; }
+                loadMessages(activeTab);
+            } catch {
+                showQuickToast('Upload failed');
+            }
         }
 
         async function openProfile(messageId) {
@@ -1684,36 +1892,26 @@
             picker.style.display = 'flex';
         }
 
-        function pickReaction(emoji) {
+        async function pickReaction(emoji) {
             if (!pendingReaction) return;
             const { tab, messageId } = pendingReaction;
             document.getElementById('reaction-picker').style.display = 'none';
-            const msgEl = document.querySelector(`.chat-msg[data-id="${messageId}"] .msg-reactions`);
-            if (msgEl) {
-                const existing = msgEl.querySelector(`[data-emoji="${CSS.escape(emoji)}"]`);
-                if (existing) {
-                    const countEl = existing.querySelector('.reaction-count');
-                    countEl.textContent = parseInt(countEl.textContent) + 1;
-                } else {
-                    const span = document.createElement('span');
-                    span.className = 'reaction';
-                    span.setAttribute('data-emoji', emoji);
-                    span.innerHTML = `${emoji} <span class="reaction-count">1</span>`;
-                    msgEl.appendChild(span);
-                }
-            }
-
-            showQuickToast(`Reacted ${emoji}`);
-
-            fetch(`${API_BASE}/api/discord/message/${tab}/${messageId}/react`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
-                body: JSON.stringify({ emoji }),
-            }).catch(() => showQuickToast('Reaction failed to save'));
-
             pendingReaction = null;
-        }
 
+            try {
+                const res = await fetch(`${API_BASE}/api/discord/message/${tab}/${messageId}/react`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+                    body: JSON.stringify({ emoji }),
+                });
+                if (!res.ok) { showQuickToast('Reaction failed to save'); return; }
+                const data = await res.json();
+                showQuickToast(data.action === 'removed' ? 'Reaction removed' : `Reacted ${emoji}`);
+                loadMessages(tab); // server is the source of truth — just re-render
+            } catch {
+                showQuickToast('Reaction failed to save');
+            }
+        }
         document.addEventListener('click', (e) => {
             const picker = document.getElementById('reaction-picker');
             if (picker.style.display === 'flex' && !picker.contains(e.target) && !e.target.closest('.msg-actions button') && !e.target.closest('.sheet-btn')) {
@@ -1808,8 +2006,8 @@
 
             checkAuth();
             fetchOnlineCount();
-            setInterval(() => loadMessages(activeTab), 5000);
-            setInterval(fetchOnlineCount, 60000);
+            setInterval(sendPresencePing, 20000);
+            sendPresencePing(); // fire once immediately on load
         });
     </script>
 

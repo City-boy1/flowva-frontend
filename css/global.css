@@ -1203,6 +1203,19 @@ overscroll-behavior: contain;
   --rw-icon-circle: rgba(255,255,255,0.12);
 }
 
+/* ─── Fix: Android Chrome repaint/ghosting on Rewards banner ─── */
+.rewards-banner-text {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  isolation: isolate;
+}
+.rewards-banner-text svg {
+  transform: translateZ(0);
+}
+.rewards-banner-text [style*="--rw-card-bg"] {
+  transform: translateZ(0);
+}
+
 [data-theme="light"] .rewards-banner-text {
   --rw-text: var(--text-primary);
   --rw-text-secondary: rgba(15,23,42,0.75);
