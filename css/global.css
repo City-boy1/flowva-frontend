@@ -1192,3 +1192,23 @@ overscroll-behavior: contain;
   background: #ffffff;
   border-color: rgba(0,0,0,0.1);
 }
+
+.rewards-banner-text {
+  --rw-text: #fff;
+  --rw-text-secondary: rgba(255,255,255,0.82);
+  --rw-text-muted: rgba(255,255,255,0.65);
+  --rw-badge-bg: rgba(255,255,255,0.15);
+  --rw-card-bg: rgba(255,255,255,0.08);
+  --rw-border: rgba(255,255,255,0.12);
+  --rw-icon-circle: rgba(255,255,255,0.12);
+}
+
+[data-theme="light"] .rewards-banner-text {
+  --rw-text: var(--text-primary);
+  --rw-text-secondary: rgba(15,23,42,0.75);
+  --rw-text-muted: rgba(15,23,42,0.55);
+  --rw-badge-bg: rgba(15,23,42,0.08);
+  --rw-card-bg: rgba(15,23,42,0.04);
+  --rw-border: rgba(15,23,42,0.12);
+  --rw-icon-circle: rgba(15,23,42,0.08);
+}
