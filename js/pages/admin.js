@@ -158,15 +158,17 @@ function activateTab(tab) {
   if (_loaded.has(tab)) return;
   _loaded.add(tab);
   const loaders = {
-    overview:    loadStats,
-    templates:   () => loadTemplates('PENDING'),
-    tutorials:   () => loadTutorials('PENDING'),
-    projects:    () => loadProjects('pending'),
-    commissions: loadCommissions,
-    disputes:    loadDisputes,
-    users:       loadUsers,
-    requests:    () => loadRoleRequests('PENDING'),
-    tools:       loadTools,
+    overview:         loadStats,
+    templates:        () => loadTemplates('PENDING'),
+    tutorials:        () => loadTutorials('PENDING'),
+    projects:         () => loadProjects('pending'),
+    payouts:          loadPayouts,
+    'payout-requests': () => loadPayoutRequests('PENDING'),
+    commissions:      loadCommissions,
+    disputes:         loadDisputes,
+    users:            loadUsers,
+    requests:         () => loadRoleRequests('PENDING'),
+    tools:            loadTools,
   };
   loaders[tab]?.();
 }
@@ -585,6 +587,245 @@ async function loadProjects(status) {
 }
 
 // ════════════════════════════════════════════════════════════
+//  PAYOUTS
+// ════════════════════════════════════════════════════════════
+
+async function loadPayouts() {
+  const container = el('payouts-list');
+  if (!container) return;
+  container.innerHTML = '<div class="loading-row"><div class="spinner"></div>Loading payouts…</div>';
+
+  const res = await api.admin.getPendingPayouts();
+  if (!res.ok) { container.innerHTML = errorHtml('Failed to load payouts'); return; }
+
+  const payouts = res.data.payouts ?? [];
+  setBadge('badge-payouts', payouts.length);
+
+  if (!payouts.length) {
+    container.innerHTML = emptyHtml('✓', 'All caught up', 'No creators currently owed a payout');
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>Creator</th><th>Pending</th><th>Method</th><th>Frequency</th><th>Action</th></tr></thead>
+          <tbody id="payouts-tbody"></tbody>
+        </table>
+      </div>
+    </div>`;
+
+  const tbody = el('payouts-tbody');
+  for (const p of payouts) {
+    const methodLabel = p.payoutMethod === 'PAYSTACK_SUBACCOUNT' ? 'Paystack'
+      : p.payoutMethod === 'SKRILL' ? 'Skrill'
+      : p.payoutMethod === 'GREY' ? 'Grey'
+      : 'Not set up';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="user-name">${esc(p.creator?.name ?? '—')}</div>
+        <div class="user-email">${esc(p.creator?.email ?? '—')}</div>
+      </td>
+      <td><span class="amount-creator">$${money(p.pending)}</span></td>
+      <td><span class="badge ${p.payoutMethod ? 'badge-approved' : 'badge-pending'}">${esc(methodLabel)}</span></td>
+      <td style="color:var(--text-2)">${esc(p.payoutFrequency ?? 'MONTHLY')}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px"></td>`;
+
+    const actionsTd = tr.querySelector('td:last-child');
+
+    if (p.canAutoPay) {
+      const payBtn = document.createElement('button');
+      payBtn.className = 'btn btn-approve btn-sm';
+      payBtn.textContent = '💸 Pay via Paystack';
+      payBtn.onclick = async () => {
+        const ok = await showConfirm({
+          icon: '💸', title: 'Send Paystack Transfer',
+          body: `Send $${money(p.pending)} to ${p.creator?.name ?? 'this creator'} via Paystack now?`,
+          confirmLabel: 'Send Payment', confirmClass: 'btn-approve',
+        });
+        if (!ok) return;
+        payBtn.disabled = true; payBtn.textContent = 'Sending…';
+        const r = await api.admin.payViaPaystack(p.creatorId);
+        if (!r.ok) { Toast.show(r.error ?? 'Transfer failed', 'error'); payBtn.disabled = false; payBtn.textContent = '💸 Pay via Paystack'; return; }
+        Toast.show('Payout sent ✓', 'success');
+        tr.remove();
+      };
+      actionsTd.appendChild(payBtn);
+    } else if (p.payoutMethod === 'SKRILL' || p.payoutMethod === 'GREY') {
+      const markBtn = document.createElement('button');
+      markBtn.className = 'btn btn-primary btn-sm';
+      markBtn.textContent = '✓ Mark as Paid';
+      markBtn.onclick = async () => {
+        const reference = await showPrompt({
+          title: `Mark ${p.creator?.name ?? 'creator'}'s payout as paid`,
+          subtitle: `Confirm you've sent $${money(p.pending)} via ${methodLabel} outside FLOWVA.`,
+          placeholder: 'Transaction reference (optional)…',
+          confirmLabel: 'Mark as Paid',
+          minLength: 0,
+        });
+        if (reference === null) return;
+        markBtn.disabled = true; markBtn.textContent = 'Saving…';
+        const r = await api.admin.markPayoutPaid(p.creatorId, p.payoutMethod, reference || undefined);
+        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); markBtn.disabled = false; markBtn.textContent = '✓ Mark as Paid'; return; }
+        Toast.show('Payout recorded ✓', 'success');
+        tr.remove();
+      };
+      actionsTd.appendChild(markBtn);
+    } else {
+      actionsTd.innerHTML = '<span style="color:var(--text-3)">Creator hasn\'t set up a payout method</span>';
+    }
+
+    tbody.appendChild(tr);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAYOUT METHOD CHANGE REQUESTS
+// ════════════════════════════════════════════════════════════
+
+function formatPayoutDetails(method, details) {
+  if (!details) return '—';
+  if (method === 'PAYSTACK_SUBACCOUNT') {
+    const acct = details.accountNumber ?? '';
+    const masked = acct.length > 4 ? `•••• ${acct.slice(-4)}` : acct;
+    return `Bank ${esc(details.bankCode ?? '—')} · ${esc(masked)}`;
+  }
+  if (method === 'SKRILL') {
+    return esc(details.email ?? '—');
+  }
+  if (method === 'GREY') {
+    return `${esc(details.accountName ?? '—')} · ${esc(details.accountNumber ?? '—')}`;
+  }
+  return '—';
+}
+
+function methodLabel(method) {
+  return method === 'PAYSTACK_SUBACCOUNT' ? 'Paystack'
+    : method === 'SKRILL' ? 'Skrill'
+    : method === 'GREY' ? 'Grey'
+    : method ?? '—';
+}
+
+async function loadPayoutRequests(status = 'PENDING') {
+  const container = el('payoutreq-list');
+  if (!container) return;
+  container.innerHTML = '<div class="loading-row"><div class="spinner"></div>Loading requests…</div>';
+
+  const res = status === 'PENDING'
+    ? await api.admin.getPendingPayoutChangeRequests()
+    : await api.get(`/admin/payout-requests?status=${status}`);
+
+  if (!res.ok) { container.innerHTML = errorHtml('Failed to load payout requests'); return; }
+
+  const requests = res.data.requests ?? [];
+
+  if (status === 'PENDING') {
+    setBadge('badge-payout-requests', requests.length);
+    const chip = el('payoutreq-pending-count');
+    if (chip) chip.textContent = requests.length || '';
+  }
+
+  if (!requests.length) {
+    const labels = {
+      PENDING:  'No pending payout method changes',
+      APPROVED: 'No approved changes yet',
+      REJECTED: 'No rejected changes',
+    };
+    container.innerHTML = emptyHtml('✓', labels[status] ?? 'No requests', '');
+    return;
+  }
+
+  container.innerHTML = '';
+  const list = document.createElement('div');
+  list.className = 'review-list';
+
+  for (const r of requests) {
+    const card = document.createElement('div');
+    card.className = 'review-card';
+    card.dataset.id = r.id;
+
+    const statusBadge =
+      r.status === 'PENDING'  ? '<span class="badge badge-pending">Pending</span>'  :
+      r.status === 'APPROVED' ? '<span class="badge badge-approved">Approved</span>' :
+                                 '<span class="badge badge-rejected">Rejected</span>';
+
+    card.innerHTML = `
+      <div class="review-card-body">
+        <div class="review-info">
+          <div class="review-title">${esc(r.creator?.name ?? '—')}</div>
+          <div class="review-meta">
+            <span class="meta-chip">✉️ ${esc(r.creator?.email ?? '—')}</span>
+            <span class="meta-chip">Requesting: ${esc(methodLabel(r.requestedMethod))}</span>
+            <span class="meta-chip">${fmt(r.createdAt)}</span>
+            ${statusBadge}
+          </div>
+          <div class="role-request-field" style="margin-top:8px">
+            <div class="role-request-field-label">New payout details</div>
+            <div class="role-request-field-value">${formatPayoutDetails(r.requestedMethod, r.requestedDetails)}</div>
+          </div>
+          <div class="role-request-field">
+            <div class="role-request-field-label">Creator's reason for changing</div>
+            <div class="role-request-field-value">${esc(r.reason ?? '—')}</div>
+          </div>
+          ${r.adminNote ? `
+          <div class="role-request-field">
+            <div class="role-request-field-label">Admin note</div>
+            <div class="role-request-field-value">${esc(r.adminNote)}</div>
+          </div>` : ''}
+        </div>
+      </div>
+      <div class="review-footer"></div>`;
+
+    const footer = card.querySelector('.review-footer');
+
+    if (status === 'PENDING') {
+      footer.innerHTML = `
+        <button class="btn btn-approve" data-action="approve" data-id="${esc(r.id)}">✓ Approve Change</button>
+        <button class="btn btn-reject"  data-action="reject"  data-id="${esc(r.id)}">✕ Reject</button>`;
+
+      footer.querySelector('[data-action="approve"]').onclick = async btn => {
+        const b = btn.currentTarget;
+        const ok = await showConfirm({
+          icon: '✓', title: 'Approve Payout Method Change',
+          body: `This will switch ${r.creator?.name ?? 'this creator'}'s active payout wallet to ${methodLabel(r.requestedMethod)}. Their previous method's details will be cleared.`,
+          confirmLabel: 'Approve', confirmClass: 'btn-approve',
+        });
+        if (!ok) return;
+        b.disabled = true; b.textContent = 'Approving…';
+        const result = await api.admin.approvePayoutChangeRequest(b.dataset.id);
+        if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✓ Approve Change'; return; }
+        Toast.show('Payout method updated ✓', 'success');
+        card.remove();
+        refreshBadge('badge-payout-requests', 'payoutreq-pending-count', container);
+      };
+
+      footer.querySelector('[data-action="reject"]').onclick = async btn => {
+        const b = btn.currentTarget;
+        const note = await showPrompt({
+          title: 'Reject Payout Method Change',
+          subtitle: 'Explain why — the creator will see this note.',
+          confirmLabel: 'Reject', minLength: 5,
+        });
+        if (!note) return;
+        b.disabled = true; b.textContent = 'Rejecting…';
+        const result = await api.admin.rejectPayoutChangeRequest(b.dataset.id, note);
+        if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✕ Reject'; return; }
+        Toast.show('Change request rejected', 'info');
+        card.remove();
+        refreshBadge('badge-payout-requests', 'payoutreq-pending-count', container);
+      };
+    }
+
+    list.appendChild(card);
+  }
+
+  container.appendChild(list);
+}
+
+// ════════════════════════════════════════════════════════════
 //  COMMISSIONS
 // ════════════════════════════════════════════════════════════
 
@@ -610,8 +851,8 @@ async function loadCommissions() {
             <tr>
               <th>Order ID</th>
               <th>Gross</th>
-              <th>Commission (30%)</th>
-              <th>Creator (70%)</th>
+              <th>Platform Commission</th>
+              <th>Creator Earnings</th>
               <th>Disbursed</th>
               <th>Date</th>
               <th>Action</th>
@@ -686,7 +927,10 @@ async function loadDisputes() {
             <span class="meta-chip"> Creator: ${esc(o.creator?.name ?? '—')}</span>
             <span class="meta-chip">${fmt(o.createdAt)}</span>
           </div>
-          ${o.deliveryNote ? `<p class="review-desc">Delivery note: ${esc(o.deliveryNote)}</p>` : ''}
+          ${o.deliveryNote ? (() => {
+            const [note, fileUrl] = o.deliveryNote.split('||');
+            return `<p class="review-desc">Delivery note: ${esc(note ?? '')}</p>${fileUrl ? `<a href="${esc(fileUrl)}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" style="margin-top:8px">📄 View Delivered File</a>` : ''}`;
+          })() : ''}
         </div>
       </div>
       <div class="review-footer">
@@ -712,7 +956,7 @@ async function loadDisputes() {
       const b = btn.currentTarget;
       const ok = await showConfirm({
         icon: '↩', title: 'Refund Buyer',
-        body: 'This marks the order as REFUNDED. The creator will not be paid. The actual on-chain refund must be processed manually via Helio/Phantom.',
+        body: 'This marks the order as REFUNDED. The creator will not be paid. The actual refund to the buyer must be processed manually via Paystack or Skrill, depending on how they originally paid.',
         confirmLabel: 'Confirm Refund',
       });
       if (!ok) return;
@@ -890,7 +1134,7 @@ async function loadStuckOrders() {
 
     tr.querySelector('[data-action="complete"]').onclick = async btn => {
       const b = btn.currentTarget;
-      const ok = await showConfirm({ icon: '✓', title: 'Force-Complete Order', body: 'This marks the order COMPLETED and credits the creator wallet. Only use if payment was confirmed via Helio.', confirmLabel: 'Force Complete', confirmClass: 'btn-approve' });
+      const ok = await showConfirm({ icon: '✓', title: 'Force-Complete Order', body: 'This marks the order COMPLETED and credits the creator wallet. Only use if you have independently confirmed the payment succeeded with Paystack or Skrill.', confirmLabel: 'Force Complete', confirmClass: 'btn-approve' });
       if (!ok) return;
       b.disabled = true; b.textContent = '…';
       const r = await api.post(`/admin/orders/${b.dataset.id}/complete`, {});
@@ -1234,6 +1478,15 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('[data-req-tab]').forEach(b => b.classList.toggle('active', b === btn));
       _loaded.delete('requests');
       loadRoleRequests(btn.dataset.reqTab);
+    });
+  });
+
+  // ── Payout request sub-tabs
+  document.querySelectorAll('[data-payoutreq-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-payoutreq-tab]').forEach(b => b.classList.toggle('active', b === btn));
+      _loaded.delete('payout-requests');
+      loadPayoutRequests(btn.dataset.payoutreqTab);
     });
   });
 

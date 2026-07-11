@@ -1,6 +1,8 @@
 // flowva marketplace.js — Full Cinematic Edition v2
 import AppState from '../core/state.js';
 import api      from '../core/api.js';
+import { COUNTRY_GROUPS, ALL_COUNTRIES } from '../core/countries.js';
+import { formatPrice, getBuyerCountry, getDisplayPrice, templateCountry, hasUsdPrice } from '../core/currency.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -141,7 +143,23 @@ if(tab==='tutorials'&&!_tutLoaded){_tutLoaded=true;loadTutorials();}
   // ══════════════════════════════════════════════════════════════════════
   // TEMPLATES
   // ══════════════════════════════════════════════════════════════════════
-  let allTemplates=[],filtered=[],visibleCount=12,activeCategory='all';
+  const homeCountry = getBuyerCountry(); // buyer's own country from signup, or null if unsupported
+  let activeCountry = homeCountry ?? ALL_COUNTRIES[0].value;
+  let _homeFallbackActive = false; // true = home country has no creators yet, showing global USD catalog instead
+
+  // Per-template pricing mode. Only true when:
+  //  - viewing your own country specifically (and it has real creators), or
+  //  - viewing "All Countries" AND this particular template's creator is
+  //    also from your home country (mixed view: your countrymen in local
+  //    currency, everyone else in USD).
+  // Never true when browsing a foreign country's marketplace or the
+  // global USD fallback catalog.
+  function shouldShowLocalPricing(t) {
+    if (_homeFallbackActive) return false;
+    if (activeCountry === homeCountry) return true;
+    if (activeCountry === 'all') return !!homeCountry && templateCountry(t) === homeCountry;
+    return false;
+  }
   function _favKey() {
   const user = AppState.getUser();
   return user?.id ? `fv_favorites_${user.id}` : null;
@@ -214,6 +232,42 @@ async function getCreatorName(id) {
     });
   }
 
+  function buildCountryFilter() {
+  const bar=document.getElementById('country-filter');
+  if(!bar)return;
+  bar.innerHTML=`<select class="filter-select" id="country-select" aria-label="Filter by creator country">
+    <option value="all" ${activeCountry==='all'?'selected':''}>🌐 All Countries</option>
+    ${COUNTRY_GROUPS.map(g=>`<optgroup label="${_esc(g.label)}">
+      ${g.countries.map(c=>`<option value="${_esc(c.value)}" ${c.value===activeCountry?'selected':''}>${c.flag} ${_esc(c.label)}</option>`).join('')}
+    </optgroup>`).join('')}
+  </select>`;
+  bar.querySelector('#country-select').addEventListener('change', function() {
+    activeCountry = this.value;
+    visibleCount = 12;
+    applyFilters();
+  });
+}
+
+function renderCountryBanner() {
+  const el=document.getElementById('country-banner');
+  if(!el)return;
+  if(_homeFallbackActive){
+    const info=ALL_COUNTRIES.find(c=>c.value===homeCountry);
+    el.textContent=`No local creators in ${info?.label??'your country'} yet — showing all templates, priced in USD.`;
+    el.classList.remove('hidden');
+  } else if(activeCountry==='all'){
+    el.textContent=homeCountry
+      ? `Showing templates from every country — creators in your own country are priced in your local currency, everyone else in USD.`
+      : `Showing templates from every country, priced in USD.`;
+    el.classList.remove('hidden');
+  } else if(activeCountry!==homeCountry){
+    const info=ALL_COUNTRIES.find(c=>c.value===activeCountry);
+    el.textContent=`Browsing ${info?.flag??''} ${info?.label??'this country'}'s creators — prices shown in USD.`;
+    el.classList.remove('hidden');
+  } else {
+    el.classList.add('hidden');
+  }
+}
 
   async function fetchTemplates() {
     const skelGrid=document.getElementById('skeleton-grid');
@@ -227,7 +281,7 @@ async function getCreatorName(id) {
       return;
     }
     allTemplates=res.data.templates;
-    buildPills();applyFilters();
+    buildPills();buildCountryFilter();applyFilters();
 
     const catParam = urlParams.get('cat');
     if (catParam) {
@@ -238,7 +292,7 @@ async function getCreatorName(id) {
     const buyParam=urlParams.get('buy');
     if(buyParam){
       const t=allTemplates.find(t=>String(t._id)===buyParam||String(t.id)===buyParam);
-      if(t)setTimeout(()=>openBuyModal(String(t._id??t.id),t.title,t.price),300);
+      if(t)setTimeout(()=>openBuyModal(String(t._id??t.id),t.title),300);
     }
 
     const rateParam   = urlParams.get('rate');
@@ -261,10 +315,41 @@ async function getCreatorName(id) {
     const q=(searchInput?.value??'').toLowerCase().trim();
     const price=priceSelect?.value??'all';
     const sort=sortSelect?.value??'trending';
-    filtered=allTemplates.filter(t=>{
+
+    // Country pool: only templates whose creator is in the selected country.
+    // If the buyer's own (default) country has no creators yet, fall back
+    // to the full global catalog priced in USD, per Flowva's global
+    // fallback pricing policy. Manually browsing another country with no
+    // creators shows an honest empty state instead — no silent fallback.
+    const isHomeView  = activeCountry === homeCountry;
+    const isAllView   = activeCountry === 'all';
+    const countryPool = allTemplates.filter(t => templateCountry(t) === activeCountry);
+    _homeFallbackActive = isHomeView && countryPool.length === 0;
+
+    let pool;
+    if (isAllView) {
+      // Everyone's templates — but a foreign template only counts if it
+      // has a USD price set. Home-country templates always qualify since
+      // their local price is required.
+      pool = allTemplates.filter(t =>
+        (!!homeCountry && templateCountry(t) === homeCountry) || hasUsdPrice(t)
+      );
+    } else if (_homeFallbackActive) {
+      // No creators in your home country yet — fall back to the global
+      // catalog, USD only.
+      pool = allTemplates.filter(hasUsdPrice);
+    } else if (isHomeView) {
+      pool = countryPool; // your own country's creators, local currency
+    } else {
+      // Browsing a specific foreign country deliberately — USD only,
+      // no silent fallback to other countries.
+      pool = countryPool.filter(hasUsdPrice);
+    }
+
+    filtered=pool.filter(t=>{
       if(activeCategory!=='all'&&t.category!==activeCategory)return false;
       if(q&&!t.title.toLowerCase().includes(q)&&!(t.description??'').toLowerCase().includes(q)&&!(t.creator?.name??'').toLowerCase().includes(q))return false;
-      const p=Number(t.price??0);
+      const p=Number(t.priceUSD??t.price??0);
       if(price==='free'&&p!==0)return false;
       if(price==='low'&&p>=20)return false;
       if(price==='mid'&&(p<20||p>35))return false;
@@ -276,12 +361,13 @@ async function getCreatorName(id) {
         case 'newest':return new Date(b.createdAt)-new Date(a.createdAt);
         case 'best-selling':return(b.salesCount||0)-(a.salesCount||0);
         case 'rating':return(b.rating||0)-(a.rating||0);
-        case 'price-low':return Number(a.price)-Number(b.price);
-        case 'price-high':return Number(b.price)-Number(a.price);
+        case 'price-low':return Number(a.priceUSD??a.price??0)-Number(b.priceUSD??b.price??0);
+        case 'price-high':return Number(b.priceUSD??b.price??0)-Number(a.priceUSD??a.price??0);
         default:return((b.salesCount||0)+(b.rating||0)*10)-((a.salesCount||0)+(a.rating||0)*10);
       }
     });
     if(resultCount)resultCount.textContent=`${filtered.length} template${filtered.length!==1?'s':''}`;
+    renderCountryBanner();
     renderGrid();
   }
 
@@ -295,7 +381,8 @@ async function getCreatorName(id) {
     }
     grid.innerHTML=slice.map((t,i)=>{
       const isFav=favorites.includes(String(t._id));
-      const price=Number(t.price??0).toFixed(2);
+      const priceInfo=getDisplayPrice(t, { viewingCountry: activeCountry, homeCountry, showLocalPricing: shouldShowLocalPricing(t) });
+      const priceLabel=formatPrice(priceInfo.amount, priceInfo.currency);
       const rating=Number(t.rating||0);
       const stars='★'.repeat(Math.round(rating))+'☆'.repeat(5-Math.round(rating));
       const prevVid=t.previewVideoUrl??'';
@@ -316,8 +403,7 @@ async function getCreatorName(id) {
                 data-type="${_esc(t.fileType??'')}">▶ Preview</button>
               <button class="btn btn--primary btn--sm buy-btn"
                 data-id="${_esc(String(t._id??t.id))}"
-                data-title="${_esc(t.title)}"
-                data-price="${_esc(String(price))}">Buy $${price}</button>
+                data-title="${_esc(t.title)}">Buy ${priceLabel}</button>
             </div>
             ${t.category?`<span class="mkt-badge mkt-badge--cat">${_esc(t.category)}</span>`:''}
             <button class="mkt-fav ${isFav?'active':''}" data-id="${_esc(String(t._id))}" aria-label="Favourite">
@@ -327,7 +413,8 @@ async function getCreatorName(id) {
           <div class="mkt-card-body">
             <div class="mkt-card-meta">
               <h3 class="mkt-card-title">${_esc(t.title)}</h3>
-              <span class="mkt-card-price">$${price}</span>
+              <span class="mkt-card-price">${priceLabel}</span>
+              ${priceInfo.noLocalPrice?`<span style="font-size:0.65rem;color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:1px 6px;margin-left:6px;" title="No local pricing set — shown in USD">USD</span>`:''}
             </div>
             ${t.creator?.name??t.creator?.username?`<a href="creator.html?id=${_esc(String(t.creator?.id??t.creator?._id??t.creatorId??''))}" class="mkt-card-creator">by ${_esc(t.creator?.name??t.creator?.username)}</a>`:'<div style="height:18px;margin-bottom:10px;"></div>'}
             <div class="mkt-card-footer">
@@ -376,7 +463,7 @@ if(_fk) localStorage.setItem(_fk, JSON.stringify(favorites));
     grid.querySelectorAll('.buy-btn').forEach(btn=>{
       btn.addEventListener('click',e=>{
         e.stopPropagation();
-        openBuyModal(btn.dataset.id,btn.dataset.title,btn.dataset.price);
+        openBuyModal(btn.dataset.id,btn.dataset.title);
       });
     });
 
@@ -628,18 +715,19 @@ if(_fk) localStorage.setItem(_fk, JSON.stringify(favorites));
     }
     const t=allTemplates.find(x=>String(x._id??x.id)===String(id));
     if(foot&&t){
+      const pi=getDisplayPrice(t, { viewingCountry: activeCountry, homeCountry, showLocalPricing: shouldShowLocalPricing(t) });
       foot.innerHTML=`
         <span style="font-size:0.85rem;color:var(--text-muted);">
           Category: <strong style="color:var(--text-primary);">${_esc(t.category??'Template')}</strong>
         </span>
         <div style="display:flex;gap:10px;">
           <button class="btn btn--ghost btn--sm" id="fv-foot-close">Close</button>
-          <button class="btn btn--primary btn--sm fv-foot-buy" data-id="${_esc(String(t._id??t.id))}" data-title="${_esc(t.title)}" data-price="${_esc(String(Number(t.price??0).toFixed(2)))}">Buy $${Number(t.price??0).toFixed(2)}</button>
+          <button class="btn btn--primary btn--sm fv-foot-buy" data-id="${_esc(String(t._id??t.id))}" data-title="${_esc(t.title)}">Buy ${formatPrice(pi.amount,pi.currency)}</button>
         </div>`;
       foot.querySelector('#fv-foot-close')?.addEventListener('click',closePreviewModal);
       foot.querySelector('.fv-foot-buy')?.addEventListener('click',btn=>{
         closePreviewModal();
-        setTimeout(()=>openBuyModal(btn.target.dataset.id,btn.target.dataset.title,btn.target.dataset.price),300);
+        setTimeout(()=>openBuyModal(btn.target.dataset.id,btn.target.dataset.title),300);
       });
     }
     previewModal.classList.add('open');
@@ -756,11 +844,17 @@ if(_fk) localStorage.setItem(_fk, JSON.stringify(favorites));
   // ── Buy Modal ──────────────────────────────────────────────────────────
   let _pendingBuyId=null;
 
-  function openBuyModal(id,title,price){
+  function openBuyModal(id,title){
   if(!AppState.isLoggedIn()){showToast('Please login to purchase','info');setTimeout(()=>window.location.href='login.html',700);return;}
   _pendingBuyId=id;
   document.getElementById('flowva-buy-modal')?.remove();
-  const p=Number(price);
+  // Display-only: the real charge amount/currency must be computed
+  // server-side from the buyer's verified account and the template's
+  // stored price — never trust activeCountry from the client for billing.
+  const t=allTemplates.find(x=>String(x._id??x.id)===String(id));
+  const priceInfo=getDisplayPrice(t??{}, { viewingCountry: activeCountry, homeCountry, showLocalPricing: shouldShowLocalPricing(t??{}) });
+  const p=priceInfo.amount;
+  const cur=priceInfo.currency;
   const modal=document.createElement('div');
   modal.id='flowva-buy-modal';
   modal.className='modal-overlay';
@@ -772,9 +866,11 @@ if(_fk) localStorage.setItem(_fk, JSON.stringify(favorites));
       </div>
       <div class="fv-buy-modal-body">
         <div class="fv-buy-modal-item-title">${_esc(title)}</div>
-        <div class="fv-buy-modal-row"><span>Creator receives</span><span style="color:var(--success);">$${(p*0.8).toFixed(2)}</span></div>
-        <div class="fv-buy-modal-row"><span>Platform fee</span><span>$${(p*0.2).toFixed(2)}</span></div>
-        <div class="fv-buy-modal-row fv-buy-modal-row--total"><span>Total</span><span class="fv-buy-total-amount">$${p.toFixed(2)}</span></div>
+        ${priceInfo.noLocalPrice?`<p style="font-size:0.78rem;color:var(--text-muted);margin:-6px 0 14px;">No local pricing set for this template yet — charged in USD.</p>`:''}
+        ${(!priceInfo.noLocalPrice && activeCountry!==homeCountry)?`<p style="font-size:0.78rem;color:var(--text-muted);margin:-6px 0 14px;">This creator is based outside your home country — charged in USD.</p>`:''}
+        <div class="fv-buy-modal-row"><span>Creator receives</span><span style="color:var(--success);">${formatPrice(p*0.8,cur)}</span></div>
+        <div class="fv-buy-modal-row"><span>Platform fee</span><span>${formatPrice(p*0.2,cur)}</span></div>
+        <div class="fv-buy-modal-row fv-buy-modal-row--total"><span>Total</span><span class="fv-buy-total-amount">${formatPrice(p,cur)}</span></div>
       </div>
       <div class="fv-buy-modal-foot">
         <button id="helio-pay-btn" class="fv-buy-pay-btn">💳 Pay Securely</button>

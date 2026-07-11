@@ -125,6 +125,9 @@
                     <button class="dash-nav-item" data-target="ratings">
                         Ratings &amp; Reviews
                     </button>
+                    <button class="dash-nav-item" data-target="followers">
+                        Followers
+                    </button>
                     <button class="dash-nav-item" data-target="payout">
                         Payouts
                     </button>
@@ -703,10 +706,20 @@
                                 <option value="resume">Resume</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label" for="wiz-price">Price (USD) *</label>
-                            <input class="form-input" type="number" id="wiz-price" placeholder="e.g. 24" min="1"
+                        <div class="form-group" id="wiz-local-price-group">
+                            <label class="form-label" id="wiz-local-price-label" for="wiz-local-price">Price *</label>
+                            <input class="form-input" type="number" id="wiz-local-price" placeholder="e.g. 24"
+                                min="0.01" step="0.01" required>
+                            <span id="wiz-local-price-hint"
+                                style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;display:block"></span>
+                        </div>
+                        <div class="form-group" id="wiz-usd-price-group" style="display:none">
+                            <label class="form-label" for="wiz-price">Price (USD) <span
+                                    style="font-weight:400;color:var(--text-muted)">— optional</span></label>
+                            <input class="form-input" type="number" id="wiz-price" placeholder="e.g. 24" min="0.01"
                                 max="500" step="0.01">
+                            <span id="wiz-usd-price-hint"
+                                style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;display:block"></span>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="wiz-software">Software / Tools</label>
@@ -1096,41 +1109,118 @@
                         </p>
                     </div>
 
-                    <!-- Update wallet address -->
+                    <!-- Payout Settings -->
                     <div style="background:var(--bg-overlay);border:1px solid var(--border);
                         border-radius:var(--radius-md);padding:var(--space-4);margin-bottom:var(--space-5)">
-                        <div style="font-weight:600;font-size:0.88rem;margin-bottom:10px">Payout Settings</div>
-                        <div class="form-group" style="margin-bottom:var(--space-3)">
-                            <label class="form-label">Skrill Email</label>
-                            <input class="form-input" type="email" id="skrill-email"
-                                placeholder="Your Skrill account email">
+                        <div style="font-weight:600;font-size:0.88rem;margin-bottom:14px">Payout Settings</div>
+
+                        <div class="form-group" style="margin-bottom:var(--space-4)">
+                            <label class="form-label">Payout Method</label>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <button type="button" class="btn btn--ghost btn--sm payout-method-btn"
+                                    data-method="PAYSTACK_SUBACCOUNT" id="method-btn-paystack">🏦 Paystack</button>
+                                <button type="button" class="btn btn--ghost btn--sm payout-method-btn"
+                                    data-method="SKRILL" id="method-btn-skrill">Skrill</button>
+                                <button type="button" class="btn btn--ghost btn--sm payout-method-btn"
+                                    data-method="GREY" id="method-btn-grey">Grey</button>
+                            </div>
+                            <span id="payout-method-hint"
+                                style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;display:block"></span>
                         </div>
-                        <div class="form-group" style="margin-bottom:var(--space-3)">
-                            <label class="form-label">Grey Account Details</label>
-                            <input class="form-input" type="text" id="grey-account"
-                                placeholder="Your Grey account number or email">
-                        </div>
-                        <!-- Paystack — shown only for GH users via JS -->
-                        <div id="paystack-payout-wrap" style="display:none">
+
+                        <!-- Paystack -->
+                        <div id="paystack-fields-wrap"
+                            style="display:none;border-top:1px solid var(--border);padding-top:var(--space-3);margin-bottom:var(--space-4)">
                             <div class="form-group" style="margin-bottom:var(--space-3)">
-                                <label class="form-label">Paystack — Mobile Money / Bank (Ghana)</label>
-                                <select class="form-input" id="paystack-type">
-                                    <option value="mobile_money">Mobile Money (MTN, Vodafone, AirtelTigo)</option>
-                                    <option value="ghipss">GHIPSS / Bank Transfer</option>
+                                <label class="form-label">Bank</label>
+                                <select class="form-input" id="paystack-bank-select">
+                                    <option value="">Select your bank…</option>
                                 </select>
                             </div>
                             <div class="form-group" style="margin-bottom:var(--space-3)">
-                                <label class="form-label">Phone / Account Number</label>
-                                <input class="form-input" type="text" id="paystack-account"
-                                    placeholder="e.g. 024XXXXXXX or account number">
+                                <label class="form-label">Account Number</label>
+                                <input class="form-input" type="text" id="paystack-account-number"
+                                    placeholder="e.g. 0123456789">
+                            </div>
+                            <div id="paystack-verified-name"
+                                style="display:none;font-size:0.82rem;color:var(--success);margin-bottom:10px">
+                                ✓ Verified: <strong id="paystack-verified-name-text"></strong>
+                            </div>
+                            <div id="paystack-verify-error"
+                                style="display:none;color:var(--danger);font-size:0.82rem;margin-bottom:10px"></div>
+                            <div class="form-group" style="margin-bottom:var(--space-3);display:none"
+                                id="paystack-reason-wrap">
+                                <label class="form-label">Reason for changing your payout method (min 20
+                                    characters)</label>
+                                <textarea class="form-input" id="paystack-reason" rows="2"
+                                    placeholder="Why are you switching?" maxlength="300"></textarea>
+                            </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <button class="btn btn--primary btn--sm" id="paystack-activate-btn" type="button">Use
+                                    Paystack as My Payout Method</button>
                             </div>
                         </div>
-                        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px;line-height:1.6">
-                            Payouts are sent in USD (Skrill/Grey) or GHS (Paystack for Ghana).
-                            Provide at least one payout method.
+
+                        <!-- Skrill -->
+                        <div id="skrill-fields-wrap"
+                            style="display:none;border-top:1px solid var(--border);padding-top:var(--space-3);margin-bottom:var(--space-4)">
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label class="form-label">Skrill Email</label>
+                                <input class="form-input" type="email" id="skrill-email"
+                                    placeholder="Your Skrill account email">
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3);display:none"
+                                id="skrill-reason-wrap">
+                                <label class="form-label">Reason for changing your payout method (min 20
+                                    characters)</label>
+                                <textarea class="form-input" id="skrill-reason" rows="2"
+                                    placeholder="Why are you switching?" maxlength="300"></textarea>
+                            </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <button class="btn btn--primary btn--sm" id="skrill-activate-btn" type="button">Use
+                                    Skrill as My Payout Method</button>
+                            </div>
                         </div>
-                        <button class="btn btn--primary btn--sm" id="save-wallet-btn">Save Payout
-                            Details</button>
+
+                        <!-- Grey -->
+                        <div id="grey-fields-wrap"
+                            style="display:none;border-top:1px solid var(--border);padding-top:var(--space-3);margin-bottom:var(--space-4)">
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label class="form-label">Grey Account Number</label>
+                                <input class="form-input" type="text" id="grey-account-number"
+                                    placeholder="Your Grey account number">
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label class="form-label">Grey Account Name</label>
+                                <input class="form-input" type="text" id="grey-account-name"
+                                    placeholder="Name on the Grey account">
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3);display:none"
+                                id="grey-reason-wrap">
+                                <label class="form-label">Reason for changing your payout method (min 20
+                                    characters)</label>
+                                <textarea class="form-input" id="grey-reason" rows="2"
+                                    placeholder="Why are you switching?" maxlength="300"></textarea>
+                            </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <button class="btn btn--primary btn--sm" id="grey-activate-btn" type="button">Use Grey
+                                    as My Payout Method</button>
+                            </div>
+                        </div>
+
+                        <!-- Frequency -->
+                        <div class="form-group" style="border-top:1px solid var(--border);padding-top:var(--space-4)">
+                            <label class="form-label">Payout Frequency</label>
+                            <div style="display:flex;gap:8px">
+                                <button type="button" class="btn btn--ghost btn--sm payout-freq-btn" data-freq="WEEKLY"
+                                    id="freq-btn-weekly">Weekly</button>
+                                <button type="button" class="btn btn--ghost btn--sm payout-freq-btn" data-freq="MONTHLY"
+                                    id="freq-btn-monthly">Monthly</button>
+                            </div>
+                            <span style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;display:block">
+                                Applies no matter which method above is active.
+                            </span>
+                        </div>
                     </div>
 
                     <!-- Commission rate info for early adopters -->
@@ -1157,6 +1247,28 @@
                     <div id="payout-history-list">
                         <p style="color:var(--text-muted);font-size:0.9rem">Loading…</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- ─── CREATOR: FOLLOWERS ─── -->
+            <div class="dash-panel" id="panel-followers">
+                <div class="dash-page-header">
+                    <h1>Followers</h1>
+                    <p>People following your work</p>
+                </div>
+                <div id="followers-list">
+                    <p style="color:var(--text-muted);font-size:0.9rem">Loading…</p>
+                </div>
+            </div>
+
+            <!-- ─── CREATOR: FOLLOWERS ─── -->
+            <div class="dash-panel" id="panel-followers">
+                <div class="dash-page-header">
+                    <h1>Followers</h1>
+                    <p>People following your work</p>
+                </div>
+                <div id="followers-list">
+                    <p style="color:var(--text-muted);font-size:0.9rem">Loading…</p>
                 </div>
             </div>
 
@@ -1428,70 +1540,15 @@
                                         id="bio-char-count">0 / 500</span>
                                 </div>
                                 <div class="form-group" style="margin-bottom:var(--space-5)">
-                                    <label class="form-label" for="profile-country">Country</label>
-                                    <select class="form-input" id="profile-country">
-                                        <optgroup label="Africa">
-                                            <option value="DZ">Algeria</option>
-                                            <option value="EG">Egypt</option>
-                                            <option value="ET">Ethiopia</option>
-                                            <option value="GH">Ghana</option>
-                                            <option value="KE">Kenya</option>
-                                            <option value="LS">Lesotho</option>
-                                            <option value="MG">Madagascar</option>
-                                            <option value="MW">Malawi</option>
-                                            <option value="MU">Mauritius</option>
-                                            <option value="MA">Morocco</option>
-                                            <option value="MZ">Mozambique</option>
-                                            <option value="NG">Nigeria</option>
-                                            <option value="SN">Senegal</option>
-                                            <option value="ZA">South Africa</option>
-                                            <option value="TZ">Tanzania</option>
-                                            <option value="UG">Uganda</option>
-                                            <option value="ZM">Zambia</option>
-                                            <option value="ZW">Zimbabwe</option>
-                                        </optgroup>
-                                        <optgroup label="Americas">
-                                            <option value="AR">Argentina</option>
-                                            <option value="BR">Brazil</option>
-                                            <option value="CA">Canada</option>
-                                            <option value="CL">Chile</option>
-                                            <option value="MX">Mexico</option>
-                                            <option value="PE">Peru</option>
-                                            <option value="US">United States</option>
-                                        </optgroup>
-                                        <optgroup label="Europe">
-                                            <option value="AT">Austria</option>
-                                            <option value="BE">Belgium</option>
-                                            <option value="FR">France</option>
-                                            <option value="DE">Germany</option>
-                                            <option value="IT">Italy</option>
-                                            <option value="NL">Netherlands</option>
-                                            <option value="NO">Norway</option>
-                                            <option value="PL">Poland</option>
-                                            <option value="ES">Spain</option>
-                                            <option value="SE">Sweden</option>
-                                            <option value="CH">Switzerland</option>
-                                            <option value="GB">United Kingdom</option>
-                                        </optgroup>
-                                        <optgroup label="Asia-Pacific">
-                                            <option value="AU">Australia</option>
-                                            <option value="CN">China</option>
-                                            <option value="IN">India</option>
-                                            <option value="MY">Malaysia</option>
-                                            <option value="NZ">New Zealand</option>
-                                            <option value="SG">Singapore</option>
-                                            <option value="TH">Thailand</option>
-                                            <option value="VN">Vietnam</option>
-                                        </optgroup>
-                                        <optgroup label="Middle East">
-                                            <option value="IL">Israel</option>
-                                            <option value="KW">Kuwait</option>
-                                            <option value="QA">Qatar</option>
-                                            <option value="SA">Saudi Arabia</option>
-                                            <option value="TR">Turkey</option>
-                                            <option value="AE">United Arab Emirates</option>
-                                        </optgroup>
-                                    </select>
+                                    <label class="form-label">Country</label>
+                                    <div class="form-input" id="profile-country-display"
+                                        style="opacity:0.6;cursor:not-allowed;display:flex;align-items:center;gap:8px">—
+                                    </div>
+                                    <span
+                                        style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;display:block">
+                                        Your country is set at signup and determines your local marketplace pricing —
+                                        it can't be changed here. Contact support if it's incorrect.
+                                    </span>
                                 </div>
                                 <button type="submit" class="btn btn--primary" id="profile-save-btn">
                                     Save Changes</button>
@@ -1689,57 +1746,6 @@
                         <span id="escrow-total-display" style="color:var(--accent)">$0.00</span>
                     </div>
                 </div>
-
-                <!-- Payment method selector -->
-                <div class="form-group" style="margin-bottom:var(--space-4)">
-                    <label class="form-label">Payment Method</label>
-                    <select class="form-input" id="escrow-pay-method">
-                        <option value="card">Credit / Debit Card</option>
-                        <option value="paypal">PayPal</option>
-                        <!-- Ghana only — shown via JS -->
-                        <option value="paystack" id="escrow-paystack-opt" style="display:none">
-                            Paystack (Ghana — MoMo / Bank)
-                        </option>
-                    </select>
-                </div>
-
-                <!-- Card fields -->
-                <div id="escrow-card-fields">
-                    <div class="form-group" style="margin-bottom:var(--space-3)">
-                        <label class="form-label">Card Number</label>
-                        <input class="form-input" type="text" id="escrow-card-number" placeholder="1234 5678 9012 3456"
-                            maxlength="19">
-                    </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)">
-                        <div class="form-group">
-                            <label class="form-label">Expiry</label>
-                            <input class="form-input" type="text" id="escrow-card-expiry" placeholder="MM/YY"
-                                maxlength="5">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">CVV</label>
-                            <input class="form-input" type="text" id="escrow-card-cvv" placeholder="123" maxlength="4">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Paystack fields (Ghana) -->
-                <div id="escrow-paystack-fields" style="display:none">
-                    <div class="form-group" style="margin-bottom:var(--space-3)">
-                        <label class="form-label">Mobile Money / Bank Number</label>
-                        <input class="form-input" type="text" id="escrow-paystack-number" placeholder="e.g. 024XXXXXXX">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Network / Bank</label>
-                        <select class="form-input" id="escrow-paystack-network">
-                            <option value="mtn">MTN Mobile Money</option>
-                            <option value="vodafone">Vodafone Cash</option>
-                            <option value="airteltigo">AirtelTigo Money</option>
-                            <option value="ghipss">Bank Transfer (GHIPSS)</option>
-                        </select>
-                    </div>
-                </div>
-
                 <div id="escrow-pay-error" style="display:none;color:var(--danger);font-size:0.85rem;margin-top:8px">
                 </div>
             </div>

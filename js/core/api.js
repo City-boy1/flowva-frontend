@@ -216,13 +216,10 @@ const api = {
   // ── Auth ──────────────────────────────────────────────────────────────────
   // signup payload differs by role:
   //   BUYER:   { name, email, password, role: 'BUYER', country }
-  //   CREATOR: { name, email, password, role: 'CREATOR', country, solanaAddress }
+  //   CREATOR: { name, email, password, role: 'CREATOR', country, phone }
   //
-  // solanaAddress: creator's Solana USDC deposit address from their exchange
-  //   Ghana/Kenya/Uganda → Binance USDC deposit address
-  //   Nigeria            → Monica USDC deposit address
-  //   US/UK/Europe       → Coinbase or Kraken USDC deposit address
-  // Helio will split 70% of every sale directly to this address on-chain.
+  // Payout method/bank details are NOT collected at signup — set up later
+  // in the dashboard Payouts panel.
   auth: {
     signup:             (payload)          => request('POST', '/auth/signup', payload),
     login:              (payload)          => request('POST', '/auth/login', payload),
@@ -254,6 +251,7 @@ const api = {
     // Follow
     toggleFollow: (id)           => request('POST', `/users/creators/${id}/follow`),
     getFollowing: ()             => request('GET',  '/users/following'),
+    getFollowers: ()             => request('GET',  '/users/followers'),
 
     // Ratings
     rateCreator:    (payload)    => request('POST',  '/users/rate', payload),
@@ -274,23 +272,20 @@ const api = {
   // ── Payments / Checkout ───────────────────────────────────────────────────
  payments: {
     initialize:        (payload)    => request('POST', '/payments/initialize', payload),
-    verify:            (reference)  => request('GET',  `/payments/verify/${reference}`),
-    // Paystack — Ghana buyers only
-    paystackInit:      (payload)    => request('POST', '/payments/paystack/initialize', payload),
-    paystackVerify:    (reference)  => request('GET',  `/payments/paystack/verify/${reference}`),
-    paystackMomoCharge:(payload)    => request('POST', '/payments/paystack/charge-momo', payload),
+    verify:            (reference)  => request('GET',  `/payments/verify/${reference}`),    
   },
 
   // ── Payouts ───────────────────────────────────────────────────────────────
-  // CreatorWallet is display-only. Creators withdraw to local currency
-  // themselves via their exchange app (Binance/Monica/Coinbase).
-  // FLOWVA does not handle withdrawals — there is no /payouts/withdraw endpoint.
-  payouts: {
-    getWallet:      ()        => request('GET', '/payouts/wallet'),
-    getSettings:    ()        => request('GET', '/payouts/settings'),
-    updateSettings: (payload) => request('PUT', '/payouts/settings', payload),
-    getHistory:     ()        => request('GET', '/payouts/history'),
+    payouts: {
+    getWallet:   () => request('GET', '/payouts/wallet'),
+    getSettings: () => request('GET', '/payouts/settings'),
+    getHistory:  () => request('GET', '/payouts/history'),
+    getBanks:    (country = 'ghana') => request('GET', `/payouts/paystack/banks?country=${country}`),
+    requestMethodChange: (payload) => request('POST', '/payouts/method', payload),
+    getChangeRequests:   ()        => request('GET',  '/payouts/change-requests'),
+    setFrequency:     (frequency) => request('POST', '/payouts/frequency', { frequency }),
   },
+
 
   // ── Templates ─────────────────────────────────────────────────────────────
   templates: {
@@ -335,7 +330,6 @@ const api = {
     requestRevision:  (projectId, note)  => request('POST',   `/projects/${projectId}/revision`, { note }),
     openDispute:      (projectId, reason)=> request('POST',   `/projects/${projectId}/dispute`, { reason }),
     uploadAttachment: (formData, onProg) => upload('/projects/upload-attachment', formData, onProg),
-    fundEscrow:       (payload)          => request('POST', '/projects/fund-escrow', payload),
   },
 
   // ── Jobs (Full-Time / Contract) ───────────────────────────────────────────
@@ -418,6 +412,17 @@ const api = {
       return request('GET', `/admin/commissions${qs}`);
     },
     disburseCommission:  (id)         => request('POST',  `/admin/commissions/${id}/disburse`),
+
+    // Payouts
+    getPendingPayouts: ()  => request('GET',  '/admin/payouts/pending'),
+    payViaPaystack:    (creatorId) => request('POST', `/admin/payouts/${creatorId}/pay-paystack`),
+    markPayoutPaid:    (creatorId, method, reference) =>
+      request('POST', `/admin/payouts/${creatorId}/mark-paid`, { method, reference }),
+
+    // Payout method change requests (single-wallet lock — creator must justify a change)
+    getPendingPayoutChangeRequests: ()              => request('GET',  '/admin/payout-requests/pending'),
+    approvePayoutChangeRequest:     (id, adminNote) => request('POST', `/admin/payout-requests/${id}/approve`, { adminNote }),
+    rejectPayoutChangeRequest:      (id, adminNote) => request('POST', `/admin/payout-requests/${id}/reject`, { adminNote }),
 
     // Templates
     getPendingTemplates: ()           => request('GET',   '/admin/templates/pending'),

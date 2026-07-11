@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post a Role — FLOWVA</title>
+    <title>Post a Job — FLOWVA</title>
     <script>
         (function () {
             var t = localStorage.getItem('flowva-theme') || 'light';
@@ -457,8 +457,8 @@
                     </svg>
                     For Employers
                 </div>
-                <h1>Post a Role</h1>
-                <p>Reach thousands of creative professionals. Post a full-time or contract role and start receiving
+                <h1>Post a Job</h1>
+                <p>Reach thousands of creative professionals. Post a full-time or contract job and start receiving
                     applications today.</p>
             </div>
         </section>
@@ -471,7 +471,7 @@
                     <span class="par-breadcrumb-sep">›</span>
                     <a href="dashboard.html#projects">Dashboard</a>
                     <span class="par-breadcrumb-sep">›</span>
-                    <span>Post a Role</span>
+                    <span>Post a Job</span>
                 </nav>
 
                 <div id="par-success">
@@ -481,8 +481,8 @@
                             <polyline points="20 6 9 17 4 12" />
                         </svg>
                     </div>
-                    <h2>Role Submitted for Review!</h2>
-                    <p>Your role listing is under review by our team. Once approved it will be visible to creators who
+                    <h2>Job Submitted for Review!</h2>
+                    <p>Your Job listing is under review by our team. Once approved it will be visible to creators who
                         can apply directly.</p>
                     <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
                         <a href="dashboard.html#projects" class="btn btn--primary btn--lg">View in Dashboard</a>
@@ -510,7 +510,7 @@
                                     </div>
                                     <div>
                                         <div class="par-type-label">Full-Time</div>
-                                        <div class="par-type-desc">Permanent employment role</div>
+                                        <div class="par-type-desc">Permanent employment Job</div>
                                     </div>
                                 </label>
                                 <label class="par-type-card" id="type-contract-card">
@@ -620,9 +620,9 @@
                                 <label class="par-label" for="par-desc">Job Description <span
                                         style="color:var(--danger)">*</span></label>
                                 <textarea class="par-textarea" id="par-desc" rows="7" maxlength="6000"
-                                    placeholder="Describe responsibilities, requirements, what a typical day looks like, and what makes this role exciting…"></textarea>
+                                    placeholder="Describe responsibilities, requirements, what a typical day looks like, and what makes this job exciting…"></textarea>
                                 <div style="display:flex;justify-content:space-between;margin-top:4px">
-                                    <span class="par-form-error" id="err-desc">Please describe the role (at least 50
+                                    <span class="par-form-error" id="err-desc">Please describe the job (at least 50
                                         characters).</span>
                                     <span class="par-hint" id="desc-count" style="margin-left:auto">0 / 6000</span>
                                 </div>
@@ -715,7 +715,7 @@
                             <div id="par-global-error">Something went wrong. Please try again.</div>
                             <div class="par-submit-row">
                                 <button type="submit" class="btn btn--primary btn--lg" id="par-submit-btn">Post
-                                    Role</button>
+                                    Job</button>
                                 <a href="dashboard.html#projects" class="btn btn--ghost">Cancel</a>
                             </div>
 
@@ -741,7 +741,7 @@
                                 </svg>
                                 Who sees this?
                             </h3>
-                            <p style="font-size:0.83rem;color:var(--text-secondary);line-height:1.65;margin:0">Your role
+                            <p style="font-size:0.83rem;color:var(--text-secondary);line-height:1.65;margin:0">Your job
                                 will be visible to all verified Flowva creators matching your creative field.</p>
                         </div>
 
@@ -1024,7 +1024,7 @@
                 globalError.textContent = err.message || 'Something went wrong. Please try again.';
                 globalError.style.display = 'block';
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Post Role';
+                submitBtn.textContent = 'Post Job';
             }
         });
     </script>

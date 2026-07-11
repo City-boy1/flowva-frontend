@@ -20,40 +20,25 @@
         const messageEl = document.getElementById('message');
         const actionEl = document.getElementById('action');
 
-        // Helio redirects back with no guaranteed query params
-        // We find the pending order and poll verify
+        // Backend always appends ?orderId=... to both the success and
+        // cancel redirect URLs (see payment.service.ts initializeCheckout)
+        // for both Paystack and Skrill — no guessing needed.
         async function checkPayment() {
-            statusEl.textContent = '⏳';
-            messageEl.textContent = 'Confirming your payment…';
+            const orderId = params.get('orderId');
+            const cancelled = params.get('status') === 'cancelled';
 
             await api.restoreSession();
 
-            // Find the most recent PENDING order for this user
-            const ordersRes = await api.users.getOrders();
-            if (!ordersRes.ok) {
-                showFailed();
-                return;
-            }
+            if (!orderId) { showFailed(); return; }
+            if (cancelled) { showCancelled(); return; }
 
-            const pending = (ordersRes.data?.orders ?? []).find(o => o.status === 'PENDING');
-            if (!pending) {
-                // No pending order — payment may have already been confirmed via webhook
-                const paid = (ordersRes.data?.orders ?? []).find(o =>
-                    ['PAID', 'COMPLETED'].includes(o.status)
-                );
-                if (paid) {
-                    showSuccess(paid.mongoTemplateId);
-                } else {
-                    showFailed();
-                }
-                return;
-            }
+            statusEl.textContent = '⏳';
+            messageEl.textContent = 'Confirming your payment…';
 
-            // Poll verify endpoint
             let attempts = 0;
             const poll = setInterval(async () => {
                 attempts++;
-                const res = await api.payments.verify(pending.id);
+                const res = await api.payments.verify(orderId);
                 if (res.ok && res.data?.verified) {
                     clearInterval(poll);
                     showSuccess(res.data.templateId);
@@ -64,6 +49,13 @@
                     actionEl.innerHTML = `<a href="dashboard.html#purchases" class="btn">Go to Dashboard</a>`;
                 }
             }, 3000);
+        }
+
+        function showCancelled() {
+            statusEl.textContent = '✕';
+            statusEl.style.color = '#ef4444';
+            messageEl.textContent = 'Payment was cancelled.';
+            actionEl.innerHTML = `<a href="marketplace.html" class="btn btn--ghost">Back to Marketplace</a>`;
         }
 
         function showSuccess(templateId) {

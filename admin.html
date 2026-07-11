@@ -75,6 +75,13 @@
             </button>
 
             <div class="nav-section-label">Commerce</div>
+            <button class="nav-item" data-tab="payouts">
+                <span class="nav-icon">💸</span> Payouts
+            </button>
+            <button class="nav-item" data-tab="payout-requests">
+                <span class="nav-icon">🔄</span> Payout Method Changes
+                <span class="nav-badge" id="badge-payout-requests">0</span>
+            </button>
             <button class="nav-item" data-tab="commissions">
                 <span class="nav-icon">$</span> Commissions
             </button>
@@ -253,15 +260,51 @@
                 </div>
             </div>
 
+            <!-- ── PAYOUTS ─────────────────────────────────── -->
+            <div class="tab-panel" id="panel-payouts">
+                <div class="page-header">
+                    <h1>Creator Payouts</h1>
+                    <p>Paystack transfers are one click; Skrill/Grey are marked paid after you send manually</p>
+                </div>
+                <div id="payouts-list">
+                    <div class="loading-row">
+                        <div class="spinner"></div>Loading payouts…
+                    </div>
+                </div>
+            </div>
+
             <!-- ── COMMISSIONS ─────────────────────────────── -->
             <div class="tab-panel" id="panel-commissions">
                 <div class="page-header">
                     <h1>Commissions</h1>
-                    <p>Platform earnings from completed sales (auto-disbursed on-chain via Helio)</p>
+                    <p>Platform earnings from completed sales — held until admin payout via Paystack, Skrill, or Grey
+                    </p>
                 </div>
                 <div id="comm-list">
                     <div class="loading-row">
                         <div class="spinner"></div>Loading…
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── PAYOUT METHOD CHANGE REQUESTS ─────────────── -->
+            <div class="tab-panel" id="panel-payout-requests">
+                <div class="page-header">
+                    <h1>Payout Method Changes</h1>
+                    <p>Creators can only have one active payout wallet. Changing an existing method requires a written
+                        reason and your approval — this protects against a compromised account silently redirecting
+                        payouts.</p>
+                </div>
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-payoutreq-tab="PENDING">
+                        Pending <span class="sub-tab-count" id="payoutreq-pending-count"></span>
+                    </button>
+                    <button class="sub-tab" data-payoutreq-tab="APPROVED">Approved</button>
+                    <button class="sub-tab" data-payoutreq-tab="REJECTED">Rejected</button>
+                </div>
+                <div id="payoutreq-list">
+                    <div class="loading-row">
+                        <div class="spinner"></div>Loading requests…
                     </div>
                 </div>
             </div>

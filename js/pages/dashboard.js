@@ -1,6 +1,7 @@
 import AppState from '../core/state.js';
 import Toast    from '../core/toast.js';
 import api      from '../core/api.js';
+import { countryInfo, normalizeCountry } from '../core/countries.js';
 
 function _esc(str) {
   const d = document.createElement('div');
@@ -737,6 +738,14 @@ async function loadProjects() {
         </div>
             <span class="badge ${statusBadge}" style="flex-shrink:0">${_esc(statusLabel)}</span>      </div>
       ${desc ? `<p style="font-size:0.83rem;color:var(--text-secondary);line-height:1.5;margin:0 0 4px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${_esc(desc)}</p>` : ''}
+    ${['DELIVERED','REVISION_REQUESTED'].includes(p.status) && p._deliveryNote ? (() => {
+    const [note, fileUrl] = p._deliveryNote.split('||');
+    return `<div style="background:var(--bg-overlay);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;margin:4px 0">
+      <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Delivered work</div>
+      <p style="font-size:0.83rem;color:var(--text-secondary);margin-bottom:6px">${_esc(note ?? '')}</p>
+      ${fileUrl ? `<a href="${_esc(fileUrl)}" target="_blank" rel="noopener" class="btn btn--ghost btn--sm">⬇ View Delivered File</a>` : ''}
+    </div>`;
+    })() : ''}
       ${skills.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap">${skills.map(s => `<span style="font-size:0.72rem;background:var(--bg-overlay);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-muted)">${_esc(s)}</span>`).join('')}</div>` : ''}
       <div style="display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap;margin-top:4px">
         ${actions.join('')}
@@ -1256,6 +1265,78 @@ async function loadFollowing() {
   });
 }
 
+// ── Followers (creator-facing) ─────────────────────────────────────────────
+async function loadFollowers() {
+  const list = document.getElementById('followers-list');
+  if (!list) return;
+  list.innerHTML = '<p style="color:var(--text-muted);font-size:0.9rem">Loading…</p>';
+
+  const res = await api.users.getFollowers();
+  if (!res.ok || !res.data?.followers?.length) {
+    list.innerHTML = `
+      <div class="empty-state" style="padding:60px 20px;text-align:center">
+        <h3>No followers yet</h3>
+        <p style="color:var(--text-muted);margin-top:8px">Followers appear here once buyers follow your creator profile</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-4)">
+      ${res.data.followers.map(f => {
+        const color = (() => {
+          const colors = ['#7c3aed','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6'];
+          let hash = 0;
+          const id = f.id ?? '';
+          for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
+          return colors[Math.abs(hash) % colors.length];
+        })();
+        return `
+          <div class="card card--hover" style="padding:var(--space-4)">
+            <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3)">
+              <a href="creator.html?id=${_esc(f.id)}" style="display:flex;align-items:center;gap:var(--space-3);text-decoration:none;flex:1;min-width:0">
+                ${f.avatarUrl
+                  ? `<img src="${_esc(f.avatarUrl)}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0">`
+                  : `<div style="width:44px;height:44px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:0.9rem;flex-shrink:0">
+                      ${_esc((f.name||'?').charAt(0).toUpperCase())}
+                     </div>`
+                }
+                <div style="min-width:0">
+                  <div style="font-weight:600;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary)">${_esc(f.name)}</div>
+                  <div style="font-size:0.78rem;color:var(--text-muted)">${_esc(f.country ?? '')}</div>
+                </div>
+              </a>
+              <button class="btn btn--ghost btn--sm message-follower-btn"
+                data-id="${_esc(f.id)}"
+                data-name="${_esc(f.name)}"
+                style="flex-shrink:0;font-size:0.78rem">
+                💬 Message
+              </button>
+            </div>
+            ${f.bio ? `<p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${_esc(f.bio)}</p>` : ''}
+          </div>`;
+      }).join('')}
+    </div>`;
+
+  list.querySelectorAll('.message-follower-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = '…';
+      const res = await api.messages.startConversation(btn.dataset.id);
+      if (!res.ok) {
+        Toast.show(res.error || 'Could not start conversation', 'error');
+        btn.disabled = false;
+        btn.textContent = '💬 Message';
+        return;
+      }
+      const convId = res.data?.conversationId ?? res.data?.conversation?.id;
+      if (convId) sessionStorage.setItem('fv_open_conversation', convId);
+      sessionStorage.setItem('fv_nav_target', 'messages');
+      window.location.href = 'messages.html';
+    });
+  });
+}
+
 function updatePayoutMethodOptions(country, selectedValue = '') {
   const select      = document.getElementById('payout-method');
   const accountInput = document.getElementById('payout-account');
@@ -1290,65 +1371,197 @@ async function initPayoutPanel() {
   if (balEl)     balEl.textContent = '…';
   if (pendingEl) pendingEl.textContent = 'Loading…';
 
-  // Ensure we have a fresh user object with country populated
   const meRes = await api.auth.me();
   if (meRes.ok && meRes.data?.user) {
     AppState.setAuth(AppState.getToken(), { ...AppState.getUser(), ...meRes.data.user });
   }
   const userCountry = (AppState.getUser()?.country ?? '').toUpperCase();
-  const isGhana     = userCountry === 'GH';
-
-  // Show Paystack payout block for Ghanaian creators
-  const paystackWrap = document.getElementById('paystack-payout-wrap');
-  if (paystackWrap) paystackWrap.style.display = isGhana ? 'block' : 'none';
+  // Mirrors the backend's PAYSTACK_PAYOUT_COUNTRIES env var.
+  const paystackAvailable = ['GH', 'NG'].includes(userCountry);
 
   const walletRes = await api.payouts.getWallet();
   if (walletRes.ok && walletRes.data?.wallet) {
     const w = walletRes.data.wallet;
-    if (balEl)     balEl.textContent = `$${Number(w.availableBalance ?? 0).toFixed(2)} USD`;
-    if (pendingEl) pendingEl.textContent = `$${Number(w.pendingBalance ?? 0).toFixed(2)} pending`;
+    if (balEl)     balEl.textContent = `$${Number(w.totalEarned ?? 0).toFixed(2)} USD`;
+    if (pendingEl) pendingEl.textContent = `$${Number(w.pending ?? 0).toFixed(2)} pending`;
   } else {
     if (balEl)     balEl.textContent = '$—';
     if (pendingEl) pendingEl.textContent = 'Could not load balance';
   }
 
   const settingsRes = await api.payouts.getSettings();
-  const s = settingsRes.ok ? settingsRes.data?.settings : null;
-  const method = (s?.primaryMethod ?? 'USDC_WALLET').toUpperCase();
+  const s = settingsRes.ok ? settingsRes.data : null;
 
-  const usdcInfo = document.getElementById('payout-usdc-info');
+  const methodBtns = {
+    PAYSTACK_SUBACCOUNT: document.getElementById('method-btn-paystack'),
+    SKRILL:              document.getElementById('method-btn-skrill'),
+    GREY:                document.getElementById('method-btn-grey'),
+  };
+  const methodWraps = {
+    PAYSTACK_SUBACCOUNT: document.getElementById('paystack-fields-wrap'),
+    SKRILL:              document.getElementById('skrill-fields-wrap'),
+    GREY:                document.getElementById('grey-fields-wrap'),
+  };
+  const methodHint = document.getElementById('payout-method-hint');
+  const methodLabel = m => m === 'PAYSTACK_SUBACCOUNT' ? 'Paystack' : m === 'SKRILL' ? 'Skrill' : 'Grey';
 
-  if (method === 'USDC_WALLET') {
-    if (usdcInfo) usdcInfo.style.display = 'block';
-    const skrillEl = document.getElementById('skrill-email');
-    const greyEl   = document.getElementById('grey-account');
-    const psAcctEl = document.getElementById('paystack-account');
-    const psTypeEl = document.getElementById('paystack-type');
-    if (skrillEl) skrillEl.value = s?.skrillEmail ?? '';
-    if (greyEl)   greyEl.value   = s?.greyAccount ?? '';
-    if (psAcctEl && s?.paystackAccount) psAcctEl.value = s.paystackAccount;
-    if (psTypeEl && s?.paystackType)    psTypeEl.value = s.paystackType;
-  } else {
-    if (usdcInfo) usdcInfo.style.display = 'none';
+  if (!paystackAvailable && methodBtns.PAYSTACK_SUBACCOUNT) {
+    methodBtns.PAYSTACK_SUBACCOUNT.disabled = true;
+    methodBtns.PAYSTACK_SUBACCOUNT.title = 'Not available for your country yet';
   }
 
-document.getElementById('save-wallet-btn')?.addEventListener('click', async () => {
-    const skrill = document.getElementById('skrill-email')?.value.trim();
-    const grey   = document.getElementById('grey-account')?.value.trim();
-    const psType = document.getElementById('paystack-type')?.value ?? '';
-    const psAcct = document.getElementById('paystack-account')?.value.trim() ?? '';
-    if (!skrill && !grey && !(isGhana && psAcct)) {
-        Toast.show('Please enter at least one payout method', 'warning');
-        return;
+  const bankSelect  = document.getElementById('paystack-bank-select');
+  const bankNumEl   = document.getElementById('paystack-account-number');
+  const skrillEl    = document.getElementById('skrill-email');
+  const greyNumEl   = document.getElementById('grey-account-number');
+  const greyNameEl  = document.getElementById('grey-account-name');
+  if (bankNumEl  && s?.paystackAccountNumber) bankNumEl.value  = s.paystackAccountNumber;
+  if (skrillEl   && s?.skrillEmail)           skrillEl.value   = s.skrillEmail;
+  if (greyNumEl  && s?.greyAccountNumber)      greyNumEl.value  = s.greyAccountNumber;
+  if (greyNameEl && s?.greyAccountName)        greyNameEl.value = s.greyAccountName;
+
+  const verifiedNameWrap = document.getElementById('paystack-verified-name');
+  const verifiedNameText = document.getElementById('paystack-verified-name-text');
+  if (s?.paystackAccountName && verifiedNameWrap && verifiedNameText) {
+    verifiedNameText.textContent = s.paystackAccountName;
+    verifiedNameWrap.style.display = 'block';
+  }
+
+  function showMethodFields(method) {
+    Object.entries(methodWraps).forEach(([m, el]) => { if (el) el.style.display = m === method ? 'block' : 'none'; });
+    Object.entries(methodBtns).forEach(([m, btn]) => btn?.classList.toggle('btn--primary', m === method));
+  }
+  const initialMethod = s?.primaryMethod ?? (paystackAvailable ? 'PAYSTACK_SUBACCOUNT' : 'SKRILL');
+  showMethodFields(initialMethod);
+  if (methodHint) {
+    methodHint.textContent = s?.primaryMethod
+      ? `Currently receiving payouts via ${methodLabel(s.primaryMethod)}.`
+      : 'Fill in a method\'s details below, then click "Use as My Payout Method".';
+  }
+  Object.entries(methodBtns).forEach(([m, btn]) => btn?.addEventListener('click', () => showMethodFields(m)));
+
+  if (bankSelect && paystackAvailable) {
+    const country = userCountry === 'NG' ? 'nigeria' : 'ghana';
+    const banksRes = await api.payouts.getBanks(country);
+    if (banksRes.ok && banksRes.data?.banks) {
+      bankSelect.innerHTML = '<option value="">Select your bank…</option>' +
+        banksRes.data.banks.map(b => `<option value="${b.code}" ${b.code === s?.paystackBankCode ? 'selected' : ''}>${b.name}</option>`).join('');
     }
-    const res = await api.payouts.updateSettings({
-        skrillEmail:     skrill,
-        greyAccount:     grey,
-        paystackType:    isGhana ? psType  : undefined,
-        paystackAccount: isGhana ? psAcct  : undefined,
+  }
+
+  const hasExistingMethod = !!s?.primaryMethod;
+
+  function toggleReasonField(method, show) {
+    const wrap = document.getElementById(`${method.toLowerCase().replace('_subaccount','')}-reason-wrap`);
+    if (wrap) wrap.style.display = show ? 'block' : 'none';
+  }
+  if (hasExistingMethod) {
+    ['paystack','skrill','grey'].forEach(m => toggleReasonField(m.toUpperCase(), true));
+  }
+
+  if (hasExistingMethod) {
+    const activeFieldsByMethod = {
+      PAYSTACK_SUBACCOUNT: [bankSelect, bankNumEl],
+      SKRILL:              [skrillEl],
+      GREY:                [greyNumEl, greyNameEl],
+    };
+    Object.entries(activeFieldsByMethod).forEach(([method, fields]) => {
+      const isActiveMethod = method === s.primaryMethod;
+      fields.forEach(f => { if (f) f.disabled = isActiveMethod; });
     });
-    if (!res.ok) { Toast.show(res.error ?? 'Failed to save payout details', 'error'); return; }
-    Toast.show('Payout details saved ✓', 'success');
+    const activeWrap = methodWraps[s.primaryMethod];
+    if (activeWrap && !activeWrap.querySelector('.payout-locked-note')) {
+      const note = document.createElement('p');
+      note.className = 'payout-locked-note';
+      note.style.cssText = 'font-size:0.75rem;color:var(--text-muted);margin-top:8px';
+      note.textContent = 'This is your active payout method. To change these details, explain why below and submit — an admin will review it.';
+      activeWrap.appendChild(note);
+    }
+  }
+
+  document.getElementById('paystack-activate-btn')?.addEventListener('click', () =>
+    requestMethodChange({
+      method: 'PAYSTACK_SUBACCOUNT',
+      bankCode: bankSelect?.value,
+      accountNumber: bankNumEl?.value.trim(),
+      currency: userCountry === 'NG' ? 'NGN' : 'GHS',
+    }, 'paystack-reason'));
+
+  document.getElementById('skrill-activate-btn')?.addEventListener('click', () =>
+    requestMethodChange({ method: 'SKRILL', email: skrillEl?.value.trim() }, 'skrill-reason'));
+
+  document.getElementById('grey-activate-btn')?.addEventListener('click', () =>
+    requestMethodChange({
+      method: 'GREY',
+      accountNumber: greyNumEl?.value.trim(),
+      accountName: greyNameEl?.value.trim(),
+    }, 'grey-reason'));
+
+  async function requestMethodChange(input, reasonFieldId) {
+    const reason = hasExistingMethod ? document.getElementById(reasonFieldId)?.value.trim() : undefined;
+    if (hasExistingMethod && (!reason || reason.length < 20)) {
+      Toast.show('Please explain why you\'re changing your payout method (min 20 characters)', 'warning');
+      return;
+    }
+    const res = await api.payouts.requestMethodChange({ ...input, reason });
+    if (!res.ok) { Toast.show(res.error ?? 'Save that method\'s details first', 'error'); return; }
+
+    if (hasExistingMethod) {
+      Toast.show('Change request submitted — awaiting admin approval.', 'info');
+      if (methodHint) methodHint.textContent = `Currently receiving payouts via ${methodLabel(s.primaryMethod)}. A change request is pending admin review.`;
+      renderPendingChangeRequest();
+    } else {
+      Toast.show(`${methodLabel(input.method)} is now your active payout method ✓`, 'success');
+      if (methodHint) methodHint.textContent = `Currently receiving payouts via ${methodLabel(input.method)}.`;
+    }
+  }
+
+  async function renderPendingChangeRequest() {
+    const res = await api.payouts.getChangeRequests();
+    const pending = res.ok ? (res.data?.requests ?? []).find(r => r.status === 'PENDING') : null;
+    let banner = document.getElementById('payout-pending-request-banner');
+    if (pending) {
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'payout-pending-request-banner';
+        banner.style.cssText = 'background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius-md);padding:var(--space-4);margin-bottom:var(--space-5);font-size:0.85rem';
+        document.querySelector('.payout-card')?.insertBefore(banner, document.querySelector('.payout-card hr.divider'));
+      }
+      banner.innerHTML = `⏳ Your request to switch to <strong>${_esc(methodLabel(pending.requestedMethod))}</strong> is pending admin review.<br><span style="color:var(--text-muted)">Reason: ${_esc(pending.reason)}</span>`;
+    } else if (banner) {
+      banner.remove();
+    }
+  }
+  renderPendingChangeRequest();
+
+  document.getElementById('skrill-save-btn')?.addEventListener('click', async function () {
+    const email = skrillEl?.value.trim();
+    if (!email) { Toast.show('Enter your Skrill email', 'warning'); return; }
+    this.disabled = true;
+    const res = await api.payouts.setSkrillEmail(email);
+    this.disabled = false;
+    if (!res.ok) { Toast.show(res.error ?? 'Failed to save', 'error'); return; }
+    Toast.show('Skrill email saved ✓', 'success');
+  });
+
+  const freqBtnWeekly  = document.getElementById('freq-btn-weekly');
+  const freqBtnMonthly = document.getElementById('freq-btn-monthly');
+  function paintFreq(freq) {
+    freqBtnWeekly?.classList.toggle('btn--primary', freq === 'WEEKLY');
+    freqBtnMonthly?.classList.toggle('btn--primary', freq === 'MONTHLY');
+  }
+  paintFreq(s?.payoutFrequency ?? 'MONTHLY');
+  freqBtnWeekly?.addEventListener('click', async () => {
+    paintFreq('WEEKLY');
+    const res = await api.payouts.setFrequency('WEEKLY');
+    if (!res.ok) { Toast.show(res.error ?? 'Failed to save', 'error'); return; }
+    Toast.show('Payout frequency set to weekly ✓', 'success');
+  });
+  freqBtnMonthly?.addEventListener('click', async () => {
+    paintFreq('MONTHLY');
+    const res = await api.payouts.setFrequency('MONTHLY');
+    if (!res.ok) { Toast.show(res.error ?? 'Failed to save', 'error'); return; }
+    Toast.show('Payout frequency set to monthly ✓', 'success');
   });
 
   loadPayoutHistory();
@@ -1401,14 +1614,17 @@ async function initSettingsPanel() {
   const nameEl     = document.getElementById('profile-name');
   const emailEl    = document.getElementById('profile-email');
   const bioEl      = document.getElementById('profile-bio');
-  const countryEl  = document.getElementById('profile-country');
+  const countryDisplayEl = document.getElementById('profile-country-display');
   const avatarPrev = document.getElementById('settings-avatar-preview');
   const bioCount   = document.getElementById('bio-char-count');
 
-  if (nameEl)    nameEl.value    = user.name    ?? '';
-  if (emailEl)   emailEl.value   = user.email   ?? '';
-  if (bioEl)     bioEl.value     = user.bio     ?? '';
-  if (countryEl) countryEl.value = user.country ?? 'GH';
+  if (nameEl)  nameEl.value  = user.name ?? '';
+  if (emailEl) emailEl.value = user.email ?? '';
+  if (bioEl)   bioEl.value   = user.bio ?? '';
+  if (countryDisplayEl) {
+    const info = countryInfo(normalizeCountry(user.country));
+    countryDisplayEl.textContent = info ? `${info.flag} ${info.label}` : (user.country || 'Not set');
+  }
 
   if (avatarPrev) {
   if (user.avatarUrl) {
@@ -1506,9 +1722,8 @@ async function initSettingsPanel() {
     const btn = document.getElementById('profile-save-btn');
     btn.disabled = true; btn.textContent = 'Saving…';
     const res = await api.users.updateProfile({
-      name:    document.getElementById('profile-name')?.value.trim(),
-      bio:     document.getElementById('profile-bio')?.value.trim(),
-      country: document.getElementById('profile-country')?.value,
+      name: document.getElementById('profile-name')?.value.trim(),
+      bio:  document.getElementById('profile-bio')?.value.trim(),
     });
     btn.disabled = false; btn.textContent = 'Save Changes';
     if (!res.ok) { Toast.show(res.error ?? 'Failed to save', 'error'); return; }
@@ -1647,6 +1862,37 @@ function initUploadPanel() {
   // Detect device
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
   wizDevice = isMobile ? 'mobile' : 'desktop';
+
+  const creatorCountry  = normalizeCountry(AppState.getUser()?.country);
+  const creatorInfo     = countryInfo(creatorCountry);
+  const creatorCurrency = creatorInfo?.currency ?? 'USD';
+  const hasLocalCurrency = creatorCurrency !== 'USD';
+
+  const localPriceGroup = document.getElementById('wiz-local-price-group');
+const localPriceLabel = document.getElementById('wiz-local-price-label');
+const localPriceHint  = document.getElementById('wiz-local-price-hint');
+const usdPriceGroup   = document.getElementById('wiz-usd-price-group');
+const usdPriceHint    = document.getElementById('wiz-usd-price-hint');
+
+if (hasLocalCurrency) {
+  if (localPriceLabel) localPriceLabel.textContent = `Price (${creatorCurrency}) *`;
+  if (localPriceHint) {
+    localPriceHint.textContent =
+      `This is what buyers in ${creatorInfo?.label ?? 'your country'} will see and pay — required.`;
+  }
+  if (usdPriceGroup) usdPriceGroup.style.display = '';
+  if (usdPriceHint) {
+    usdPriceHint.textContent =
+      `Lets buyers browsing outside ${creatorInfo?.label ?? 'your country'} (in USD) find and buy this template. ` +
+      `If left blank, this template simply won't appear in USD/other-country marketplace views — ` +
+      `only buyers in ${creatorInfo?.label ?? 'your country'} will see it. Should stay reasonably ` +
+      `close to your local price — large mismatches will be rejected on review.`;
+  }
+} else {
+  if (localPriceLabel) localPriceLabel.textContent = 'Price (USD) *';
+  if (localPriceHint) localPriceHint.textContent = '';
+  if (usdPriceGroup) usdPriceGroup.style.display = 'none'; // creator's local currency IS USD — no separate field needed
+}
   const hintEl = document.getElementById('wiz-device-hint');
   if (hintEl) hintEl.textContent = `We detected you're on a ${wizDevice === 'mobile' ? 'mobile device' : 'desktop'}. Choose your template category below.`;
 
@@ -1766,21 +2012,34 @@ function initUploadPanel() {
   document.getElementById('wiz-next-2')?.addEventListener('click', () => goTo(3));
 
   // ── Step 3: details ───────────────────────────────────────────────────────
-  document.getElementById('wiz-price')?.addEventListener('input', function () {
+  document.getElementById('wiz-local-price')?.addEventListener('input', function () {
     const p = parseFloat(this.value) || 0;
-    document.getElementById('wiz-creator-earn').textContent  = `$${(p * 0.8).toFixed(2)}`;
-    document.getElementById('wiz-platform-earn').textContent = `$${(p * 0.2).toFixed(2)}`;
+    const curr = hasLocalCurrency ? creatorCurrency : 'USD';
+    document.getElementById('wiz-creator-earn').textContent  = `${(p * 0.8).toFixed(2)} ${curr}`;
+    document.getElementById('wiz-platform-earn').textContent = `${(p * 0.2).toFixed(2)} ${curr}`;
   });
 
   document.getElementById('wiz-back-3')?.addEventListener('click', () => goTo(2));
   document.getElementById('wiz-next-3')?.addEventListener('click', () => {
-    const title  = document.getElementById('wiz-title')?.value.trim();
-    const subcat = document.getElementById('wiz-subcategory')?.value;
-    const price  = document.getElementById('wiz-price')?.value;
-    const desc   = document.getElementById('wiz-desc')?.value.trim();
-    const errEl  = document.getElementById('wiz-details-error');
-    if (!title || !subcat || !price || !desc) {
+    const title      = document.getElementById('wiz-title')?.value.trim();
+    const subcat     = document.getElementById('wiz-subcategory')?.value;
+    const localPrice = document.getElementById('wiz-local-price')?.value.trim();
+    const usdPrice   = hasLocalCurrency ? document.getElementById('wiz-price')?.value.trim() : '';
+    const desc       = document.getElementById('wiz-desc')?.value.trim();
+    const errEl      = document.getElementById('wiz-details-error');
+
+    if (!title || !subcat || !localPrice || !desc) {
       errEl.textContent = 'Please fill all required fields.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (isNaN(Number(localPrice)) || Number(localPrice) <= 0) {
+      errEl.textContent = `Please enter a valid ${hasLocalCurrency ? creatorCurrency : 'USD'} price.`;
+      errEl.style.display = 'block';
+      return;
+    }
+    if (hasLocalCurrency && usdPrice && (isNaN(Number(usdPrice)) || Number(usdPrice) <= 0)) {
+      errEl.textContent = 'USD price must be a valid positive number.';
       errEl.style.display = 'block';
       return;
     }
@@ -1790,7 +2049,9 @@ function initUploadPanel() {
     const catLabel = { motion:'Motion Graphics', design:'Graphic Design', animation:'Animation 2D/3D', '3d':'3D Assets', universal:'Universal Export', 'mobile-design':'Mobile Design', 'mobile-animation':'Mobile Animation', capcut:'CapCut Link' };
     document.getElementById('rev-category').textContent = catLabel[wizCategory] ?? wizCategory;
     document.getElementById('rev-title').textContent    = title;
-    document.getElementById('rev-price').textContent    = `$${parseFloat(price).toFixed(2)} USD`;
+    document.getElementById('rev-price').textContent    = hasLocalCurrency
+      ? `${parseFloat(localPrice).toFixed(2)} ${creatorCurrency}${usdPrice ? ` · $${parseFloat(usdPrice).toFixed(2)} USD` : ' · No USD price set (won\'t show for USD/other-country buyers)'}`
+      : `$${parseFloat(localPrice).toFixed(2)} USD`;
     document.getElementById('rev-software').textContent = document.getElementById('wiz-software')?.value || '—';
     document.getElementById('rev-file').textContent     = templateFile?.name ?? '—';
 
@@ -1811,16 +2072,31 @@ function initUploadPanel() {
     errEl.style.display = 'none';
 
     const formData = new FormData();
+    const localPriceVal = document.getElementById('wiz-local-price').value.trim();
+    const usdPriceVal   = hasLocalCurrency
+      ? (document.getElementById('wiz-price')?.value.trim() || '')
+      : '';
+
     formData.append('title',       document.getElementById('wiz-title').value.trim());
     formData.append('category',    document.getElementById('wiz-subcategory').value);
-    formData.append('price',       document.getElementById('wiz-price').value);
+
+    // priceLocal is always required — it's in the creator's local currency,
+    // or USD if the creator's own country uses USD as its currency.
+    formData.append('priceLocal', localPriceVal);
+    formData.append('currency',   hasLocalCurrency ? creatorCurrency : 'USD');
+    formData.append('price',      localPriceVal); // backward-compat alias, same value as priceLocal
+
+    // priceUSD is optional and only meaningful when the creator's currency isn't USD.
+    // If omitted, the backend/marketplace should exclude this template from
+    // USD / other-country marketplace views entirely.
+    if (usdPriceVal) formData.append('priceUSD', usdPriceVal);
+
     formData.append('description', document.getElementById('wiz-desc').value.trim());
     formData.append('software',    JSON.stringify(
       (document.getElementById('wiz-software')?.value || '')
         .split(',').map(s => s.trim()).filter(Boolean)
     ));
     formData.append('tags',     JSON.stringify([]));
-    formData.append('currency', 'USD');
     formData.append('file',     templateFile);
     if (thumbFile)   formData.append('thumbnail', thumbFile);
     if (previewFile) formData.append('preview',   previewFile);
@@ -1854,6 +2130,10 @@ function initUploadPanel() {
     document.getElementById('wiz-file-info').style.display   = 'none';
     document.getElementById('wiz-preview-info').style.display = 'none';
     document.getElementById('wiz-thumb-preview').style.display = 'none';
+    const localPriceReset = document.getElementById('wiz-local-price');
+    if (localPriceReset) localPriceReset.value = '';
+    const usdPriceReset = document.getElementById('wiz-price');
+    if (usdPriceReset) usdPriceReset.value = '';
     goTo(1);
     activateTab('templates');
   });
@@ -2199,6 +2479,7 @@ function activateTab(target) {
 
   if (target === 'payout'            && isCreator())       initPayoutPanel();
   if (target === 'ratings'           && isCreator())       loadRatings();
+  if (target === 'followers'         && isCreator())       loadFollowers();
   if (target === 'templates'         && isCreator())       loadMyTemplates();
   if (target === 'tutorials-upload'  && isCreator())       loadMyTutorials();
   if (target === 'purchases'         && !isCreator())      loadPurchases();
@@ -2379,125 +2660,33 @@ async function openEscrowPaymentModal({ projectId, bidId, creatorId, creatorName
   const payBtn = document.getElementById('escrow-pay-btn');
   const freshPayBtn = payBtn.cloneNode(true);
   payBtn.replaceWith(freshPayBtn);
-
-  freshPayBtn.addEventListener('click', async () => {
+freshPayBtn.addEventListener('click', async () => {
     if (errEl) errEl.style.display = 'none';
-    const method = document.getElementById('escrow-pay-method')?.value
-                ?? freshMethod.value;
-
-    // ── Validate ──────────────────────────────────────────────────────────
-    if (method === 'card') {
-      const num = document.getElementById('escrow-card-number')?.value.replace(/\s/g,'');
-      const exp = document.getElementById('escrow-card-expiry')?.value;
-      const cvv = document.getElementById('escrow-card-cvv')?.value;
-      if (!num || num.length < 13 || !exp || !cvv || cvv.length < 3) {
-        if (errEl) { errEl.textContent = 'Please complete your card details'; errEl.style.display = 'block'; }
-        return;
-      }
-    }
-    if (method === 'paystack') {
-      const num = document.getElementById('escrow-paystack-number')?.value.trim();
-      if (!num) {
-        if (errEl) { errEl.textContent = 'Please enter your mobile money or bank account number'; errEl.style.display = 'block'; }
-        return;
-      }
-    }
 
     freshPayBtn.disabled    = true;
     freshPayBtn.textContent = 'Processing…';
 
-    let payRes;
-
-    if (method === 'paystack') {
-      // ── Paystack MoMo / Bank charge ──────────────────────────────────
-      payRes = await api.payments.paystackMomoCharge({
-        projectId,
-        bidId,
-        amount:   total,
-        currency: 'GHS',
-        phone:    document.getElementById('escrow-paystack-number')?.value.trim(),
-        network:  document.getElementById('escrow-paystack-network')?.value,
-        meta:     { creatorId, creatorName },
-      });
-    } else if (method === 'card') {
-      // ── Card via your payment initializer ────────────────────────────
-      payRes = await api.payments.initialize({
-        projectId,
-        bidId,
-        amount:      total,
-        currency:    'USD',
-        callbackUrl: `${window.location.origin}/payment-callback.html`,
-        meta:        { creatorId, creatorName, type: 'escrow' },
-      });
-      // For card, redirect to hosted payment page
-      if (payRes.ok && payRes.data?.authorizationUrl) {
-        window.location.href = payRes.data.authorizationUrl;
-        return;
-      }
-    } else {
-      // PayPal or other — initialize generic
-      payRes = await api.payments.initialize({
-        projectId,
-        bidId,
-        amount:      total,
-        currency:    'USD',
-        method,
-        callbackUrl: `${window.location.origin}/payment-callback.html`,
-        meta:        { creatorId, creatorName, type: 'escrow' },
-      });
-      if (payRes.ok && payRes.data?.authorizationUrl) {
-        window.location.href = payRes.data.authorizationUrl;
-        return;
-      }
-    }
+    const payRes = await api.payments.initialize({
+      type:        'PROJECT',
+      referenceId: bidId,
+      creatorId,
+      amount:      total,
+      currency:    'USD',
+      callbackUrl: `${window.location.origin}/payment-callback.html`,
+    });
 
     freshPayBtn.disabled    = false;
     freshPayBtn.textContent = '🔒 Pay & Fund Escrow';
 
     if (!payRes.ok) {
-      if (errEl) {
-        errEl.textContent = payRes.error ?? 'Payment failed. Please try again.';
-        errEl.style.display = 'block';
-      }
+      if (errEl) { errEl.textContent = payRes.error ?? 'Payment failed. Please try again.'; errEl.style.display = 'block'; }
       return;
     }
-
-    // ── Payment succeeded — fund escrow on backend ────────────────────
-    const escrowRes = await api.projects.fundEscrow({
-      projectId,
-      bidId,
-      amount:    total,
-      method,
-      reference: payRes.data?.reference ?? payRes.data?.data?.reference ?? '',
-    });
-
-    if (!escrowRes.ok) {
-      if (errEl) {
-        errEl.textContent = escrowRes.error ?? 'Escrow funding failed. Contact support.';
-        errEl.style.display = 'block';
-      }
+    if (payRes.data?.authorizationUrl) {
+      window.location.href = payRes.data.authorizationUrl;
       return;
     }
-
-    modal.classList.remove('open');
-    Toast.show('Escrow funded! The creator has been notified to begin work. ✓', 'success');
-
-    // ── Auto-open message thread with the creator ─────────────────────
-    if (creatorId) {
-      const msgRes = await api.messages.startConversation(
-        creatorId,
-        `Hi! I just funded the escrow for our project. Looking forward to working with you! 🎉`
-      );
-      if (msgRes.ok) {
-        const convId = msgRes.data?.conversationId ?? msgRes.data?.conversation?._id ?? creatorId;
-        sessionStorage.setItem('fv_open_conversation', convId);
-      }
-      // Navigate to messages regardless
-      sessionStorage.setItem('fv_nav_target', 'messages');
-      setTimeout(() => { window.location.href = 'messages.html'; }, 800);
-    }
-
-    loadProjects();
+    if (errEl) { errEl.textContent = 'Could not start checkout. Please try again.'; errEl.style.display = 'block'; }
   });
 
   modal.classList.add('open');

@@ -7,12 +7,21 @@
 import AppState from '../core/state.js';
 import Toast    from '../core/toast.js';
 import api      from '../core/api.js';
+import { getBuyerCountry, templateCountry, getDisplayPrice, formatPrice, hasUsdPrice } from '../core/currency.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 
   // ─── Persist favourites across pages ────────────────────────────────────
   const _favKey = 'fv_favorites';
   const favorites = new Set(JSON.parse(localStorage.getItem(_favKey) || '[]'));
+
+  // ─── Home-country pricing context ───────────────────────────────────────
+  // Set once per loadTemplates() call: true when the trending strip is
+  // showing real creators from the buyer's own country (→ local currency),
+  // false when falling back to the global catalog (→ USD only, and only
+  // templates that actually have a USD price set are eligible).
+  const _homeCountry = getBuyerCountry();
+  let _showLocalPricing = false;
 
   function _saveFavs() {
     localStorage.setItem(_favKey, JSON.stringify([...favorites]));
@@ -133,8 +142,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       empty?.classList.remove('hidden');
       return;
     }
+
+    const all = res.data.templates;
+    const homePool = _homeCountry ? all.filter(t => templateCountry(t) === _homeCountry) : [];
+
+    let pool;
+    if (homePool.length) {
+      pool = homePool;
+      _showLocalPricing = true;
+    } else {
+      // No creators (yet) from the buyer's own country — show the global
+      // catalog instead, but only templates with a USD price set, and
+      // priced in USD only.
+      pool = all.filter(hasUsdPrice);
+      _showLocalPricing = false;
+    }
+
+    if (!pool.length) {
+      empty?.classList.remove('hidden');
+      return;
+    }
+
     carousel?.classList.remove('hidden');
-    const displayed = _seededShuffle(res.data.templates).slice(0, 6);
+    const displayed = _seededShuffle(pool).slice(0, 6);
     renderTemplates(grid, displayed);
   } catch {
     skeleton?.classList.add('hidden');
@@ -146,9 +176,12 @@ function renderTemplates(grid, templates) {
   grid.innerHTML = templates.map((t, i) => {
     const isFav = favorites.has(t._id || t.id);
     const previewUrl = t.previewUrl || '';
-    const price = Number(t.price ?? 0).toFixed(2);
-    const GHS_RATE = 15.5; // update this when you wire to a live exchange rate API
-    const priceGhs = (Number(t.price ?? 0) * GHS_RATE).toFixed(2);
+    const priceInfo = getDisplayPrice(t, {
+      viewingCountry:  _homeCountry,
+      homeCountry:     _homeCountry,
+      showLocalPricing: _showLocalPricing,
+    });
+    const priceLabel = formatPrice(priceInfo.amount, priceInfo.currency);
     const creatorName = t.creator?.name ?? t.creator?.username ?? t.creatorName ?? t.creatorId ?? 'Creator';
     const creatorId = t.creator?._id ?? t.creator?.id ?? '';
     const templateId = t._id ?? t.id;
@@ -184,9 +217,10 @@ const thumbHTML = previewUrl
             <button class="btn btn--primary btn--sm buy-btn"
               data-id="${_esc(String(templateId))}"
               data-title="${_esc(t.title)}"
-              data-price="${_esc(String(price))}"
+              data-price="${_esc(String(priceInfo.amount))}"
+              data-currency="${_esc(priceInfo.currency)}"
               aria-label="Buy ${_esc(t.title)}">
-              Buy $${price}
+              Buy ${priceLabel}
             </button>
           </div>
           <button class="template-fav ${isFav ? 'active' : ''}"
@@ -202,7 +236,7 @@ const thumbHTML = previewUrl
         <div class="template-body">
           <div class="template-meta">
             <h3 class="template-title">${_esc(t.title)}</h3>
-            <span class="template-price">$${price} <span style="font-size:0.72rem;font-weight:500;color:var(--text-muted);display:block;margin-top:1px;">GH₵${priceGhs}</span></span>
+            <span class="template-price">${priceLabel}</span>
           </div>
           <p class="template-creator">
             by <a href="creator.html?id=${_esc(String(creatorId))}">${_esc(creatorName)}</a>
@@ -716,9 +750,14 @@ const observer = new IntersectionObserver((entries) => {
     const footer = document.getElementById('modal-footer');
     if (!modal) return;
 
-    const price     = Number(template.price ?? 0).toFixed(2);
-    const previewUrl = template.previewUrl ?? template.preview_url ?? '';
-    const templateId = template._id ?? template.id;
+    const priceInfo   = getDisplayPrice(template, {
+      viewingCountry:  _homeCountry,
+      homeCountry:     _homeCountry,
+      showLocalPricing: _showLocalPricing,
+    });
+    const priceLabel  = formatPrice(priceInfo.amount, priceInfo.currency);
+    const previewUrl  = template.previewUrl ?? template.preview_url ?? '';
+    const templateId  = template._id ?? template.id;
 
     title.textContent = template.title;
 
@@ -751,8 +790,9 @@ if (isVideo) {
           <button class="btn btn--primary btn--sm modal-buy-btn"
             data-id="${_esc(String(templateId))}"
             data-title="${_esc(template.title)}"
-            data-price="${_esc(String(price))}">
-            Buy $${price}
+            data-price="${_esc(String(priceInfo.amount))}"
+            data-currency="${_esc(priceInfo.currency)}">
+            Buy ${priceLabel}
           </button>
         </div>
       `;
