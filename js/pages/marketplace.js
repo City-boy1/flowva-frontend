@@ -143,9 +143,13 @@ if(tab==='tutorials'&&!_tutLoaded){_tutLoaded=true;loadTutorials();}
   // ══════════════════════════════════════════════════════════════════════
   // TEMPLATES
   // ══════════════════════════════════════════════════════════════════════
-  const homeCountry = getBuyerCountry(); // buyer's own country from signup, or null if unsupported
+const homeCountry = getBuyerCountry(); // buyer's own country from signup, or null if unsupported
   let activeCountry = homeCountry ?? ALL_COUNTRIES[0].value;
-  let _homeFallbackActive = false; // true = home country has no creators yet, showing global USD catalog instead
+  let _homeFallbackActive = false;
+  let activeCategory = 'all';
+  let allTemplates = [];       // ← ADD THIS LINE
+  let filtered = [];
+  let visibleCount = 12;       // how many filtered templates are currently rendered
 
   // Per-template pricing mode. Only true when:
   //  - viewing your own country specifically (and it has real creators), or

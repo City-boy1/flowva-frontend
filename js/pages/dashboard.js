@@ -1232,12 +1232,20 @@ async function loadFollowing() {
                   <div style="font-size:0.78rem;color:var(--text-muted)">${followers.toLocaleString()} follower${followers !== 1 ? 's' : ''}</div>
                 </div>
               </a>
-              <button class="btn btn--ghost btn--sm unfollow-btn"
-                data-id="${_esc(c.id)}"
-                data-name="${_esc(c.name)}"
-                style="flex-shrink:0;font-size:0.78rem">
-                Unfollow
-              </button>
+              <div style="display:flex;gap:6px;flex-shrink:0">
+                <button class="btn btn--ghost btn--sm message-following-btn"
+                  data-id="${_esc(c.id)}"
+                  data-name="${_esc(c.name)}"
+                  style="font-size:0.78rem">
+                  💬 Message
+                </button>
+                <button class="btn btn--ghost btn--sm unfollow-btn"
+                  data-id="${_esc(c.id)}"
+                  data-name="${_esc(c.name)}"
+                  style="font-size:0.78rem">
+                  Unfollow
+                </button>
+              </div>
             </div>
             ${c.bio ? `<p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${_esc(c.bio)}</p>` : ''}
           </div>`;
@@ -1261,6 +1269,13 @@ async function loadFollowing() {
       Toast.show(`Unfollowed ${name}`, 'info');
       // Reload the panel to reflect updated follower counts
       loadFollowing();
+    });
+  });
+
+  // Wire message buttons
+  list.querySelectorAll('.message-following-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openFollowerMessageModal(btn.dataset.id, btn.dataset.name || 'this creator');
     });
   });
 }
@@ -1319,20 +1334,8 @@ async function loadFollowers() {
     </div>`;
 
   list.querySelectorAll('.message-follower-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      btn.disabled = true;
-      btn.textContent = '…';
-      const res = await api.messages.startConversation(btn.dataset.id);
-      if (!res.ok) {
-        Toast.show(res.error || 'Could not start conversation', 'error');
-        btn.disabled = false;
-        btn.textContent = '💬 Message';
-        return;
-      }
-      const convId = res.data?.conversationId ?? res.data?.conversation?.id;
-      if (convId) sessionStorage.setItem('fv_open_conversation', convId);
-      sessionStorage.setItem('fv_nav_target', 'messages');
-      window.location.href = 'messages.html';
+    btn.addEventListener('click', () => {
+      openFollowerMessageModal(btn.dataset.id, btn.dataset.name || 'this user');
     });
   });
 }
@@ -2579,6 +2582,63 @@ function openRatingModal(orderId, creatorId) {
     Toast.show('Rating submitted ✓', 'success');
     // Reload purchases to reflect rated state
     loadPurchases();
+  });
+}
+
+function openFollowerMessageModal(recipientId, recipientName) {
+  document.getElementById('follower-msg-modal')?.remove();
+  const modal = document.createElement('div');
+  modal.id = 'follower-msg-modal';
+  modal.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;backdrop-filter:blur(4px)`;
+  modal.innerHTML = `
+    <div style="background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-6);width:100%;max-width:480px;box-shadow:var(--shadow-lg)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-5)">
+        <h3 style="font-family:var(--font-display);font-size:1.1rem">Message ${_esc(recipientName)}</h3>
+        <button id="follower-msg-close" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--text-muted);padding:4px">✕</button>
+      </div>
+      <textarea id="follower-msg-input" placeholder="Write your message…"
+        maxlength="1000" rows="4"
+        style="width:100%;background:var(--bg-overlay);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3);color:var(--text-primary);font-family:'Poppins',var(--font-body),sans-serif;font-size:0.9rem;resize:vertical;outline:none;box-sizing:border-box"></textarea>
+      <div style="display:flex;justify-content:flex-end;gap:var(--space-3);margin-top:var(--space-4)">
+        <button class="btn btn--ghost btn--sm" id="follower-msg-cancel">Cancel</button>
+        <button class="btn btn--primary btn--sm" id="follower-msg-send">Send Message</button>
+      </div>
+      <p id="follower-msg-error" style="color:var(--danger);font-size:0.82rem;margin-top:8px;display:none"></p>
+    </div>`;
+  document.body.appendChild(modal);
+
+  const input   = document.getElementById('follower-msg-input');
+  const sendBtn = document.getElementById('follower-msg-send');
+  const errorEl = document.getElementById('follower-msg-error');
+
+  const close = () => modal.remove();
+  document.getElementById('follower-msg-close')?.addEventListener('click', close);
+  document.getElementById('follower-msg-cancel')?.addEventListener('click', close);
+  modal.addEventListener('click', e => { if (e.target === modal) close(); });
+  input?.focus();
+
+  sendBtn?.addEventListener('click', async () => {
+    const content = input?.value.trim();
+    if (!content) {
+      errorEl.textContent  = 'Please write a message first.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    sendBtn.disabled    = true;
+    sendBtn.textContent = 'Sending…';
+    errorEl.style.display = 'none';
+    const res = await api.messages.startConversation(recipientId, content);
+    if (!res.ok) {
+      sendBtn.disabled    = false;
+      sendBtn.textContent = 'Send Message';
+      errorEl.textContent  = res.error || 'Failed to send. Please try again.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    const convId = res.data?.conversationId ?? res.data?.conversation?.id;
+    if (convId) sessionStorage.setItem('fv_open_conversation', convId);
+    Toast.show('Message sent! Opening conversation…', 'success');
+    setTimeout(() => { window.location.href = 'messages.html'; }, 800);
   });
 }
 

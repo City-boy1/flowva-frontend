@@ -27,6 +27,36 @@ function money(n) { return Number(n ?? 0).toFixed(2); }
 function el(id) { return document.getElementById(id); }
 
 // ════════════════════════════════════════════════════════════
+//  ICONS  (inline SVG — replaces emoji/symbol glyphs everywhere)
+// ════════════════════════════════════════════════════════════
+
+const ICONS = {
+  check:      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  close:      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  arrowUp:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>',
+  arrowDown:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>',
+  arrowRight: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+  undo:       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>',
+  refresh:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
+  dollar:     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+  eye:        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+  file:       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+  paperclip:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>',
+  clock:      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  gear:       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  play:       '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
+  grid:       '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+  list:       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+  users:      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  plus:       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  diamond:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 7-7 13-7-13z"/></svg>',
+  inbox:      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>',
+  alert:      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+};
+
+function icon(name) { return ICONS[name] ?? ''; }
+
+// ════════════════════════════════════════════════════════════
 //  TOAST
 // ════════════════════════════════════════════════════════════
 
@@ -49,13 +79,13 @@ const Toast = {
 //  DIALOGS  (replaces all native confirm / prompt / alert)
 // ════════════════════════════════════════════════════════════
 
-function showConfirm({ title, body, icon = '!', confirmLabel = 'Confirm', confirmClass = 'btn-danger', cancelLabel = 'Cancel' }) {
+function showConfirm({ title, body, icon: iconName = 'alert', confirmLabel = 'Confirm', confirmClass = 'btn-danger', cancelLabel = 'Cancel' }) {
   return new Promise(resolve => {
     const overlay = document.createElement('div');
     overlay.className = 'confirm-overlay';
     overlay.innerHTML = `
       <div class="confirm-dialog">
-        <div class="confirm-icon">${esc(icon)}</div>
+        <div class="confirm-icon">${icon(iconName)}</div>
         <div class="confirm-title">${esc(title)}</div>
         <div class="confirm-body">${esc(body)}</div>
         <div class="confirm-actions">
@@ -133,7 +163,7 @@ function openPreview(title, fileUrl, previewUrl, fileType) {
     <div class="modal">
       <div class="modal-header">
         <span class="modal-title">${esc(title)}</span>
-        <button class="modal-close" id="preview-close">✕</button>
+        <button class="modal-close" id="preview-close">${icon('close')}</button>
       </div>
       ${media}
     </div>`;
@@ -238,7 +268,7 @@ async function loadTemplates(status) {
   }
 
   if (!templates.length) {
-    container.innerHTML = emptyHtml('-', 'No templates', `No ${status.toLowerCase()} templates found`);
+    container.innerHTML = emptyHtml(icon('file'), 'No templates', `No ${status.toLowerCase()} templates found`);
     return;
   }
 
@@ -269,15 +299,15 @@ async function loadTemplates(status) {
     const footer = card.querySelector('.review-footer');
     if (status === 'PENDING') {
       footer.innerHTML = `
-        <button class="btn btn-approve" data-action="approve" data-id="${esc(t._id ?? t.id)}">✓ Approve</button>
+        <button class="btn btn-approve" data-action="approve" data-id="${esc(t._id ?? t.id)}">${icon('check')} Approve</button>
         <input class="reject-reason-input" id="reason-${esc(t._id ?? t.id)}" placeholder="Rejection reason (required, min 5 chars)…">
-        <button class="btn btn-reject"  data-action="reject"  data-id="${esc(t._id ?? t.id)}">✕ Reject</button>
+        <button class="btn btn-reject"  data-action="reject"  data-id="${esc(t._id ?? t.id)}">${icon('close')} Reject</button>
         ${(t.fileUrl || t.previewUrl) ? previewBtn(t) : ''}`;
 
       footer.querySelector('[data-action="approve"]').onclick = async btn => {
-        const b = btn.currentTarget; b.disabled = true; b.textContent = 'Approving…';
+        const b = btn.currentTarget; b.disabled = true; b.innerHTML = 'Approving…';
         const r = await api.templates.approve(b.dataset.id);
-        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✓ Approve'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('check')} Approve`; return; }
         Toast.show('Template approved — now live ✓', 'success');
         card.remove();
         refreshBadge('badge-templates', 'tmpl-pending-count', container);
@@ -287,9 +317,9 @@ async function loadTemplates(status) {
         const b   = btn.currentTarget;
         const reason = el(`reason-${b.dataset.id}`)?.value.trim();
         if (!reason || reason.length < 5) { Toast.show('Enter a rejection reason (min 5 chars)', 'warning'); return; }
-        b.disabled = true; b.textContent = 'Rejecting…';
+        b.disabled = true; b.innerHTML = 'Rejecting…';
         const r = await api.templates.reject(b.dataset.id, reason);
-        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✕ Reject'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('close')} Reject`; return; }
         Toast.show('Template rejected', 'info');
         card.remove();
       };
@@ -297,7 +327,7 @@ async function loadTemplates(status) {
     } else if (status === 'APPROVED') {
       footer.innerHTML = `
         ${(t.fileUrl || t.previewUrl) ? previewBtn(t) : ''}
-        <button class="btn btn-warning" data-action="unpublish" data-id="${esc(t._id ?? t.id)}">⬇ Unpublish</button>`;
+        <button class="btn btn-warning" data-action="unpublish" data-id="${esc(t._id ?? t.id)}">${icon('arrowDown')} Unpublish</button>`;
 
       footer.querySelector('[data-action="unpublish"]').onclick = async btn => {
         const b = btn.currentTarget;
@@ -313,27 +343,27 @@ async function loadTemplates(status) {
     } else if (status === 'REJECTED') {
       footer.innerHTML = `
         ${(t.fileUrl || t.previewUrl) ? previewBtn(t) : ''}
-        <button class="btn btn-approve" data-action="approve" data-id="${esc(t._id ?? t.id)}">↑ Re-approve</button>
-        <button class="btn btn-danger"  data-action="delete"  data-id="${esc(t._id ?? t.id)}">✕ Delete Forever</button>`;
+        <button class="btn btn-approve" data-action="approve" data-id="${esc(t._id ?? t.id)}">${icon('arrowUp')} Re-approve</button>
+        <button class="btn btn-danger"  data-action="delete"  data-id="${esc(t._id ?? t.id)}">${icon('close')} Delete Forever</button>`;
 
       footer.querySelector('[data-action="approve"]').onclick = async btn => {
-        const b = btn.currentTarget; b.disabled = true; b.textContent = 'Approving…';
+        const b = btn.currentTarget; b.disabled = true; b.innerHTML = 'Approving…';
         const r = await api.templates.approve(b.dataset.id);
-        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '↑ Re-approve'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('arrowUp')} Re-approve`; return; }
         Toast.show('Template re-approved ✓', 'success'); card.remove();
       };
 
       footer.querySelector('[data-action="delete"]').onclick = async btn => {
         const b = btn.currentTarget;
         const ok = await showConfirm({
-          icon: '✕', title: 'Delete Template Permanently',
+          icon: 'close', title: 'Delete Template Permanently',
           body: 'This removes the MongoDB document and all Cloudinary assets. This action cannot be undone.',
           confirmLabel: 'Delete Forever',
         });
         if (!ok) return;
-        b.disabled = true; b.textContent = 'Deleting…';
+        b.disabled = true; b.innerHTML = 'Deleting…';
         const r = await api.templates.permanentDelete(b.dataset.id);
-        if (!r.ok) { Toast.show(r.error ?? 'Delete failed', 'error'); b.disabled = false; b.textContent = '✕ Delete Forever'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Delete failed', 'error'); b.disabled = false; b.innerHTML = `${icon('close')} Delete Forever`; return; }
         Toast.show('Template permanently deleted', 'success'); card.remove();
       };
     }
@@ -369,7 +399,7 @@ async function loadTutorials(status) {
   }
 
   if (!tutorials.length) {
-    container.innerHTML = emptyHtml('▣', 'No tutorials', `No ${status.toLowerCase()} tutorials found`);
+    container.innerHTML = emptyHtml(icon('grid'), 'No tutorials', `No ${status.toLowerCase()} tutorials found`);
     return;
   }
 
@@ -395,15 +425,15 @@ async function loadTutorials(status) {
 
     if (status === 'PENDING') {
       footer.innerHTML = `
-        <button class="btn btn-approve" data-action="approve" data-id="${esc(t._id ?? t.id)}">✓ Approve</button>
+        <button class="btn btn-approve" data-action="approve" data-id="${esc(t._id ?? t.id)}">${icon('check')} Approve</button>
         <input class="reject-reason-input" id="tut-reason-${esc(t._id ?? t.id)}" placeholder="Rejection reason (required, min 5 chars)…">
-        <button class="btn btn-reject"  data-action="reject"  data-id="${esc(t._id ?? t.id)}">✕ Reject</button>
-        ${t.videoUrl ? `<button class="btn btn-ghost preview-video-btn" data-url="${esc(t.videoUrl)}" data-title="${esc(t.title)}">▶ Watch</button>` : ''}`;
+        <button class="btn btn-reject"  data-action="reject"  data-id="${esc(t._id ?? t.id)}">${icon('close')} Reject</button>
+        ${t.videoUrl ? `<button class="btn btn-ghost preview-video-btn" data-url="${esc(t.videoUrl)}" data-title="${esc(t.title)}">${icon('play')} Watch</button>` : ''}`;
 
       footer.querySelector('[data-action="approve"]').onclick = async btn => {
-        const b = btn.currentTarget; b.disabled = true; b.textContent = 'Approving…';
+        const b = btn.currentTarget; b.disabled = true; b.innerHTML = 'Approving…';
         const r = await api.tutorials.approve(b.dataset.id);
-        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✓ Approve'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('check')} Approve`; return; }
         Toast.show('Tutorial approved ✓', 'success'); card.remove();
         refreshBadge('badge-tutorials', 'tut-pending-count', container);
       };
@@ -412,16 +442,16 @@ async function loadTutorials(status) {
         const b = btn.currentTarget;
         const reason = el(`tut-reason-${b.dataset.id}`)?.value.trim();
         if (!reason || reason.length < 5) { Toast.show('Enter a rejection reason (min 5 chars)', 'warning'); return; }
-        b.disabled = true; b.textContent = 'Rejecting…';
+        b.disabled = true; b.innerHTML = 'Rejecting…';
         const r = await api.tutorials.reject(b.dataset.id, reason);
-        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✕ Reject'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('close')} Reject`; return; }
         Toast.show('Tutorial rejected', 'info'); card.remove();
       };
 
     } else if (status === 'APPROVED') {
       footer.innerHTML = `
-        ${t.videoUrl ? `<button class="btn btn-ghost preview-video-btn" data-url="${esc(t.videoUrl)}" data-title="${esc(t.title)}">▶ Watch</button>` : ''}
-        <button class="btn btn-warning" data-action="unpublish" data-id="${esc(t._id ?? t.id)}">⬇ Unpublish</button>`;
+        ${t.videoUrl ? `<button class="btn btn-ghost preview-video-btn" data-url="${esc(t.videoUrl)}" data-title="${esc(t.title)}">${icon('play')} Watch</button>` : ''}
+        <button class="btn btn-warning" data-action="unpublish" data-id="${esc(t._id ?? t.id)}">${icon('arrowDown')} Unpublish</button>`;
 
       footer.querySelector('[data-action="unpublish"]').onclick = async btn => {
         const b = btn.currentTarget;
@@ -435,28 +465,28 @@ async function loadTutorials(status) {
 
     } else if (status === 'REJECTED') {
       footer.innerHTML = `
-        ${t.videoUrl ? `<button class="btn btn-ghost preview-video-btn" data-url="${esc(t.videoUrl)}" data-title="${esc(t.title)}">▶ Watch</button>` : ''}
-        <button class="btn btn-approve" data-action="approve" data-id="${esc(t._id ?? t.id)}">↑ Re-approve</button>
-        <button class="btn btn-danger"  data-action="delete"  data-id="${esc(t._id ?? t.id)}">✕ Delete Forever</button>`;
+        ${t.videoUrl ? `<button class="btn btn-ghost preview-video-btn" data-url="${esc(t.videoUrl)}" data-title="${esc(t.title)}">${icon('play')} Watch</button>` : ''}
+        <button class="btn btn-approve" data-action="approve" data-id="${esc(t._id ?? t.id)}">${icon('arrowUp')} Re-approve</button>
+        <button class="btn btn-danger"  data-action="delete"  data-id="${esc(t._id ?? t.id)}">${icon('close')} Delete Forever</button>`;
 
       footer.querySelector('[data-action="approve"]').onclick = async btn => {
-        const b = btn.currentTarget; b.disabled = true; b.textContent = 'Approving…';
+        const b = btn.currentTarget; b.disabled = true; b.innerHTML = 'Approving…';
         const r = await api.tutorials.approve(b.dataset.id);
-        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '↑ Re-approve'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('arrowUp')} Re-approve`; return; }
         Toast.show('Tutorial re-approved ✓', 'success'); card.remove();
       };
 
       footer.querySelector('[data-action="delete"]').onclick = async btn => {
         const b = btn.currentTarget;
         const ok = await showConfirm({
-          icon: '✕', title: 'Delete Tutorial Permanently',
+          icon: 'close', title: 'Delete Tutorial Permanently',
           body: 'This removes the video from Cloudinary and the database. Cannot be undone.',
           confirmLabel: 'Delete Forever',
         });
         if (!ok) return;
-        b.disabled = true; b.textContent = 'Deleting…';
+        b.disabled = true; b.innerHTML = 'Deleting…';
         const r = await api.tutorials.permanentDelete(b.dataset.id);
-        if (!r.ok) { Toast.show(r.error ?? 'Delete failed', 'error'); b.disabled = false; b.textContent = '✕ Delete Forever'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Delete failed', 'error'); b.disabled = false; b.innerHTML = `${icon('close')} Delete Forever`; return; }
         Toast.show('Tutorial permanently deleted', 'success'); card.remove();
       };
     }
@@ -497,7 +527,7 @@ async function loadProjects(status) {
   }
 
   if (!projects.length) {
-    container.innerHTML = emptyHtml('📭', 'No projects', `No ${status} projects found`);
+    container.innerHTML = emptyHtml(icon('inbox'), 'No projects', `No ${status} projects found`);
     return;
   }
 
@@ -513,7 +543,7 @@ async function loadProjects(status) {
     card.dataset.id = p.id;
 
     const attachments = (c.attachments ?? []).map((url, i) =>
-      `<a href="${esc(url)}" target="_blank" rel="noopener" class="attachment-link">📎 File ${i + 1}</a>`
+      `<a href="${esc(url)}" target="_blank" rel="noopener" class="attachment-link">${icon('paperclip')} File ${i + 1}</a>`
     ).join('');
 
     card.innerHTML = `
@@ -538,15 +568,15 @@ async function loadProjects(status) {
 
     if (status === 'pending') {
       footer.innerHTML = `
-        <button class="btn btn-approve" data-action="approve" data-id="${esc(p.id)}">✓ Approve</button>
+        <button class="btn btn-approve" data-action="approve" data-id="${esc(p.id)}">${icon('check')} Approve</button>
         <input class="reject-reason-input" id="proj-reason-${esc(p.id)}" placeholder="Rejection reason…">
-        <button class="btn btn-reject"  data-action="reject"  data-id="${esc(p.id)}">✕ Reject</button>
-        <button class="btn btn-danger"  data-action="delete"  data-id="${esc(p.id)}" data-title="${esc(c.title ?? 'project')}">✕ Delete</button>`;
+        <button class="btn btn-reject"  data-action="reject"  data-id="${esc(p.id)}">${icon('close')} Reject</button>
+        <button class="btn btn-danger"  data-action="delete"  data-id="${esc(p.id)}" data-title="${esc(c.title ?? 'project')}">${icon('close')} Delete</button>`;
 
       footer.querySelector('[data-action="approve"]').onclick = async btn => {
-        const b = btn.currentTarget; b.disabled = true; b.textContent = 'Approving…';
+        const b = btn.currentTarget; b.disabled = true; b.innerHTML = 'Approving…';
         const r = await api.patch(`/admin/projects/${b.dataset.id}/approve`, {});
-        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✓ Approve'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('check')} Approve`; return; }
         Toast.show('Project approved — now live ✓', 'success'); card.remove();
         refreshBadge('badge-projects', 'proj-pending-count', container);
       };
@@ -555,28 +585,28 @@ async function loadProjects(status) {
         const b = btn.currentTarget;
         const reason = el(`proj-reason-${b.dataset.id}`)?.value.trim();
         if (!reason || reason.length < 5) { Toast.show('Enter a rejection reason', 'warning'); return; }
-        b.disabled = true; b.textContent = 'Rejecting…';
+        b.disabled = true; b.innerHTML = 'Rejecting…';
         const r = await api.patch(`/admin/projects/${b.dataset.id}/reject`, { reason });
-        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✕ Reject'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('close')} Reject`; return; }
         Toast.show('Project rejected', 'info'); card.remove();
       };
 
     } else {
       footer.innerHTML = `
-        <button class="btn btn-danger" data-action="delete" data-id="${esc(p.id)}" data-title="${esc(c.title ?? 'project')}">✕ Delete Forever</button>`;
+        <button class="btn btn-danger" data-action="delete" data-id="${esc(p.id)}" data-title="${esc(c.title ?? 'project')}">${icon('close')} Delete Forever</button>`;
     }
 
     footer.querySelector('[data-action="delete"]')?.addEventListener('click', async btn => {
       const b = btn.currentTarget;
       const ok = await showConfirm({
-        icon: '✕', title: `Delete "${b.dataset.title}"?`,
+        icon: 'close', title: `Delete "${b.dataset.title}"?`,
         body: 'This removes the project and all bids from the database, and notifies the client. Cannot be undone.',
         confirmLabel: 'Delete Forever',
       });
       if (!ok) return;
-      b.disabled = true; b.textContent = 'Deleting…';
+      b.disabled = true; b.innerHTML = 'Deleting…';
       const r = await api.delete(`/admin/projects/${b.dataset.id}`);
-      if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✕ Delete Forever'; return; }
+      if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('close')} Delete Forever`; return; }
       Toast.show('Project deleted. Client notified.', 'success'); card.remove();
     });
 
@@ -602,7 +632,7 @@ async function loadPayouts() {
   setBadge('badge-payouts', payouts.length);
 
   if (!payouts.length) {
-    container.innerHTML = emptyHtml('✓', 'All caught up', 'No creators currently owed a payout');
+    container.innerHTML = emptyHtml(icon('check'), 'All caught up', 'No creators currently owed a payout');
     return;
   }
 
@@ -618,7 +648,7 @@ async function loadPayouts() {
 
   const tbody = el('payouts-tbody');
   for (const p of payouts) {
-    const methodLabel = p.payoutMethod === 'PAYSTACK_SUBACCOUNT' ? 'Paystack'
+    const methodLabelText = p.payoutMethod === 'PAYSTACK_SUBACCOUNT' ? 'Paystack'
       : p.payoutMethod === 'SKRILL' ? 'Skrill'
       : p.payoutMethod === 'GREY' ? 'Grey'
       : 'Not set up';
@@ -630,7 +660,7 @@ async function loadPayouts() {
         <div class="user-email">${esc(p.creator?.email ?? '—')}</div>
       </td>
       <td><span class="amount-creator">$${money(p.pending)}</span></td>
-      <td><span class="badge ${p.payoutMethod ? 'badge-approved' : 'badge-pending'}">${esc(methodLabel)}</span></td>
+      <td><span class="badge ${p.payoutMethod ? 'badge-approved' : 'badge-pending'}">${esc(methodLabelText)}</span></td>
       <td style="color:var(--text-2)">${esc(p.payoutFrequency ?? 'MONTHLY')}</td>
       <td style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px"></td>`;
 
@@ -639,17 +669,17 @@ async function loadPayouts() {
     if (p.canAutoPay) {
       const payBtn = document.createElement('button');
       payBtn.className = 'btn btn-approve btn-sm';
-      payBtn.textContent = '💸 Pay via Paystack';
+      payBtn.innerHTML = `${icon('dollar')} Pay via Paystack`;
       payBtn.onclick = async () => {
         const ok = await showConfirm({
-          icon: '💸', title: 'Send Paystack Transfer',
+          icon: 'dollar', title: 'Send Paystack Transfer',
           body: `Send $${money(p.pending)} to ${p.creator?.name ?? 'this creator'} via Paystack now?`,
           confirmLabel: 'Send Payment', confirmClass: 'btn-approve',
         });
         if (!ok) return;
-        payBtn.disabled = true; payBtn.textContent = 'Sending…';
+        payBtn.disabled = true; payBtn.innerHTML = 'Sending…';
         const r = await api.admin.payViaPaystack(p.creatorId);
-        if (!r.ok) { Toast.show(r.error ?? 'Transfer failed', 'error'); payBtn.disabled = false; payBtn.textContent = '💸 Pay via Paystack'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Transfer failed', 'error'); payBtn.disabled = false; payBtn.innerHTML = `${icon('dollar')} Pay via Paystack`; return; }
         Toast.show('Payout sent ✓', 'success');
         tr.remove();
       };
@@ -657,19 +687,19 @@ async function loadPayouts() {
     } else if (p.payoutMethod === 'SKRILL' || p.payoutMethod === 'GREY') {
       const markBtn = document.createElement('button');
       markBtn.className = 'btn btn-primary btn-sm';
-      markBtn.textContent = '✓ Mark as Paid';
+      markBtn.innerHTML = `${icon('check')} Mark as Paid`;
       markBtn.onclick = async () => {
         const reference = await showPrompt({
           title: `Mark ${p.creator?.name ?? 'creator'}'s payout as paid`,
-          subtitle: `Confirm you've sent $${money(p.pending)} via ${methodLabel} outside FLOWVA.`,
+          subtitle: `Confirm you've sent $${money(p.pending)} via ${methodLabelText} outside FLOWVA.`,
           placeholder: 'Transaction reference (optional)…',
           confirmLabel: 'Mark as Paid',
           minLength: 0,
         });
         if (reference === null) return;
-        markBtn.disabled = true; markBtn.textContent = 'Saving…';
+        markBtn.disabled = true; markBtn.innerHTML = 'Saving…';
         const r = await api.admin.markPayoutPaid(p.creatorId, p.payoutMethod, reference || undefined);
-        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); markBtn.disabled = false; markBtn.textContent = '✓ Mark as Paid'; return; }
+        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); markBtn.disabled = false; markBtn.innerHTML = `${icon('check')} Mark as Paid`; return; }
         Toast.show('Payout recorded ✓', 'success');
         tr.remove();
       };
@@ -734,7 +764,7 @@ async function loadPayoutRequests(status = 'PENDING') {
       APPROVED: 'No approved changes yet',
       REJECTED: 'No rejected changes',
     };
-    container.innerHTML = emptyHtml('✓', labels[status] ?? 'No requests', '');
+    container.innerHTML = emptyHtml(icon('check'), labels[status] ?? 'No requests', '');
     return;
   }
 
@@ -757,7 +787,7 @@ async function loadPayoutRequests(status = 'PENDING') {
         <div class="review-info">
           <div class="review-title">${esc(r.creator?.name ?? '—')}</div>
           <div class="review-meta">
-            <span class="meta-chip">✉️ ${esc(r.creator?.email ?? '—')}</span>
+            <span class="meta-chip">${esc(r.creator?.email ?? '—')}</span>
             <span class="meta-chip">Requesting: ${esc(methodLabel(r.requestedMethod))}</span>
             <span class="meta-chip">${fmt(r.createdAt)}</span>
             ${statusBadge}
@@ -783,20 +813,20 @@ async function loadPayoutRequests(status = 'PENDING') {
 
     if (status === 'PENDING') {
       footer.innerHTML = `
-        <button class="btn btn-approve" data-action="approve" data-id="${esc(r.id)}">✓ Approve Change</button>
-        <button class="btn btn-reject"  data-action="reject"  data-id="${esc(r.id)}">✕ Reject</button>`;
+        <button class="btn btn-approve" data-action="approve" data-id="${esc(r.id)}">${icon('check')} Approve Change</button>
+        <button class="btn btn-reject"  data-action="reject"  data-id="${esc(r.id)}">${icon('close')} Reject</button>`;
 
       footer.querySelector('[data-action="approve"]').onclick = async btn => {
         const b = btn.currentTarget;
         const ok = await showConfirm({
-          icon: '✓', title: 'Approve Payout Method Change',
+          icon: 'check', title: 'Approve Payout Method Change',
           body: `This will switch ${r.creator?.name ?? 'this creator'}'s active payout wallet to ${methodLabel(r.requestedMethod)}. Their previous method's details will be cleared.`,
           confirmLabel: 'Approve', confirmClass: 'btn-approve',
         });
         if (!ok) return;
-        b.disabled = true; b.textContent = 'Approving…';
+        b.disabled = true; b.innerHTML = 'Approving…';
         const result = await api.admin.approvePayoutChangeRequest(b.dataset.id);
-        if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✓ Approve Change'; return; }
+        if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('check')} Approve Change`; return; }
         Toast.show('Payout method updated ✓', 'success');
         card.remove();
         refreshBadge('badge-payout-requests', 'payoutreq-pending-count', container);
@@ -810,9 +840,9 @@ async function loadPayoutRequests(status = 'PENDING') {
           confirmLabel: 'Reject', minLength: 5,
         });
         if (!note) return;
-        b.disabled = true; b.textContent = 'Rejecting…';
+        b.disabled = true; b.innerHTML = 'Rejecting…';
         const result = await api.admin.rejectPayoutChangeRequest(b.dataset.id, note);
-        if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✕ Reject'; return; }
+        if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('close')} Reject`; return; }
         Toast.show('Change request rejected', 'info');
         card.remove();
         refreshBadge('badge-payout-requests', 'payoutreq-pending-count', container);
@@ -839,7 +869,7 @@ async function loadCommissions() {
 
   const list = res.data.commissions ?? [];
   if (!list.length) {
-    container.innerHTML = emptyHtml('$', 'No commissions', 'No commission records yet');
+    container.innerHTML = emptyHtml(icon('dollar'), 'No commissions', 'No commission records yet');
     return;
   }
 
@@ -906,7 +936,7 @@ async function loadDisputes() {
 
   const orders = res.data.orders ?? [];
   if (!orders.length) {
-    container.innerHTML = emptyHtml('✓', 'No disputes', 'All disputes resolved — nothing to action');
+    container.innerHTML = emptyHtml(icon('check'), 'No disputes', 'All disputes resolved — nothing to action');
     return;
   }
 
@@ -923,25 +953,25 @@ async function loadDisputes() {
           <div class="review-title">Order <span class="order-id">…${esc(o.id.slice(-8))}</span></div>
           <div class="review-meta">
             <span class="meta-chip">$${money(o.amount)}</span>
-            <span class="meta-chip"> Buyer: ${esc(o.buyer?.name ?? '—')}</span>
-            <span class="meta-chip"> Creator: ${esc(o.creator?.name ?? '—')}</span>
+            <span class="meta-chip">Buyer: ${esc(o.buyer?.name ?? '—')}</span>
+            <span class="meta-chip">Creator: ${esc(o.creator?.name ?? '—')}</span>
             <span class="meta-chip">${fmt(o.createdAt)}</span>
           </div>
           ${o.deliveryNote ? (() => {
             const [note, fileUrl] = o.deliveryNote.split('||');
-            return `<p class="review-desc">Delivery note: ${esc(note ?? '')}</p>${fileUrl ? `<a href="${esc(fileUrl)}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" style="margin-top:8px">📄 View Delivered File</a>` : ''}`;
+            return `<p class="review-desc">Delivery note: ${esc(note ?? '')}</p>${fileUrl ? `<a href="${esc(fileUrl)}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" style="margin-top:8px">${icon('file')} View Delivered File</a>` : ''}`;
           })() : ''}
         </div>
       </div>
       <div class="review-footer">
-        <button class="btn btn-approve" data-action="release" data-id="${esc(o.id)}">✓ Release to Creator</button>
-        <button class="btn btn-reject"  data-action="refund"  data-id="${esc(o.id)}">↩ Refund Buyer</button>
+        <button class="btn btn-approve" data-action="release" data-id="${esc(o.id)}">${icon('check')} Release to Creator</button>
+        <button class="btn btn-reject"  data-action="refund"  data-id="${esc(o.id)}">${icon('undo')} Refund Buyer</button>
       </div>`;
 
     card.querySelector('[data-action="release"]').onclick = async btn => {
       const b = btn.currentTarget;
       const ok = await showConfirm({
-        icon: '✓', title: 'Release Escrow to Creator',
+        icon: 'check', title: 'Release Escrow to Creator',
         body: 'This marks the order as COMPLETED and credits the creator wallet. The buyer will not be refunded.',
         confirmLabel: 'Release Funds', confirmClass: 'btn-approve',
       });
@@ -955,7 +985,7 @@ async function loadDisputes() {
     card.querySelector('[data-action="refund"]').onclick = async btn => {
       const b = btn.currentTarget;
       const ok = await showConfirm({
-        icon: '↩', title: 'Refund Buyer',
+        icon: 'undo', title: 'Refund Buyer',
         body: 'This marks the order as REFUNDED. The creator will not be paid. The actual refund to the buyer must be processed manually via Paystack or Skrill, depending on how they originally paid.',
         confirmLabel: 'Confirm Refund',
       });
@@ -1018,14 +1048,14 @@ async function loadUsers(role = '', status = '') {
       <td>
         ${u.role !== 'ADMIN'
           ? u.status === 'SUSPENDED'
-            ? `<button class="btn btn-approve btn-sm" data-action="unsuspend" data-id="${esc(u.id)}">↑ Unsuspend</button>`
-            : `<button class="btn btn-danger  btn-sm" data-action="suspend"   data-id="${esc(u.id)}">⊘ Suspend</button>`
+            ? `<button class="btn btn-approve btn-sm" data-action="unsuspend" data-id="${esc(u.id)}">${icon('arrowUp')} Unsuspend</button>`
+            : `<button class="btn btn-danger  btn-sm" data-action="suspend"   data-id="${esc(u.id)}">${icon('close')} Suspend</button>`
           : '<span class="text-muted">—</span>'}
       </td>`;
 
     tr.querySelector('[data-action="suspend"]')?.addEventListener('click', async btn => {
       const b = btn.currentTarget;
-      const ok = await showConfirm({ icon: '⊘', title: 'Suspend User', body: `Suspend ${u.name ?? u.email}? They will lose access immediately.`, confirmLabel: 'Suspend', confirmClass: 'btn-danger' });
+      const ok = await showConfirm({ icon: 'close', title: 'Suspend User', body: `Suspend ${u.name ?? u.email}? They will lose access immediately.`, confirmLabel: 'Suspend', confirmClass: 'btn-danger' });
       if (!ok) return;
       b.disabled = true;
       const r = await api.admin.suspendUser(b.dataset.id);
@@ -1036,7 +1066,7 @@ async function loadUsers(role = '', status = '') {
 
     tr.querySelector('[data-action="unsuspend"]')?.addEventListener('click', async btn => {
       const b = btn.currentTarget;
-      const ok = await showConfirm({ icon: '↑', title: 'Unsuspend User', body: `Restore access for ${u.name ?? u.email}?`, confirmLabel: 'Unsuspend', confirmClass: 'btn-approve' });
+      const ok = await showConfirm({ icon: 'arrowUp', title: 'Unsuspend User', body: `Restore access for ${u.name ?? u.email}?`, confirmLabel: 'Unsuspend', confirmClass: 'btn-approve' });
       if (!ok) return;
       b.disabled = true;
       const r = await api.admin.unsuspendUser(b.dataset.id);
@@ -1051,7 +1081,7 @@ async function loadUsers(role = '', status = '') {
       const oldRole = sel.dataset.current;
       if (newRole === oldRole) return;
       const ok = await showConfirm({
-        icon: '🔄',
+        icon: 'refresh',
         title: 'Change User Role',
         body: `Change ${u.name ?? u.email} from ${oldRole} to ${newRole}? They will be notified by email.`,
         confirmLabel: 'Change Role',
@@ -1092,7 +1122,7 @@ async function loadStuckOrders() {
 
   const orders = res.data.orders ?? [];
   if (!orders.length) {
-    container.innerHTML = emptyHtml('✓', 'All clear', 'No orders stuck in PENDING for over 30 minutes');
+    container.innerHTML = emptyHtml(icon('check'), 'All clear', 'No orders stuck in PENDING for over 30 minutes');
     return;
   }
 
@@ -1128,27 +1158,27 @@ async function loadStuckOrders() {
       <td style="color:var(--text-2)">${esc(o.type ?? '—')}</td>
       <td style="color:var(--text-2)">${fmt(o.createdAt)}</td>
       <td style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px">
-        <button class="btn btn-approve btn-sm" data-action="complete" data-id="${esc(o.id)}">✓ Force Complete</button>
-        <button class="btn btn-reject  btn-sm" data-action="cancel"   data-id="${esc(o.id)}">✕ Cancel</button>
+        <button class="btn btn-approve btn-sm" data-action="complete" data-id="${esc(o.id)}">${icon('check')} Force Complete</button>
+        <button class="btn btn-reject  btn-sm" data-action="cancel"   data-id="${esc(o.id)}">${icon('close')} Cancel</button>
       </td>`;
 
     tr.querySelector('[data-action="complete"]').onclick = async btn => {
       const b = btn.currentTarget;
-      const ok = await showConfirm({ icon: '✓', title: 'Force-Complete Order', body: 'This marks the order COMPLETED and credits the creator wallet. Only use if you have independently confirmed the payment succeeded with Paystack or Skrill.', confirmLabel: 'Force Complete', confirmClass: 'btn-approve' });
+      const ok = await showConfirm({ icon: 'check', title: 'Force-Complete Order', body: 'This marks the order COMPLETED and credits the creator wallet. Only use if you have independently confirmed the payment succeeded with Paystack or Skrill.', confirmLabel: 'Force Complete', confirmClass: 'btn-approve' });
       if (!ok) return;
-      b.disabled = true; b.textContent = '…';
+      b.disabled = true; b.innerHTML = '…';
       const r = await api.post(`/admin/orders/${b.dataset.id}/complete`, {});
-      if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✓ Force Complete'; return; }
+      if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('check')} Force Complete`; return; }
       Toast.show('Order completed — creator credited ✓', 'success'); tr.remove();
     };
 
     tr.querySelector('[data-action="cancel"]').onclick = async btn => {
       const b = btn.currentTarget;
-      const ok = await showConfirm({ icon: '✕', title: 'Cancel Order', body: 'Cancel this stuck order? The buyer will be able to repurchase.', confirmLabel: 'Cancel Order' });
+      const ok = await showConfirm({ icon: 'close', title: 'Cancel Order', body: 'Cancel this stuck order? The buyer will be able to repurchase.', confirmLabel: 'Cancel Order' });
       if (!ok) return;
-      b.disabled = true; b.textContent = '…';
+      b.disabled = true; b.innerHTML = '…';
       const r = await api.post(`/admin/orders/${b.dataset.id}/cancel`, {});
-      if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✕ Cancel'; return; }
+      if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('close')} Cancel`; return; }
       Toast.show('Order cancelled', 'info'); tr.remove();
     };
 
@@ -1168,8 +1198,8 @@ function buildReviewCard({ id, title, desc, thumb, fileUrl, fileType, status, re
   const isVideo = fileType === 'video' || /\/video\//.test(thumb ?? '') || /\/video\//.test(fileUrl ?? '');
 
   const thumbHtml = thumb
-    ? `<img src="${esc(thumb)}" alt="${esc(title)}">${isVideo ? '<div class="review-thumb-play">▶</div>' : ''}`
-    : `<span style="font-size:2rem;opacity:0.3">▶</span>`;
+    ? `<img src="${esc(thumb)}" alt="${esc(title)}">${isVideo ? `<div class="review-thumb-play">${icon('play')}</div>` : ''}`
+    : `<span style="opacity:0.3">${icon('play')}</span>`;
 
   const statusBadge =
     status === 'PENDING'  ? '<span class="badge badge-pending">Pending</span>'  :
@@ -1198,14 +1228,14 @@ function previewBtn(t) {
     if (!t.fileUrl) return '';
     const isSafeUrl = /^https:\/\/res\.cloudinary\.com\//i.test(t.fileUrl);
     if (!isSafeUrl) return '';
-    return `<a class="btn btn-ghost" href="${esc(t.fileUrl)}" target="_blank" rel="noopener noreferrer">📄 View PDF</a>`;
+    return `<a class="btn btn-ghost" href="${esc(t.fileUrl)}" target="_blank" rel="noopener noreferrer">${icon('file')} View PDF</a>`;
   }
   if (!t.fileUrl && !t.previewUrl) return '';
   return `<button class="btn btn-ghost preview-media-btn"
     data-url="${esc(t.fileUrl ?? '')}"
     data-preview="${esc(t.previewUrl ?? '')}"
     data-type="${esc(t.fileType ?? '')}"
-    data-title="${esc(t.title)}">👁 Preview</button>`;
+    data-title="${esc(t.title)}">${icon('eye')} Preview</button>`;
 }
 
 function bindPreviewBtn(parent) {
@@ -1221,11 +1251,11 @@ function refreshBadge(badgeId, countId, container) {
 }
 
 function errorHtml(msg) {
-  return `<div class="empty-state"><div class="empty-icon" style="opacity:1">✕</div><div class="empty-title">${esc(msg)}</div></div>`;
+  return `<div class="empty-state"><div class="empty-icon" style="opacity:1">${icon('close')}</div><div class="empty-title">${esc(msg)}</div></div>`;
 }
 
-function emptyHtml(icon, title, sub) {
-  return `<div class="empty-state"><div class="empty-icon">${icon}</div><div class="empty-title">${esc(title)}</div><div class="empty-sub">${esc(sub)}</div></div>`;
+function emptyHtml(iconHtml, title, sub) {
+  return `<div class="empty-state"><div class="empty-icon">${iconHtml}</div><div class="empty-title">${esc(title)}</div><div class="empty-sub">${esc(sub)}</div></div>`;
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -1250,7 +1280,7 @@ async function loadRoleRequests(status = 'PENDING') {
 
   if (!requests.length) {
     const labels = { PENDING: 'No pending applications', APPROVED: 'No approved applications', REJECTED: 'No rejected applications' };
-    container.innerHTML = emptyHtml('✓', labels[status] ?? 'No requests', '');
+    container.innerHTML = emptyHtml(icon('check'), labels[status] ?? 'No requests', '');
     return;
   }
 
@@ -1283,10 +1313,10 @@ async function loadRoleRequests(status = 'PENDING') {
              <button class="btn btn-ghost btn-sm open-portfolio-btn"
                data-url="${esc(r.portfolio)}"
                title="Opens in a new tab. Verify the link before clicking.">
-               → Open Link
+               ${icon('arrowRight')} Open Link
              </button>
            </div>`
-        : `<span class="role-request-url-text invalid">⚠ URL removed — not a valid https:// link</span>`;
+        : `<span class="role-request-url-text invalid">${icon('alert')} URL removed — not a valid https:// link</span>`;
     } else {
       portfolioHtml = `<span class="role-request-url-text invalid">No URL provided</span>`;
     }
@@ -1295,14 +1325,14 @@ async function loadRoleRequests(status = 'PENDING') {
     let footerHtml = '';
     if (status === 'PENDING') {
       footerHtml = `
-        <button class="btn btn-approve" data-action="approve" data-id="${esc(r.id)}">✓ Approve</button>
+        <button class="btn btn-approve" data-action="approve" data-id="${esc(r.id)}">${icon('check')} Approve</button>
         <input class="role-request-reject-input" id="req-reason-${esc(r.id)}"
           placeholder="Rejection reason (min 5 chars) — required to reject…">
-        <button class="btn btn-reject" data-action="reject" data-id="${esc(r.id)}">✕ Reject</button>`;
+        <button class="btn btn-reject" data-action="reject" data-id="${esc(r.id)}">${icon('close')} Reject</button>`;
     } else if (status === 'REJECTED') {
       footerHtml = `
-        <button class="btn btn-approve" data-action="approve" data-id="${esc(r.id)}">↑ Approve Instead</button>
-        <button class="btn btn-danger"  data-action="delete"  data-id="${esc(r.id)}">✕ Delete Record</button>`;
+        <button class="btn btn-approve" data-action="approve" data-id="${esc(r.id)}">${icon('arrowUp')} Approve Instead</button>
+        <button class="btn btn-danger"  data-action="delete"  data-id="${esc(r.id)}">${icon('close')} Delete Record</button>`;
     } else {
       footerHtml = `<span style="color:var(--text-3);font-size:12px">Approved — no further action needed</span>`;
     }
@@ -1315,8 +1345,8 @@ async function loadRoleRequests(status = 'PENDING') {
     card.innerHTML = `
       <div class="review-title">${esc(r.user?.name ?? '—')}</div>
       <div class="role-request-meta">
-        <span class="meta-chip">✉️ ${esc(r.user?.email ?? '—')}</span>
-        <span class="meta-chip"> Applied ${fmt(r.createdAt)}</span>
+        <span class="meta-chip">${esc(r.user?.email ?? '—')}</span>
+        <span class="meta-chip">Applied ${fmt(r.createdAt)}</span>
         <span class="meta-chip">Member since ${fmt(r.user?.createdAt)}</span>
         ${statusBadge}
       </div>
@@ -1354,7 +1384,7 @@ async function loadRoleRequests(status = 'PENDING') {
   if (/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|127\.)/.test(host)) { Toast.show('Blocked — internal IP not allowed', 'error'); return; }
 } catch { Toast.show('Blocked — invalid URL', 'error'); return; }
         const ok = await showConfirm({
-          icon: '→',
+          icon: 'arrowRight',
           title: 'Open External Link',
           body: `You are about to visit:\n\n${url}\n\nThis is a user-submitted link. Only proceed if you trust it.`,
           confirmLabel: 'Open Link',
@@ -1374,15 +1404,15 @@ async function loadRoleRequests(status = 'PENDING') {
     card.querySelector('[data-action="approve"]')?.addEventListener('click', async btn => {
       const b = btn.currentTarget;
       const ok = await showConfirm({
-        icon: '✓',
+        icon: 'check',
         title: `Approve ${r.user?.name ?? 'this user'} as Creator?`,
         body: 'Their role will be changed to CREATOR and they will be notified by email.',
         confirmLabel: 'Approve', confirmClass: 'btn-approve',
       });
       if (!ok) return;
-      b.disabled = true; b.textContent = 'Approving…';
+      b.disabled = true; b.innerHTML = 'Approving…';
       const result = await api.admin.approveRoleRequest(b.dataset.id);
-      if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✓ Approve'; return; }
+      if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('check')} Approve`; return; }
       Toast.show(`${r.user?.name ?? 'User'} is now a Creator ✓`, 'success');
       card.remove();
       refreshBadge('badge-requests', 'req-pending-count', container);
@@ -1394,15 +1424,15 @@ async function loadRoleRequests(status = 'PENDING') {
       const reason = el(`req-reason-${b.dataset.id}`)?.value.trim();
       if (!reason || reason.length < 5) { Toast.show('Enter a rejection reason (min 5 chars)', 'warning'); return; }
       const ok = await showConfirm({
-        icon: '✕',
+        icon: 'close',
         title: `Reject ${r.user?.name ?? 'this user'}'s application?`,
         body: 'They will be notified by email with your reason.',
         confirmLabel: 'Reject', confirmClass: 'btn-reject',
       });
       if (!ok) return;
-      b.disabled = true; b.textContent = 'Rejecting…';
+      b.disabled = true; b.innerHTML = 'Rejecting…';
       const result = await api.admin.rejectRoleRequest(b.dataset.id, reason);
-      if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✕ Reject'; return; }
+      if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('close')} Reject`; return; }
       Toast.show('Application rejected. User notified.', 'info');
       card.remove();
       refreshBadge('badge-requests', 'req-pending-count', container);
@@ -1412,15 +1442,15 @@ async function loadRoleRequests(status = 'PENDING') {
     card.querySelector('[data-action="delete"]')?.addEventListener('click', async btn => {
       const b = btn.currentTarget;
       const ok = await showConfirm({
-        icon: '✕',
+        icon: 'close',
         title: 'Delete this application record?',
         body: `Removes all application data for ${r.user?.name ?? 'this user'}. They remain a Buyer and can reapply. Cannot be undone.`,
         confirmLabel: 'Delete Record', confirmClass: 'btn-danger',
       });
       if (!ok) return;
-      b.disabled = true; b.textContent = 'Deleting…';
+      b.disabled = true; b.innerHTML = 'Deleting…';
       const result = await api.admin.deleteRoleRequest(b.dataset.id);
-      if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.textContent = '✕ Delete Record'; return; }
+      if (!result.ok) { Toast.show(result.error ?? 'Failed', 'error'); b.disabled = false; b.innerHTML = `${icon('close')} Delete Record`; return; }
       Toast.show('Application record deleted ✓', 'success');
       card.remove();
     });
@@ -1497,33 +1527,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Repair sales counts
   el('btn-repair-sales')?.addEventListener('click', async function () {
-    const ok = await showConfirm({ icon: '⚙', title: 'Repair Sales Counts', body: 'Recalculate salesCount on all templates from completed orders?', confirmLabel: 'Run Repair', confirmClass: 'btn-primary' });
+    const ok = await showConfirm({ icon: 'gear', title: 'Repair Sales Counts', body: 'Recalculate salesCount on all templates from completed orders?', confirmLabel: 'Run Repair', confirmClass: 'btn-primary' });
     if (!ok) return;
-    this.disabled = true; this.textContent = 'Running…';
+    this.disabled = true; this.innerHTML = 'Running…';
     const res = await api.post('/admin/repair-sales-counts', {});
-    this.disabled = false; this.textContent = '⚙ Run Repair';
+    this.disabled = false; this.innerHTML = `${icon('gear')} Run Repair`;
     if (!res.ok) { Toast.show(res.error ?? 'Failed', 'error'); return; }
     Toast.show(`Fixed ${res.data.templatesUpdated} templates ✓`, 'success');
   });
 
   // ── Repair wallets
   el('btn-repair-wallets')?.addEventListener('click', async function () {
-    const ok = await showConfirm({ icon: '▲', title: 'Repair Creator Wallets', body: 'Ensure every creator has a wallet record?', confirmLabel: 'Run Repair', confirmClass: 'btn-primary' });
+    const ok = await showConfirm({ icon: 'arrowUp', title: 'Repair Creator Wallets', body: 'Ensure every creator has a wallet record?', confirmLabel: 'Run Repair', confirmClass: 'btn-primary' });
     if (!ok) return;
-    this.disabled = true; this.textContent = 'Running…';
+    this.disabled = true; this.innerHTML = 'Running…';
     const res = await api.post('/admin/repair-wallets', {});
-    this.disabled = false; this.textContent = '⚙ Run Repair';
+    this.disabled = false; this.innerHTML = `${icon('gear')} Run Repair`;
     if (!res.ok) { Toast.show(res.error ?? 'Failed', 'error'); return; }
     Toast.show(`Ensured wallets for ${res.data.walletsEnsured} creators ✓`, 'success');
   });
 
   // ── Logout
   el('nav-logout')?.addEventListener('click', async () => {
-    const ok = await showConfirm({ icon: '→', title: 'Log Out', body: 'End your admin session?', confirmLabel: 'Log Out', confirmClass: 'btn-danger' });
+    const ok = await showConfirm({ icon: 'arrowRight', title: 'Log Out', body: 'End your admin session?', confirmLabel: 'Log Out', confirmClass: 'btn-danger' });
     if (!ok) return;
     await api.auth.logout();
     window.location.replace('index.html');
   });
+
+  // ── Floating theme toggle
+  const ICON_MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  const ICON_SUN  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+
+  const themeFab = el('theme-fab');
+  if (themeFab) {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    themeFab.innerHTML = current === 'light' ? ICON_MOON : ICON_SUN;
+
+    themeFab.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('flowva-theme', next);
+      themeFab.innerHTML = next === 'light' ? ICON_MOON : ICON_SUN;
+    });
+  }
+
+  // ── Boot
+  activateTab('overview');
 
   // ── Boot
   activateTab('overview');

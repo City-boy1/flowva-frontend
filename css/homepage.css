@@ -2077,6 +2077,24 @@
   flex-wrap: wrap;
 }
 
+/* ─── REWARDS BANNER — theme-safe overrides ─── */
+.rewards-cta-btn {
+  background: var(--text-primary);
+  color: var(--bg-base);
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.rewards-cta-btn:hover {
+  opacity: 0.9;
+}
+
+.custom-projects-eyebrow {
+  justify-content: flex-start;
+  color: var(--text-primary);
+}
+
 /* ─── FOOTER EARN NOTE ─── */
 .footer-earn-note {
   color: var(--text-muted);
