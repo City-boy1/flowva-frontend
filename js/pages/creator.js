@@ -58,23 +58,25 @@ function _setBannerBg(avatarUrl, creatorId) {
     // Blurred avatar — most professional, like Spotify/Twitter
     bgDiv.style.backgroundImage = `url(${JSON.stringify(avatarUrl)})`;
   } else {
-    // Deterministic gradient from creator ID — same every time, no API call
+    // Deterministic bright gradient from creator ID — same every time, no API call.
+    // All combos built from Flowva's real brand hues (pink/blue/cyan family),
+    // just recombined so each creator gets a visually distinct but on-brand banner.
     const palette = [
-      ['#1a0a3e','#4c1d95'],
-      ['#0a1628','#1e3a5f'],
-      ['#0f1a0f','#14532d'],
-      ['#1a0a0a','#7f1d1d'],
-      ['#0a0f1a','#1e3a8a'],
-      ['#1a0f0a','#78350f'],
-      ['#0f0a1a','#3b0764'],
-      ['#0a1a18','#134e4a'],
+      ['#FF2E93','#007BFF'],  // pink → blue (core brand)
+      ['#007BFF','#00CFFF'],  // blue → cyan
+      ['#FF6FB5','#00CFFF'],  // soft pink → cyan
+      ['#FF2E93','#00CFFF'],  // pink → cyan
+      ['#0EA5E9','#FF2E93'],  // sky blue → pink
+      ['#00CFFF','#FF6FB5'],  // cyan → soft pink
+      ['#7C3AED','#FF2E93'],  // violet → pink
+      ['#007BFF','#FF6FB5'],  // blue → soft pink
     ];
     let hash = 0;
     for (let i = 0; i < creatorId.length; i++) {
       hash = creatorId.charCodeAt(i) + ((hash << 5) - hash);
     }
     const [c1, c2] = palette[Math.abs(hash) % palette.length];
-    bgDiv.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 60%, ${c1} 100%)`;
+    bgDiv.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`;
     bgDiv.style.filter = 'none'; // gradient doesn't need blur
   }
 
@@ -106,6 +108,7 @@ function _setBannerBg(avatarUrl, creatorId) {
 
     // Set banner background now that we have creator data
     _setBannerBg(creator.avatarUrl ?? null, creator.id ?? '');
+    banner?.classList.toggle('creator-banner--gradient', !creator.avatarUrl);
 
     // Avatar
     const avatarEl = document.getElementById('creator-avatar-init');
@@ -662,7 +665,7 @@ if (aboutPanel) {
       sendBtn.disabled    = true;
       sendBtn.textContent = 'Sending…';
       errorEl.style.display = 'none';
-      const res = await api.messages.startConversation(creator.id, { content });
+      const res = await api.messages.startConversation(creator.id, content);
       if (!res.ok) {
         sendBtn.disabled    = false;
         sendBtn.textContent = 'Send Message';
@@ -692,11 +695,15 @@ if (aboutPanel) {
   async function loadCreatorsDirectory() {
     const hero = document.querySelector('.creator-hero');
     if (hero) {
+      hero.classList.add('creator-hero--directory');
+            hero.querySelector('.creator-profile-wrap')?.classList.remove('container');
+
       // Add animated grain & scan to banner
       const bannerEl = hero.querySelector('.creator-banner');
       if (bannerEl) {
+        bannerEl.classList.add('creator-banner--directory');
         bannerEl.insertAdjacentHTML('beforeend',
-          '<div class="creator-banner-grain"></div><div class="creator-banner-scan"></div>'
+          '<div class="creator-banner-grain"></div><div class="creator-banner-scan"></div><div class="creator-banner-orbs"></div>'
         );
       }
 
@@ -708,15 +715,22 @@ if (aboutPanel) {
       if (profileWrap) {
         profileWrap.innerHTML = `
           <div class="directory-header">
-            <div class="film-strip" aria-hidden="true">
-              ${Array.from({length: 14}).map(() => '<div class="film-hole"></div>').join('')}
-            </div>
-            <h1 style="font-family:var(--font-display);font-size:2rem;margin:0 0 8px">Browse Creators</h1>
-            <p style="color:var(--text-muted);margin:0 0 var(--space-4)">Discover talented creators — graphic designers, motion artists, and animators — on FLOWVA</p>
-            <div class="dir-search-wrap" style="display:flex;gap:var(--space-3);flex-wrap:wrap;width:100%;max-width:520px">
-              <input type="text" id="creator-search" placeholder="Search by name, bio, country…"
-                class="form-input" style="flex:1;min-width:200px">
-              <button class="btn btn--primary btn--sm" id="creator-search-btn">Search</button>
+            <div class="dir-header-inner">
+              <div class="dir-eyebrow">
+                <span class="dir-eyebrow-dot"></span>
+                CREATOR DIRECTORY
+              </div>
+              <h1 class="dir-heading">Browse Creators</h1>
+              <p class="dir-subtext">Discover talented creators — graphic designers, motion artists, and animators — on FLOWVA</p>
+              <div class="dir-search-row">
+                <div class="dir-search-wrap">
+                  <span class="dir-search-icon">⌕</span>
+                  <input type="text" id="creator-search" placeholder="Search by name, bio, country…"
+                    class="form-input dir-search-input">
+                </div>
+                <button class="btn btn--primary btn--sm" id="creator-search-btn" style="height:44px">Search</button>
+                <span class="dir-count-pill" id="dir-count-pill" hidden></span>
+              </div>
             </div>
           </div>`;
       }
@@ -761,6 +775,13 @@ if (aboutPanel) {
       }
 
       const { creators, pages } = res.data;
+
+      // Populate the live creator count pill in the header
+      const countPill = document.getElementById('dir-count-pill');
+      if (countPill && res.data.total != null) {
+        countPill.textContent = `${Number(res.data.total).toLocaleString()} creators`;
+        countPill.hidden = false;
+      }
 
       if (grid) {
         grid.innerHTML = creators.map((c, i) => `

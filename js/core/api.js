@@ -354,9 +354,9 @@ const api = {
     getConversations:  ()                            => request('GET',   '/messages/conversations'),
     getMessages:       (conversationId)              => request('GET',   `/messages/${conversationId}`),
     send:              (conversationId, payload)     => request('POST',  `/messages/${conversationId}`, payload),
-    startConversation: (recipientId, initialMessage) => request('POST',  '/messages/start', {
-      recipientId,
-      ...(initialMessage ? { message: initialMessage } : {}),
+    startConversation: (recipientId, content) => request('POST',  '/messages/start', {
+    recipientId,
+    content,
     }),
     edit:              (messageId, payload)          => request('PATCH', `/messages/${messageId}`, payload),
     markRead:          (conversationId)              => request('PATCH', `/messages/${conversationId}/read`),
