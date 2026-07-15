@@ -625,11 +625,19 @@ async function loadPayouts() {
   if (!container) return;
   container.innerHTML = '<div class="loading-row"><div class="spinner"></div>Loading payouts…</div>';
 
-  const res = await api.admin.getPendingPayouts();
-  if (!res.ok) { container.innerHTML = errorHtml('Failed to load payouts'); return; }
+  const [payoutsRes, statsRes] = await Promise.all([
+    api.admin.getPendingPayouts(),
+    api.admin.getStats(),
+  ]);
+  if (!payoutsRes.ok) { container.innerHTML = errorHtml('Failed to load payouts'); return; }
 
-  const payouts = res.data.payouts ?? [];
+  const payouts = payoutsRes.data.payouts ?? [];
   setBadge('badge-payouts', payouts.length);
+
+  const totalOwed = payouts.reduce((sum, p) => sum + Number(p.pending ?? 0), 0);
+  el('payout-st-owed').textContent = money(totalOwed);
+  el('payout-st-creators').textContent = payouts.length;
+  if (statsRes.ok) el('payout-st-commission').textContent = money(statsRes.data.stats?.totalCommission);
 
   if (!payouts.length) {
     container.innerHTML = emptyHtml(icon('check'), 'All caught up', 'No creators currently owed a payout');
@@ -640,7 +648,7 @@ async function loadPayouts() {
     <div class="table-wrap">
       <div class="table-scroll">
         <table class="data-table">
-          <thead><tr><th>Creator</th><th>Pending</th><th>Method</th><th>Frequency</th><th>Action</th></tr></thead>
+          <thead><tr><th>Creator</th><th>Pending</th><th>Destination</th><th>Frequency</th><th>Action</th></tr></thead>
           <tbody id="payouts-tbody"></tbody>
         </table>
       </div>
@@ -648,11 +656,6 @@ async function loadPayouts() {
 
   const tbody = el('payouts-tbody');
   for (const p of payouts) {
-    const methodLabelText = p.payoutMethod === 'PAYSTACK_SUBACCOUNT' ? 'Paystack'
-      : p.payoutMethod === 'SKRILL' ? 'Skrill'
-      : p.payoutMethod === 'GREY' ? 'Grey'
-      : 'Not set up';
-
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>
@@ -660,50 +663,32 @@ async function loadPayouts() {
         <div class="user-email">${esc(p.creator?.email ?? '—')}</div>
       </td>
       <td><span class="amount-creator">$${money(p.pending)}</span></td>
-      <td><span class="badge ${p.payoutMethod ? 'badge-approved' : 'badge-pending'}">${esc(methodLabelText)}</span></td>
+      <td><span class="badge ${p.payoutMethod ? 'badge-approved' : 'badge-pending'}">${esc(methodLabel(p.payoutMethod))}</span></td>
       <td style="color:var(--text-2)">${esc(p.payoutFrequency ?? 'MONTHLY')}</td>
       <td style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px"></td>`;
 
     const actionsTd = tr.querySelector('td:last-child');
 
-    if (p.canAutoPay) {
+    if (p.payoutMethod) {
       const payBtn = document.createElement('button');
-      payBtn.className = 'btn btn-approve btn-sm';
-      payBtn.innerHTML = `${icon('dollar')} Pay via Paystack`;
+      payBtn.className = 'btn btn-primary btn-sm';
+      payBtn.innerHTML = `${icon('dollar')} Pay via Eversend`;
       payBtn.onclick = async () => {
         const ok = await showConfirm({
-          icon: 'dollar', title: 'Send Paystack Transfer',
-          body: `Send $${money(p.pending)} to ${p.creator?.name ?? 'this creator'} via Paystack now?`,
-          confirmLabel: 'Send Payment', confirmClass: 'btn-approve',
+          icon: 'dollar',
+          title: `Send $${money(p.pending)} to ${p.creator?.name ?? 'this creator'}?`,
+          body: `This triggers a live Eversend transfer to their ${methodLabel(p.payoutMethod)} destination. This cannot be undone from FLOWVA once sent.`,
+          confirmLabel: 'Send Now',
+          confirmClass: 'btn-primary',
         });
         if (!ok) return;
         payBtn.disabled = true; payBtn.innerHTML = 'Sending…';
-        const r = await api.admin.payViaPaystack(p.creatorId);
-        if (!r.ok) { Toast.show(r.error ?? 'Transfer failed', 'error'); payBtn.disabled = false; payBtn.innerHTML = `${icon('dollar')} Pay via Paystack`; return; }
-        Toast.show('Payout sent ✓', 'success');
+        const r = await api.admin.payoutViaEversend(p.creatorId);
+        if (!r.ok) { Toast.show(r.error ?? 'Eversend transfer failed', 'error'); payBtn.disabled = false; payBtn.innerHTML = `${icon('dollar')} Pay via Eversend`; return; }
+        Toast.show(`Payout sent ✓${r.data?.reference ? ` (ref: ${r.data.reference})` : ''}`, 'success');
         tr.remove();
       };
       actionsTd.appendChild(payBtn);
-    } else if (p.payoutMethod === 'SKRILL' || p.payoutMethod === 'GREY') {
-      const markBtn = document.createElement('button');
-      markBtn.className = 'btn btn-primary btn-sm';
-      markBtn.innerHTML = `${icon('check')} Mark as Paid`;
-      markBtn.onclick = async () => {
-        const reference = await showPrompt({
-          title: `Mark ${p.creator?.name ?? 'creator'}'s payout as paid`,
-          subtitle: `Confirm you've sent $${money(p.pending)} via ${methodLabelText} outside FLOWVA.`,
-          placeholder: 'Transaction reference (optional)…',
-          confirmLabel: 'Mark as Paid',
-          minLength: 0,
-        });
-        if (reference === null) return;
-        markBtn.disabled = true; markBtn.innerHTML = 'Saving…';
-        const r = await api.admin.markPayoutPaid(p.creatorId, p.payoutMethod, reference || undefined);
-        if (!r.ok) { Toast.show(r.error ?? 'Failed', 'error'); markBtn.disabled = false; markBtn.innerHTML = `${icon('check')} Mark as Paid`; return; }
-        Toast.show('Payout recorded ✓', 'success');
-        tr.remove();
-      };
-      actionsTd.appendChild(markBtn);
     } else {
       actionsTd.innerHTML = '<span style="color:var(--text-3)">Creator hasn\'t set up a payout method</span>';
     }
@@ -718,25 +703,27 @@ async function loadPayouts() {
 
 function formatPayoutDetails(method, details) {
   if (!details) return '—';
-  if (method === 'PAYSTACK_SUBACCOUNT') {
+  if (method === 'MOMO') {
+    const num = details.number ?? '';
+    const masked = num.length > 4 ? `•••• ${num.slice(-4)}` : num;
+    return `${esc(details.network ?? '—')} · ${esc(masked)} · ${esc(details.accountName ?? '—')}`;
+  }
+  if (method === 'BANK') {
     const acct = details.accountNumber ?? '';
     const masked = acct.length > 4 ? `•••• ${acct.slice(-4)}` : acct;
-    return `Bank ${esc(details.bankCode ?? '—')} · ${esc(masked)}`;
+    return `${esc(details.bankName ?? '—')} · ${esc(masked)} · ${esc(details.accountName ?? '—')}`;
   }
-  if (method === 'SKRILL') {
-    return esc(details.email ?? '—');
-  }
-  if (method === 'GREY') {
-    return `${esc(details.accountName ?? '—')} · ${esc(details.accountNumber ?? '—')}`;
+  if (method === 'EVERSEND') {
+    return esc(details.tag ?? '—');
   }
   return '—';
 }
 
 function methodLabel(method) {
-  return method === 'PAYSTACK_SUBACCOUNT' ? 'Paystack'
-    : method === 'SKRILL' ? 'Skrill'
-    : method === 'GREY' ? 'Grey'
-    : method ?? '—';
+  return method === 'MOMO' ? 'Mobile Money'
+    : method === 'BANK' ? 'Bank Transfer'
+    : method === 'EVERSEND' ? 'Eversend'
+    : method ?? 'Not set up';
 }
 
 async function loadPayoutRequests(status = 'PENDING') {

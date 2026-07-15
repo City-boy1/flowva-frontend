@@ -391,8 +391,42 @@
             <div class="tab-panel" id="panel-payouts">
                 <div class="page-header">
                     <h1>Creator Payouts</h1>
-                    <p>Paystack transfers are one click; Skrill/Grey are marked paid after you send manually</p>
+                    <p>Payouts are sent via Eversend, to whichever Mobile Money, Bank, or Eversend Wallet destination
+                        each creator has on file</p>
                 </div>
+
+                <div class="stats-grid" id="payout-stats-grid" style="margin-bottom:20px">
+                    <div class="stat-card" style="--stat-color:var(--yellow)">
+                        <span class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23" />
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                            </svg></span>
+                        <div class="stat-value">$<span id="payout-st-owed">—</span></div>
+                        <div class="stat-label">Total Owed to Creators</div>
+                    </div>
+                    <div class="stat-card" style="--stat-color:var(--green)">
+                        <span class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="19" x2="12" y2="5" />
+                                <polyline points="5 12 12 5 19 12" />
+                            </svg></span>
+                        <div class="stat-value">$<span id="payout-st-commission">—</span></div>
+                        <div class="stat-label">Commission Earned (Platform)</div>
+                    </div>
+                    <div class="stat-card" style="--stat-color:var(--purple)">
+                        <span class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg></span>
+                        <div class="stat-value" id="payout-st-creators">—</div>
+                        <div class="stat-label">Creators Awaiting Payout</div>
+                    </div>
+                </div>
+
                 <div id="payouts-list">
                     <div class="loading-row">
                         <div class="spinner"></div>Loading payouts…
@@ -404,8 +438,7 @@
             <div class="tab-panel" id="panel-commissions">
                 <div class="page-header">
                     <h1>Commissions</h1>
-                    <p>Platform earnings from completed sales — held until admin payout via Paystack, Skrill, or Grey
-                    </p>
+                    <p>Platform earnings from completed sales, held centrally until disbursed</p>
                 </div>
                 <div id="comm-list">
                     <div class="loading-row">

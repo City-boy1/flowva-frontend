@@ -779,10 +779,10 @@ if (aboutPanel) {
       // Populate the live creator count pill in the header
       const countPill = document.getElementById('dir-count-pill');
       if (countPill && res.data.total != null) {
-      const total = Number(res.data.total);
-      countPill.textContent = `${total.toLocaleString()} creator${total !== 1 ? 's' : ''}`;
-      countPill.hidden = false;
-    S}
+        const total = Number(res.data.total);
+        countPill.textContent = `${total.toLocaleString()} creator${total !== 1 ? 's' : ''}`;
+        countPill.hidden = false;
+      }
 
       if (grid) {
         grid.innerHTML = creators.map((c, i) => `

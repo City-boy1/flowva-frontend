@@ -877,8 +877,8 @@ if(_fk) localStorage.setItem(_fk, JSON.stringify(favorites));
         <div class="fv-buy-modal-row fv-buy-modal-row--total"><span>Total</span><span class="fv-buy-total-amount">${formatPrice(p,cur)}</span></div>
       </div>
       <div class="fv-buy-modal-foot">
-        <button id="helio-pay-btn" class="fv-buy-pay-btn">💳 Pay Securely</button>
-        <p class="fv-buy-secure-note">Secured by Flowva Escrow · Skrill, Grey, Mastercard & Bank Account accepted</p>
+        <button id="paystack-pay-btn" class="fv-buy-pay-btn">💳 Pay Securely</button>
+        <p class="fv-buy-secure-note">Payment processed securely via Paystack</p>
         <p id="buy-modal-error" class="fv-buy-modal-error"></p>
       </div>
     </div>`;
@@ -898,12 +898,12 @@ if(_fk) localStorage.setItem(_fk, JSON.stringify(favorites));
   modal.querySelector('#buy-modal-close').addEventListener('click',closeBuyModal);
   modal.addEventListener('click',e=>{if(e.target===modal)closeBuyModal();});
 
-  modal.querySelector('#helio-pay-btn').addEventListener('click',async()=>{
-    const btn=modal.querySelector('#helio-pay-btn');
+  modal.querySelector('#paystack-pay-btn').addEventListener('click',async()=>{
+    const btn=modal.querySelector('#paystack-pay-btn');
     const errEl=modal.querySelector('#buy-modal-error');
     errEl.style.display='none';
     btn.disabled=true;btn.textContent='Redirecting…';
-    const res=await api.templates.purchase(_pendingBuyId,`${window.location.origin}/marketplace.html?payment=success&id=${_pendingBuyId}`);
+    const res=await api.templates.purchase(_pendingBuyId,`${window.location.origin}/payment-callback.html`);
     if(!res.ok){
       btn.disabled=false;btn.innerHTML='💳 Pay with Card';
       errEl.textContent=res.error??'Payment could not be started.';

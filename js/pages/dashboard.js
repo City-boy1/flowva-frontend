@@ -273,10 +273,8 @@ async function loadCreatorOverview() {
 
  if (walletRes.ok && walletRes.data?.wallet) {
   const w = walletRes.data.wallet;
-  const balEl     = document.getElementById('stat-balance');
   const revenueEl = document.getElementById('stat-revenue');
-  if (balEl)     balEl.textContent = Number(w.availableBalance ?? 0).toFixed(2);
-  if (revenueEl) revenueEl.textContent = Number(w.totalEarned ?? 0).toFixed(2);
+  if (revenueEl) revenueEl.textContent = Number(w.totalSales ?? 0).toFixed(2);
 }
 
   if (ordersRes.ok && ordersRes.data?.orders) {
@@ -1350,7 +1348,6 @@ function updatePayoutMethodOptions(country, selectedValue = '') {
   ).join('');
   if (accountInput) accountInput.placeholder = PAYOUT_PLACEHOLDERS[select.value] ?? 'Account details';
 }
-
 async function loadPayoutHistory() {
   const el = document.getElementById('payout-history-list');
   if (!el) return;
@@ -1368,105 +1365,99 @@ async function loadPayoutHistory() {
   `).join('');
 }
 
+// Only Ghana has named providers (MTN MoMo, Telecel Cash, AirtelTigo Money) so far.
+const MOMO_COUNTRIES = ['ghana'];
+
 async function initPayoutPanel() {
-  const balEl     = document.getElementById('payout-balance');
-  const pendingEl = document.getElementById('payout-pending');
-  if (balEl)     balEl.textContent = '…';
-  if (pendingEl) pendingEl.textContent = 'Loading…';
+  const salesEl = document.getElementById('payout-total-sales');
+  const commEl  = document.getElementById('payout-commission');
+  const netEl   = document.getElementById('payout-net-balance');
+  if (salesEl) salesEl.textContent = '…';
+  if (commEl)  commEl.textContent  = '…';
+  if (netEl)   netEl.textContent   = 'Loading…';
 
   const meRes = await api.auth.me();
   if (meRes.ok && meRes.data?.user) {
     AppState.setAuth(AppState.getToken(), { ...AppState.getUser(), ...meRes.data.user });
   }
-  const userCountry = (AppState.getUser()?.country ?? '').toUpperCase();
-  // Mirrors the backend's PAYSTACK_PAYOUT_COUNTRIES env var.
-  const paystackAvailable = ['GH', 'NG'].includes(userCountry);
+  const creatorCountry = normalizeCountry(AppState.getUser()?.country);
+  const momoAvailable  = MOMO_COUNTRIES.includes(creatorCountry);
 
   const walletRes = await api.payouts.getWallet();
   if (walletRes.ok && walletRes.data?.wallet) {
     const w = walletRes.data.wallet;
-    if (balEl)     balEl.textContent = `$${Number(w.totalEarned ?? 0).toFixed(2)} USD`;
-    if (pendingEl) pendingEl.textContent = `$${Number(w.pending ?? 0).toFixed(2)} pending`;
+    if (salesEl) salesEl.textContent = `$${Number(w.totalSales ?? 0).toFixed(2)}`;
+    if (commEl)  commEl.textContent  = `$${Number(w.commissionDeducted ?? 0).toFixed(2)}`;
+    if (netEl)   netEl.textContent   = `$${Number(w.netPayoutBalance ?? 0).toFixed(2)}`;
   } else {
-    if (balEl)     balEl.textContent = '$—';
-    if (pendingEl) pendingEl.textContent = 'Could not load balance';
+    if (salesEl) salesEl.textContent = '$—';
+    if (commEl)  commEl.textContent  = '$—';
+    if (netEl)   netEl.textContent   = 'Could not load balance';
   }
 
   const settingsRes = await api.payouts.getSettings();
   const s = settingsRes.ok ? settingsRes.data : null;
 
   const methodBtns = {
-    PAYSTACK_SUBACCOUNT: document.getElementById('method-btn-paystack'),
-    SKRILL:              document.getElementById('method-btn-skrill'),
-    GREY:                document.getElementById('method-btn-grey'),
+    MOMO:     document.getElementById('method-btn-momo'),
+    BANK:     document.getElementById('method-btn-bank'),
+    EVERSEND: document.getElementById('method-btn-eversend'),
   };
   const methodWraps = {
-    PAYSTACK_SUBACCOUNT: document.getElementById('paystack-fields-wrap'),
-    SKRILL:              document.getElementById('skrill-fields-wrap'),
-    GREY:                document.getElementById('grey-fields-wrap'),
+    MOMO:     document.getElementById('momo-fields-wrap'),
+    BANK:     document.getElementById('bank-fields-wrap'),
+    EVERSEND: document.getElementById('eversend-fields-wrap'),
   };
   const methodHint = document.getElementById('payout-method-hint');
-  const methodLabel = m => m === 'PAYSTACK_SUBACCOUNT' ? 'Paystack' : m === 'SKRILL' ? 'Skrill' : 'Grey';
+  const methodLabel = m => m === 'MOMO' ? 'Mobile Money' : m === 'BANK' ? 'Bank Transfer' : 'Eversend';
 
-  if (!paystackAvailable && methodBtns.PAYSTACK_SUBACCOUNT) {
-    methodBtns.PAYSTACK_SUBACCOUNT.disabled = true;
-    methodBtns.PAYSTACK_SUBACCOUNT.title = 'Not available for your country yet';
+  if (!momoAvailable && methodBtns.MOMO) {
+    methodBtns.MOMO.disabled = true;
+    methodBtns.MOMO.title = 'Mobile Money is not available for your country yet';
   }
 
-  const bankSelect  = document.getElementById('paystack-bank-select');
-  const bankNumEl   = document.getElementById('paystack-account-number');
-  const skrillEl    = document.getElementById('skrill-email');
-  const greyNumEl   = document.getElementById('grey-account-number');
-  const greyNameEl  = document.getElementById('grey-account-name');
-  if (bankNumEl  && s?.paystackAccountNumber) bankNumEl.value  = s.paystackAccountNumber;
-  if (skrillEl   && s?.skrillEmail)           skrillEl.value   = s.skrillEmail;
-  if (greyNumEl  && s?.greyAccountNumber)      greyNumEl.value  = s.greyAccountNumber;
-  if (greyNameEl && s?.greyAccountName)        greyNameEl.value = s.greyAccountName;
+  const momoNetworkEl  = document.getElementById('momo-network');
+  const momoNumberEl   = document.getElementById('momo-number');
+  const momoNameEl     = document.getElementById('momo-account-name');
+  const bankNameEl     = document.getElementById('bank-name');
+  const bankNumEl      = document.getElementById('bank-account-number');
+  const bankAcctNameEl = document.getElementById('bank-account-name');
+  const eversendTagEl  = document.getElementById('eversend-tag');
 
-  const verifiedNameWrap = document.getElementById('paystack-verified-name');
-  const verifiedNameText = document.getElementById('paystack-verified-name-text');
-  if (s?.paystackAccountName && verifiedNameWrap && verifiedNameText) {
-    verifiedNameText.textContent = s.paystackAccountName;
-    verifiedNameWrap.style.display = 'block';
-  }
+  if (momoNetworkEl  && s?.momoNetwork)      momoNetworkEl.value  = s.momoNetwork;
+  if (momoNumberEl   && s?.momoNumber)       momoNumberEl.value   = s.momoNumber;
+  if (momoNameEl     && s?.momoAccountName)  momoNameEl.value     = s.momoAccountName;
+  if (bankNameEl     && s?.bankName)         bankNameEl.value     = s.bankName;
+  if (bankNumEl      && s?.bankAccountNumber)bankNumEl.value      = s.bankAccountNumber;
+  if (bankAcctNameEl && s?.bankAccountName)  bankAcctNameEl.value = s.bankAccountName;
+  if (eversendTagEl  && s?.eversendTag)      eversendTagEl.value  = s.eversendTag;
 
   function showMethodFields(method) {
     Object.entries(methodWraps).forEach(([m, el]) => { if (el) el.style.display = m === method ? 'block' : 'none'; });
     Object.entries(methodBtns).forEach(([m, btn]) => btn?.classList.toggle('btn--primary', m === method));
   }
-  const initialMethod = s?.primaryMethod ?? (paystackAvailable ? 'PAYSTACK_SUBACCOUNT' : 'SKRILL');
+  const initialMethod = s?.primaryMethod ?? (momoAvailable ? 'MOMO' : 'BANK');
   showMethodFields(initialMethod);
   if (methodHint) {
     methodHint.textContent = s?.primaryMethod
       ? `Currently receiving payouts via ${methodLabel(s.primaryMethod)}.`
-      : 'Fill in a method\'s details below, then click "Use as My Payout Method".';
+      : 'Fill in a method\'s details below, then click "Use as My Payout Method". You can only have one active method at a time.';
   }
   Object.entries(methodBtns).forEach(([m, btn]) => btn?.addEventListener('click', () => showMethodFields(m)));
-
-  if (bankSelect && paystackAvailable) {
-    const country = userCountry === 'NG' ? 'nigeria' : 'ghana';
-    const banksRes = await api.payouts.getBanks(country);
-    if (banksRes.ok && banksRes.data?.banks) {
-      bankSelect.innerHTML = '<option value="">Select your bank…</option>' +
-        banksRes.data.banks.map(b => `<option value="${b.code}" ${b.code === s?.paystackBankCode ? 'selected' : ''}>${b.name}</option>`).join('');
-    }
-  }
 
   const hasExistingMethod = !!s?.primaryMethod;
 
   function toggleReasonField(method, show) {
-    const wrap = document.getElementById(`${method.toLowerCase().replace('_subaccount','')}-reason-wrap`);
+    const wrap = document.getElementById(`${method.toLowerCase()}-reason-wrap`);
     if (wrap) wrap.style.display = show ? 'block' : 'none';
   }
   if (hasExistingMethod) {
-    ['paystack','skrill','grey'].forEach(m => toggleReasonField(m.toUpperCase(), true));
-  }
+    ['momo','bank','eversend'].forEach(m => toggleReasonField(m.toUpperCase(), true));
 
-  if (hasExistingMethod) {
     const activeFieldsByMethod = {
-      PAYSTACK_SUBACCOUNT: [bankSelect, bankNumEl],
-      SKRILL:              [skrillEl],
-      GREY:                [greyNumEl, greyNameEl],
+      MOMO:     [momoNetworkEl, momoNumberEl, momoNameEl],
+      BANK:     [bankNameEl, bankNumEl, bankAcctNameEl],
+      EVERSEND: [eversendTagEl],
     };
     Object.entries(activeFieldsByMethod).forEach(([method, fields]) => {
       const isActiveMethod = method === s.primaryMethod;
@@ -1482,23 +1473,24 @@ async function initPayoutPanel() {
     }
   }
 
-  document.getElementById('paystack-activate-btn')?.addEventListener('click', () =>
+  document.getElementById('momo-activate-btn')?.addEventListener('click', () =>
     requestMethodChange({
-      method: 'PAYSTACK_SUBACCOUNT',
-      bankCode: bankSelect?.value,
+      method: 'MOMO',
+      network: momoNetworkEl?.value,
+      number: momoNumberEl?.value.trim(),
+      accountName: momoNameEl?.value.trim(),
+    }, 'momo-reason'));
+
+  document.getElementById('bank-activate-btn')?.addEventListener('click', () =>
+    requestMethodChange({
+      method: 'BANK',
+      bankName: bankNameEl?.value.trim(),
       accountNumber: bankNumEl?.value.trim(),
-      currency: userCountry === 'NG' ? 'NGN' : 'GHS',
-    }, 'paystack-reason'));
+      accountName: bankAcctNameEl?.value.trim(),
+    }, 'bank-reason'));
 
-  document.getElementById('skrill-activate-btn')?.addEventListener('click', () =>
-    requestMethodChange({ method: 'SKRILL', email: skrillEl?.value.trim() }, 'skrill-reason'));
-
-  document.getElementById('grey-activate-btn')?.addEventListener('click', () =>
-    requestMethodChange({
-      method: 'GREY',
-      accountNumber: greyNumEl?.value.trim(),
-      accountName: greyNameEl?.value.trim(),
-    }, 'grey-reason'));
+  document.getElementById('eversend-activate-btn')?.addEventListener('click', () =>
+    requestMethodChange({ method: 'EVERSEND', tag: eversendTagEl?.value.trim() }, 'eversend-reason'));
 
   async function requestMethodChange(input, reasonFieldId) {
     const reason = hasExistingMethod ? document.getElementById(reasonFieldId)?.value.trim() : undefined;
@@ -1537,16 +1529,6 @@ async function initPayoutPanel() {
   }
   renderPendingChangeRequest();
 
-  document.getElementById('skrill-save-btn')?.addEventListener('click', async function () {
-    const email = skrillEl?.value.trim();
-    if (!email) { Toast.show('Enter your Skrill email', 'warning'); return; }
-    this.disabled = true;
-    const res = await api.payouts.setSkrillEmail(email);
-    this.disabled = false;
-    if (!res.ok) { Toast.show(res.error ?? 'Failed to save', 'error'); return; }
-    Toast.show('Skrill email saved ✓', 'success');
-  });
-
   const freqBtnWeekly  = document.getElementById('freq-btn-weekly');
   const freqBtnMonthly = document.getElementById('freq-btn-monthly');
   function paintFreq(freq) {
@@ -1569,7 +1551,6 @@ async function initPayoutPanel() {
 
   loadPayoutHistory();
 }
-
 async function initSettingsPanel() {
   const saveBtn = document.getElementById('prefs-save-btn');
   if (!saveBtn) return;

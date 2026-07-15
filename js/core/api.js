@@ -280,7 +280,6 @@ const api = {
     getWallet:   () => request('GET', '/payouts/wallet'),
     getSettings: () => request('GET', '/payouts/settings'),
     getHistory:  () => request('GET', '/payouts/history'),
-    getBanks:    (country = 'ghana') => request('GET', `/payouts/paystack/banks?country=${country}`),
     requestMethodChange: (payload) => request('POST', '/payouts/method', payload),
     getChangeRequests:   ()        => request('GET',  '/payouts/change-requests'),
     setFrequency:     (frequency) => request('POST', '/payouts/frequency', { frequency }),
@@ -406,7 +405,7 @@ const api = {
     rejectRoleRequest:     (id, reason) => request('POST', `/admin/role-requests/${id}/reject`, { reason }),
     deleteRoleRequest:     (id)         => request('DELETE', `/admin/role-requests/${id}`),
 
-    // Commissions (all auto-disbursed on-chain by Helio)
+    // Commissions
     getCommissions:      (disbursed)  => {
       const qs = disbursed !== undefined ? `?disbursed=${disbursed}` : '';
       return request('GET', `/admin/commissions${qs}`);
@@ -415,7 +414,6 @@ const api = {
 
     // Payouts
     getPendingPayouts: ()  => request('GET',  '/admin/payouts/pending'),
-    payViaPaystack:    (creatorId) => request('POST', `/admin/payouts/${creatorId}/pay-paystack`),
     markPayoutPaid:    (creatorId, method, reference) =>
       request('POST', `/admin/payouts/${creatorId}/mark-paid`, { method, reference }),
 
@@ -448,6 +446,12 @@ const api = {
     // Disputes
     getDisputes:         ()           => request('GET',   '/admin/disputes'),
     resolveDispute:      (orderId, decision) => request('POST', `/admin/disputes/${orderId}/resolve`, { decision }),
+
+    // Payouts
+    getPendingPayouts: ()  => request('GET',  '/admin/payouts/pending'),
+    payoutViaEversend: (creatorId) => request('POST', `/admin/payouts/${creatorId}/pay-eversend`),
+    markPayoutPaid:    (creatorId, method, reference) =>
+    request('POST', `/admin/payouts/${creatorId}/mark-paid`, { method, reference }),
 
     // Maintenance
     repairWallets:       ()           => request('POST',  '/admin/repair-wallets'),

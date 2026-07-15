@@ -1078,10 +1078,23 @@
                         <h3>Total Earned</h3>
                         <span class="badge badge--success">Active</span>
                     </div>
-                    <!-- totalEarned: display-only counter from CreatorWallet. Real funds already in creator's Solana wallet. -->
-                    <div class="payout-balance" id="payout-balance">$0.00</div>
-                    <!-- pending: escrow funds held for in-progress projects (display only) -->
-                    <div class="payout-pending" id="payout-pending">Loading…</div>
+                    <div
+                        style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--space-4);margin-bottom:var(--space-5)">
+                        <div>
+                            <div style="font-size:0.75rem;color:var(--text-muted)">Total Sales</div>
+                            <div class="payout-balance" id="payout-total-sales" style="font-size:1.5rem">$0.00</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.75rem;color:var(--text-muted)">Commission Deducted</div>
+                            <div class="payout-balance" id="payout-commission"
+                                style="font-size:1.5rem;color:var(--text-muted)">$0.00</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.75rem;color:var(--text-muted)">Net Payout Balance</div>
+                            <div class="payout-balance" id="payout-net-balance"
+                                style="font-size:1.5rem;color:var(--success)">$0.00</div>
+                        </div>
+                    </div>
                     <hr class="divider" style="margin-bottom:var(--space-6)">
 
                     <div style="background:rgba(0,123,255,0.08);border:1px solid rgba(0,123,255,0.2);
@@ -1089,23 +1102,16 @@
                         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
                             <span style="font-size:1.5rem">💳</span>
                             <div>
-                                <div style="font-weight:700;font-size:0.95rem">Escrow-Secured Payouts</div>
-                                <div style="font-size:0.8rem;color:var(--text-muted)">Flowva holds payments in
-                                    escrow
-                                    and releases your earnings weekly or monthly to your Skrill or Grey wallet
-                                </div>
+                                <div style="font-weight:700;font-size:0.95rem">Manual Payouts</div>
+                                <div style="font-size:0.8rem;color:var(--text-muted)">Flowva collects all sales
+                                    centrally and sends payouts to your Mobile Money, Bank, or Eversend wallet on a
+                                    weekly or monthly schedule</div>
                             </div>
                             <span class="badge badge--success" style="margin-left:auto;flex-shrink:0">Active</span>
                         </div>
                         <p style="font-size:0.78rem;color:var(--text-muted);margin-top:10px;line-height:1.6">
-                            Payouts are made in USD only. Add your Skrill email or Grey account details below to
-                            receive
-                            payments.
-                            Payouts are made in USD only. Skrill requires your registered Skrill email address.
-                            Grey
-                            requires your Grey account number or email. Add your preferred details below to
-                            receive
-                            payments.
+                            Add one or more payout methods below. An admin reviews and sends each payout manually —
+                            it'll appear in your history once sent.
                         </p>
                     </div>
 
@@ -1118,93 +1124,97 @@
                             <label class="form-label">Payout Method</label>
                             <div style="display:flex;gap:8px;flex-wrap:wrap">
                                 <button type="button" class="btn btn--ghost btn--sm payout-method-btn"
-                                    data-method="PAYSTACK_SUBACCOUNT" id="method-btn-paystack">🏦 Paystack</button>
+                                    data-method="MOMO" id="method-btn-momo">📱 Mobile Money</button>
                                 <button type="button" class="btn btn--ghost btn--sm payout-method-btn"
-                                    data-method="SKRILL" id="method-btn-skrill">Skrill</button>
+                                    data-method="BANK" id="method-btn-bank">🏦 Bank Transfer</button>
                                 <button type="button" class="btn btn--ghost btn--sm payout-method-btn"
-                                    data-method="GREY" id="method-btn-grey">Grey</button>
+                                    data-method="EVERSEND" id="method-btn-eversend">Eversend Wallet</button>
                             </div>
                             <span id="payout-method-hint"
                                 style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;display:block"></span>
                         </div>
 
-                        <!-- Paystack -->
-                        <div id="paystack-fields-wrap"
+                        <!-- Mobile Money -->
+                        <div id="momo-fields-wrap"
                             style="display:none;border-top:1px solid var(--border);padding-top:var(--space-3);margin-bottom:var(--space-4)">
                             <div class="form-group" style="margin-bottom:var(--space-3)">
-                                <label class="form-label">Bank</label>
-                                <select class="form-input" id="paystack-bank-select">
-                                    <option value="">Select your bank…</option>
+                                <label class="form-label">Network</label>
+                                <select class="form-input" id="momo-network">
+                                    <option value="MTN">MTN MoMo</option>
+                                    <option value="TELECEL">Telecel Cash</option>
+                                    <option value="AIRTELTIGO">AirtelTigo Money</option>
                                 </select>
                             </div>
                             <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label class="form-label">Mobile Money Number</label>
+                                <input class="form-input" type="tel" id="momo-number" placeholder="e.g. 0241234567">
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label class="form-label">Account Name</label>
+                                <input class="form-input" type="text" id="momo-account-name"
+                                    placeholder="Name registered on the mobile money account">
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3);display:none"
+                                id="momo-reason-wrap">
+                                <label class="form-label">Reason for changing your payout method (min 20
+                                    characters)</label>
+                                <textarea class="form-input" id="momo-reason" rows="2"
+                                    placeholder="Why are you switching?" maxlength="300"></textarea>
+                            </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <button class="btn btn--primary btn--sm" id="momo-activate-btn" type="button">Use Mobile
+                                    Money as My Payout Method</button>
+                            </div>
+                        </div>
+
+                        <!-- Bank Transfer -->
+                        <div id="bank-fields-wrap"
+                            style="display:none;border-top:1px solid var(--border);padding-top:var(--space-3);margin-bottom:var(--space-4)">
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label class="form-label">Bank Name</label>
+                                <input class="form-input" type="text" id="bank-name" placeholder="e.g. GCB Bank">
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
                                 <label class="form-label">Account Number</label>
-                                <input class="form-input" type="text" id="paystack-account-number"
-                                    placeholder="e.g. 0123456789">
+                                <input class="form-input" type="text" id="bank-account-number"
+                                    placeholder="Your bank account number">
                             </div>
-                            <div id="paystack-verified-name"
-                                style="display:none;font-size:0.82rem;color:var(--success);margin-bottom:10px">
-                                ✓ Verified: <strong id="paystack-verified-name-text"></strong>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label class="form-label">Account Name</label>
+                                <input class="form-input" type="text" id="bank-account-name"
+                                    placeholder="Name on the bank account">
                             </div>
-                            <div id="paystack-verify-error"
-                                style="display:none;color:var(--danger);font-size:0.82rem;margin-bottom:10px"></div>
                             <div class="form-group" style="margin-bottom:var(--space-3);display:none"
-                                id="paystack-reason-wrap">
+                                id="bank-reason-wrap">
                                 <label class="form-label">Reason for changing your payout method (min 20
                                     characters)</label>
-                                <textarea class="form-input" id="paystack-reason" rows="2"
+                                <textarea class="form-input" id="bank-reason" rows="2"
                                     placeholder="Why are you switching?" maxlength="300"></textarea>
                             </div>
                             <div style="display:flex;gap:8px;flex-wrap:wrap">
-                                <button class="btn btn--primary btn--sm" id="paystack-activate-btn" type="button">Use
-                                    Paystack as My Payout Method</button>
+                                <button class="btn btn--primary btn--sm" id="bank-activate-btn" type="button">Use Bank
+                                    Transfer as My Payout Method</button>
                             </div>
                         </div>
 
-                        <!-- Skrill -->
-                        <div id="skrill-fields-wrap"
+                        <!-- Eversend -->
+                        <div id="eversend-fields-wrap"
                             style="display:none;border-top:1px solid var(--border);padding-top:var(--space-3);margin-bottom:var(--space-4)">
                             <div class="form-group" style="margin-bottom:var(--space-3)">
-                                <label class="form-label">Skrill Email</label>
-                                <input class="form-input" type="email" id="skrill-email"
-                                    placeholder="Your Skrill account email">
+                                <label class="form-label">Eversend Tag or Email</label>
+                                <input class="form-input" type="text" id="eversend-tag"
+                                    placeholder="Your Eversend @tag or account email">
                             </div>
                             <div class="form-group" style="margin-bottom:var(--space-3);display:none"
-                                id="skrill-reason-wrap">
+                                id="eversend-reason-wrap">
                                 <label class="form-label">Reason for changing your payout method (min 20
                                     characters)</label>
-                                <textarea class="form-input" id="skrill-reason" rows="2"
+                                <textarea class="form-input" id="eversend-reason" rows="2"
                                     placeholder="Why are you switching?" maxlength="300"></textarea>
                             </div>
                             <div style="display:flex;gap:8px;flex-wrap:wrap">
-                                <button class="btn btn--primary btn--sm" id="skrill-activate-btn" type="button">Use
-                                    Skrill as My Payout Method</button>
-                            </div>
-                        </div>
-
-                        <!-- Grey -->
-                        <div id="grey-fields-wrap"
-                            style="display:none;border-top:1px solid var(--border);padding-top:var(--space-3);margin-bottom:var(--space-4)">
-                            <div class="form-group" style="margin-bottom:var(--space-3)">
-                                <label class="form-label">Grey Account Number</label>
-                                <input class="form-input" type="text" id="grey-account-number"
-                                    placeholder="Your Grey account number">
-                            </div>
-                            <div class="form-group" style="margin-bottom:var(--space-3)">
-                                <label class="form-label">Grey Account Name</label>
-                                <input class="form-input" type="text" id="grey-account-name"
-                                    placeholder="Name on the Grey account">
-                            </div>
-                            <div class="form-group" style="margin-bottom:var(--space-3);display:none"
-                                id="grey-reason-wrap">
-                                <label class="form-label">Reason for changing your payout method (min 20
-                                    characters)</label>
-                                <textarea class="form-input" id="grey-reason" rows="2"
-                                    placeholder="Why are you switching?" maxlength="300"></textarea>
-                            </div>
-                            <div style="display:flex;gap:8px;flex-wrap:wrap">
-                                <button class="btn btn--primary btn--sm" id="grey-activate-btn" type="button">Use Grey
-                                    as My Payout Method</button>
+                                <button class="btn btn--primary btn--sm" id="eversend-activate-btn" type="button">Use
+                                    Eversend as My Payout Method</button>
                             </div>
                         </div>
 
@@ -1218,7 +1228,8 @@
                                     id="freq-btn-monthly">Monthly</button>
                             </div>
                             <span style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;display:block">
-                                Applies no matter which method above is active.
+                                Admin pays weekly-preference creators every week, and monthly-preference creators every
+                                month.
                             </span>
                         </div>
                     </div>
@@ -1310,13 +1321,11 @@
                         <summary style="font-weight:600;cursor:pointer;font-size:0.92rem">How do payouts work?
                         </summary>
                         <p style="color:var(--text-muted);font-size:0.87rem;line-height:1.7;margin-top:var(--space-3)">
-                            Flowva uses an escrow system. When a buyer purchases your template, funds are held
-                            securely
-                            and released to your Skrill or Grey wallet weekly or monthly. Creators earn 80% of
-                            each
-                            sale. The first 50 creators earn 90%. Payouts are made in USD only. Skrill requires
-                            your
-                            registered Skrill email; Grey requires your Grey account number or email.</p>
+                            All template sales are collected into Flowva's main account. Your dashboard tracks
+                            your total sales, commission deducted, and net payout balance in real time. An admin
+                            manually sends your payout weekly or monthly, via Mobile Money, Bank Transfer, or
+                            Eversend Wallet — whichever you've set up. Creators earn 80% of each sale; the first
+                            50 creators earn 90%.</p>
                     </details>
                     <details
                         style="background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)">
@@ -1352,9 +1361,8 @@
                         <summary style="font-weight:600;cursor:pointer;font-size:0.92rem">How do I add my payout
                             details?</summary>
                         <p style="color:var(--text-muted);font-size:0.87rem;line-height:1.7;margin-top:var(--space-3)">
-                            Go to Dashboard → Payouts and enter your Skrill email or Grey account details.
-                            Payouts are
-                            made in USD only.</p>
+                            Go to Dashboard → Payouts and add your Mobile Money, Bank, or Eversend details. You
+                            can save more than one — an admin chooses which to use when sending your payout.</p>
                     </details>
                     <details
                         style="background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)">
